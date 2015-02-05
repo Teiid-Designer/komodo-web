@@ -22,6 +22,9 @@ import javax.inject.Inject;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.web.client.messages.ClientMessages;
+import org.komodo.web.client.services.KomodoRpcService;
+import org.komodo.web.client.services.NotificationService;
+import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.share.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -44,6 +47,12 @@ public class KomodoWorkspaceScreen extends Composite {
 
     @Inject
     private ClientMessages i18n;
+
+    @Inject
+    private NotificationService notificationService;
+    
+    @Inject
+    private KomodoRpcService komodoService;
         
     @Inject @DataField("textbox-komodo-workspace-name")
     protected TextBox workspaceNameTextBox;
@@ -71,24 +80,25 @@ public class KomodoWorkspaceScreen extends Composite {
     
     @OnStartup
     public void onStartup( final PlaceRequest place ) {   	    	
-    	// Populates list of existing vdb names
-    	//doGetAllVdbNames();
+        
+    	// Start the KEngine
+    	startKEngine();
     }
     
-//    /**
-//     * Populate list of all current VDB names
-//     */
-//    protected void doGetAllVdbNames( ) {
-//    	teiidService.getAllVdbNames(new IRpcServiceInvocationHandler<Collection<String>>() {
-//    		@Override
-//    		public void onReturn(Collection<String> vdbNames) {
-//    			existingVdbNames=vdbNames;
-//    		}
-//    		@Override
-//    		public void onError(Throwable error) {
-//                notificationService.sendErrorNotification(i18n.format("createdataservice.getvdbnames-error"), error); //$NON-NLS-1$
-//    		}
-//    	});
-//    }
+    /**
+     * Populate list of all current VDB names
+     */
+    protected void startKEngine( ) {
+    	komodoService.startKEngine(new IRpcServiceInvocationHandler<Void>() {
+    		@Override
+    		public void onReturn( Void data ) {
+    		}
+    		@Override
+    		public void onError(Throwable error) {
+                notificationService.sendErrorNotification(i18n.format("komodoworkspace-screen.startengine-error"), error); //$NON-NLS-1$
+    		}
+    	});
+    }
     
+        
 }

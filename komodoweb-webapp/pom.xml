@@ -104,11 +104,41 @@
        <artifactId>teiid-admin</artifactId>
     </dependency>
     
-      <!-- Third party libraries -->
-      <dependency>
-        <groupId>org.owasp.encoder</groupId>
-        <artifactId>encoder</artifactId>
-      </dependency>
+    <!-- Komodo -->
+    <dependency>
+       <groupId>org.jboss.tools.komodo.plugins</groupId>
+       <artifactId>org.komodo.core</artifactId>
+    </dependency>
+    <dependency>
+       <groupId>org.jboss.tools.komodo.plugins.libs</groupId>
+       <artifactId>org.komodo.modeshape.lib</artifactId>
+    </dependency>
+    <dependency>
+       <groupId>org.jboss.tools.komodo.plugins</groupId>
+       <artifactId>org.komodo.relational</artifactId>
+    </dependency>
+    <dependency>
+       <groupId>org.jboss.tools.komodo.plugins</groupId>
+       <artifactId>org.komodo.spi</artifactId>
+    </dependency>
+    <dependency>
+       <groupId>org.jboss.tools.komodo.plugins</groupId>
+       <artifactId>org.komodo.utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.tools.komodo.plugins</groupId>
+      <artifactId>org.komodo.modeshape.teiid.sql.sequencer</artifactId>
+    </dependency>
+    
+    <!-- Third party libraries -->
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
       
     <!-- Log -->
     <dependency>

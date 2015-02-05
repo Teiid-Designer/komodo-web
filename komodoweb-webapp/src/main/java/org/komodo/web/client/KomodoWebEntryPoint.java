@@ -28,6 +28,10 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
+import org.komodo.web.client.messages.ClientMessages;
+import org.komodo.web.client.services.KomodoRpcService;
+import org.komodo.web.client.services.NotificationService;
+import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.share.Constants;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -53,6 +57,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class KomodoWebEntryPoint {
 
     @Inject
+    private ClientMessages i18n;
+    
+    @Inject
     private SyncBeanManager manager;
 
     @Inject
@@ -69,6 +76,12 @@ public class KomodoWebEntryPoint {
 
     @Inject
     private Caller<AuthenticationService> authService;
+    
+    @Inject
+    private NotificationService notificationService;
+    
+    @Inject
+    private KomodoRpcService komodoService;
     
     @PostConstruct
     public void startApp() {
@@ -129,6 +142,9 @@ public class KomodoWebEntryPoint {
     private class LogoutCommand implements Command {
     	@Override
     	public void execute() {
+    		// Shutdown KEngine
+			//shutdownKEngine();
+			
     		authService.call(new RemoteCallback<Void>() {
     			@Override
     			public void callback(Void response) {
@@ -142,6 +158,21 @@ public class KomodoWebEntryPoint {
     			}
     		}).logout();
     	}
+    }
+    
+    /**
+     * Shutdown the KEngine
+     */
+    protected void shutdownKEngine( ) {
+    	komodoService.shutdownKEngine(new IRpcServiceInvocationHandler<Void>() {
+    		@Override
+    		public void onReturn( Void data ) {
+    		}
+    		@Override
+    		public void onError(Throwable error) {
+                notificationService.sendErrorNotification(i18n.format("createdataservice.getvdbnames-error"), error); //$NON-NLS-1$
+    		}
+    	});
     }
     
 }

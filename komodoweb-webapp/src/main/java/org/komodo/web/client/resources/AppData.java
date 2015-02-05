@@ -15,19 +15,14 @@
  */
 package org.komodo.web.client.resources;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource.NotStrict;
+import com.google.gwt.resources.client.DataResource;
 
-public interface AppResource
-        extends
-        ClientBundle {
+public interface AppData extends ClientBundle {
 
-    AppResource INSTANCE = GWT.create( AppResource.class );
+	@NotStrict
+    @Source("data/repository-in-memory-config.json")
+    DataResource repositoryConfig();
 
-    AppImages images();
-    
-    AppCss css();
-    
-    AppData data();
-    
 }

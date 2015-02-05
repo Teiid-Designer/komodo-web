@@ -1,5 +1,6 @@
 {
   "no-value" : "<no value>",
+  "komodoworkspace-screen.startengine-error" : "Error Starting the Komodo Engine",
   "komodoworkspace-screen.workspaceNameTextBox.tooltip" : "Sample Name field",
   "managesources.deleting-datasource-title" : "Deleting DataSource",
   "managesources.deleting-datasource-msg" : "Deleting '{0}', please wait...",

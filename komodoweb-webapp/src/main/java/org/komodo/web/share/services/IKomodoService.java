@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.komodo.web.client.resources;
+package org.komodo.web.share.services;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.komodo.web.share.exceptions.KomodoUiException;
 
-public interface AppResource
-        extends
-        ClientBundle {
-
-    AppResource INSTANCE = GWT.create( AppResource.class );
-
-    AppImages images();
+/**
+ * Provides interface for the Komodo remote services
+ *
+ * @author mdrillin@redhat.com
+ */
+@Remote
+public interface IKomodoService {
     
-    AppCss css();
-    
-    AppData data();
-    
+    public void startKEngine( ) throws KomodoUiException;
+
+    public void shutdownKEngine( ) throws KomodoUiException;
+
 }
