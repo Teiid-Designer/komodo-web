@@ -25,6 +25,7 @@ import org.komodo.web.client.messages.ClientMessages;
 import org.komodo.web.client.services.KomodoRpcService;
 import org.komodo.web.client.services.NotificationService;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
+import org.komodo.web.client.widgets.RepoTreeDisplayer;
 import org.komodo.web.share.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -56,6 +57,9 @@ public class KomodoWorkspaceScreen extends Composite {
         
     @Inject @DataField("textbox-komodo-workspace-name")
     protected TextBox workspaceNameTextBox;
+
+    @Inject @DataField("tree-komodo-workspace")
+    protected RepoTreeDisplayer repoTree;
         
     @Override
     @WorkbenchPartTitle

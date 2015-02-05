@@ -33,8 +33,8 @@ public interface AppCss extends ClientBundle {
     @Source("css/komodoweb.css")
     CssResource komodoWebStyle();
 	
-	@NotStrict
-    @Source("css/rcue.css")
-    CssResource rcueStyle();
+//	@NotStrict
+//    @Source("css/rcue.css")
+//    CssResource rcueStyle();
 
 }
