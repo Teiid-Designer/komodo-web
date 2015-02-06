@@ -84,7 +84,6 @@ public class KomodoWorkspaceScreen extends Composite {
     
     @OnStartup
     public void onStartup( final PlaceRequest place ) {   	    	
-        
     	// Start the KEngine
     	startKEngine();
     }
@@ -96,6 +95,7 @@ public class KomodoWorkspaceScreen extends Composite {
     	komodoService.startKEngine(new IRpcServiceInvocationHandler<Void>() {
     		@Override
     		public void onReturn( Void data ) {
+    			repoTree.addTree();
     		}
     		@Override
     		public void onError(Throwable error) {
@@ -103,6 +103,5 @@ public class KomodoWorkspaceScreen extends Composite {
     		}
     	});
     }
-    
-        
+            
 }

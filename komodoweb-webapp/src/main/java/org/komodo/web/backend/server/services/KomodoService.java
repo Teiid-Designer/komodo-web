@@ -16,6 +16,8 @@
 package org.komodo.web.backend.server.services;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
@@ -35,11 +37,14 @@ import org.komodo.repository.LocalRepository;
 import org.komodo.repository.LocalRepository.LocalRepositoryId;
 import org.komodo.spi.KException;
 import org.komodo.spi.constants.StringConstants;
+import org.komodo.spi.repository.KomodoObject;
 import org.komodo.spi.repository.Repository;
 import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.spi.repository.RepositoryClient.State;
 import org.komodo.spi.repository.RepositoryObserver;
+import org.komodo.web.backend.server.services.util.Utils;
 import org.komodo.web.client.resources.AppResource;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
 
@@ -153,6 +158,34 @@ public class KomodoService implements IKomodoService {
     	}
     	
     	return isStarted;
+    }
+    
+    public List<KomodoObjectBean> getChildren(final String kObjPath) throws KomodoUiException {
+   	    Utils utils = Utils.getInstance();
+    	List<KomodoObjectBean> result = new ArrayList<KomodoObjectBean>();
+    	
+  		Repository repo = kEngine.getDefaultRepository();
+  		
+  		// If kObjPath is null, get the root Vdbs
+  		
+    	KomodoObject[] children = null;
+		try {
+			if(kObjPath==null) {
+				children = wsManager.findVdbs(null);
+			} else {
+				KomodoObject kObj = repo.getFromWorkspace(null, kObjPath);
+				children = kObj.getChildren(null);
+			}
+		} catch (KException e) {
+			throw new KomodoUiException(e);
+		}
+		if(children!=null && children.length>0) {
+			for(KomodoObject child : children) {
+				result.add(utils.createKomodoObjectBean(child));
+			}
+		}
+    	
+    	return result;
     }
 
     public static void initLocalRepository() throws Exception {

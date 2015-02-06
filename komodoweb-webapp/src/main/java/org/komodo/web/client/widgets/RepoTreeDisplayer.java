@@ -15,16 +15,13 @@ public class RepoTreeDisplayer extends Composite {
     public RepoTreeDisplayer() {
     	mainPanel.setWidth("100%");
         initWidget( mainPanel );
-        treePanel = createTreePanel();
-        treePanel.setWidth("100%");
-        mainPanel.add(treePanel);
     }
     
     /**
      * Create the panel
      * @return the panel widget
      */
-    protected HorizontalPanel createTreePanel() {
+    protected HorizontalPanel createTreePanel( ) {
         // Create a model for the tree.
         TreeViewModel model = new RepoTreeModel();
 
@@ -41,5 +38,11 @@ public class RepoTreeDisplayer extends Composite {
         hPanel.add(cellTree);
         return hPanel;
     }
-    	
+    
+    public void addTree() {
+        treePanel = createTreePanel( );
+        treePanel.setWidth("100%");
+        mainPanel.add(treePanel);
+    }
+        	
 }

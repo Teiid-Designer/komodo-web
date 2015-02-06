@@ -15,7 +15,10 @@
  */
 package org.komodo.web.share.services;
 
+import java.util.List;
+
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 
 /**
@@ -29,5 +32,7 @@ public interface IKomodoService {
     public void startKEngine( ) throws KomodoUiException;
 
     public void shutdownKEngine( ) throws KomodoUiException;
+    
+    public List<KomodoObjectBean> getChildren(final String path) throws KomodoUiException;
 
 }

@@ -28,7 +28,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 public class KomodoObjectBean {
 
     private String name;
-    private String description;
+    private String path;
 
     /**
      * Constructor.
@@ -44,10 +44,10 @@ public class KomodoObjectBean {
     }
     
     /**
-     * @return the description
+     * @return the absolute path
      */
-    public String getDescription() {
-        return this.description;
+    public String getPath() {
+        return this.path;
     }
     
     /**
@@ -58,10 +58,10 @@ public class KomodoObjectBean {
     }
     
     /**
-     * @param description the description to set
+     * @param path the path
      */
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

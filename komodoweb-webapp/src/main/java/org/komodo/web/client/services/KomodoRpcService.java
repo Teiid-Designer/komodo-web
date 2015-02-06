@@ -15,6 +15,8 @@
  */
 package org.komodo.web.client.services;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -24,6 +26,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.komodo.web.client.services.rpc.DelegatingErrorCallback;
 import org.komodo.web.client.services.rpc.DelegatingRemoteCallback;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
 
@@ -59,6 +62,16 @@ public class KomodoRpcService {
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
         	remoteKomodoService.call(successCallback, errorCallback).shutdownKEngine();
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+    
+    public void getChildren(final String kObjectPath, final IRpcServiceInvocationHandler<List<KomodoObjectBean>> handler) {
+        RemoteCallback<List<KomodoObjectBean>> successCallback = new DelegatingRemoteCallback<List<KomodoObjectBean>>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+        	remoteKomodoService.call(successCallback, errorCallback).getChildren(kObjectPath);
         } catch (KomodoUiException e) {
             errorCallback.error(null, e);
         }
