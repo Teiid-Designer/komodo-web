@@ -67,11 +67,11 @@ public class KomodoRpcService {
         }
     }
     
-    public void getChildren(final String kObjectPath, final IRpcServiceInvocationHandler<List<KomodoObjectBean>> handler) {
+    public void getKomodoNodes(final String kObjectPath, final IRpcServiceInvocationHandler<List<KomodoObjectBean>> handler) {
         RemoteCallback<List<KomodoObjectBean>> successCallback = new DelegatingRemoteCallback<List<KomodoObjectBean>>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteKomodoService.call(successCallback, errorCallback).getChildren(kObjectPath);
+        	remoteKomodoService.call(successCallback, errorCallback).getKomodoNodes(kObjectPath);
         } catch (KomodoUiException e) {
             errorCallback.error(null, e);
         }

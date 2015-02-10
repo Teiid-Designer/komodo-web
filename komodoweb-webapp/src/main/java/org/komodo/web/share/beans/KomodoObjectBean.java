@@ -29,6 +29,8 @@ public class KomodoObjectBean {
 
     private String name;
     private String path;
+    private String type;
+    private boolean hasChildren = false;
 
     /**
      * Constructor.
@@ -63,5 +65,21 @@ public class KomodoObjectBean {
     public void setPath(String path) {
         this.path = path;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public boolean hasChildren() {
+		return hasChildren;
+	}
+
+	public void setHasChildren(boolean hasChildren) {
+		this.hasChildren = hasChildren;
+	}
 
 }

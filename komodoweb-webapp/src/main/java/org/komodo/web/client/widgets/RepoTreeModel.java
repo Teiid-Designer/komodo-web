@@ -1,5 +1,7 @@
 package org.komodo.web.client.widgets;
 
+import javax.inject.Inject;
+
 import org.komodo.web.share.beans.KomodoObjectBean;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -16,6 +18,9 @@ import com.google.gwt.view.client.TreeViewModel;
  */
 public class RepoTreeModel implements TreeViewModel {
 
+	@Inject
+	private RepoTreeDataProvider repoTreeProvider;
+	
 	private final SelectionModel<KomodoObjectBean> selectionModel;
 	private final KomodoCell komodoCell = new KomodoCell();
 
@@ -37,10 +42,10 @@ public class RepoTreeModel implements TreeViewModel {
 		
 		if (value == null) {
 			// Return top level nodes.
-			return new DefaultNodeInfo<KomodoObjectBean>(new RepoTreeDataProvider(), komodoCell, selectionModel, null);
+			return new DefaultNodeInfo<KomodoObjectBean>(repoTreeProvider, komodoCell, selectionModel, null);
 		} else if (value instanceof KomodoObjectBean) {
 			//AsyncDataProvider<KomodoObjectBean> provider = createDataProvider(nodePath);
-			return new DefaultNodeInfo<KomodoObjectBean>(new RepoTreeDataProvider(), komodoCell, selectionModel, null);
+			return new DefaultNodeInfo<KomodoObjectBean>(repoTreeProvider, komodoCell, selectionModel, null);
 		}
 
 		// Unhandled type.

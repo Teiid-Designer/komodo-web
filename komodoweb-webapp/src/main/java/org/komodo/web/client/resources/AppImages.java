@@ -145,4 +145,43 @@ public interface AppImages extends ClientBundle {
     
     @Source("images/JoinRightOuter.png")
     ImageResource joinRightOuter_Image();
+    
+    // -----------------------------------
+    // Model and VDB Images
+    // -----------------------------------
+    @Source("images/VDB.gif")
+    ImageResource vdb_Image();
+    
+    @Source("images/Model.gif")
+    ImageResource physicalModel_Image();
+    
+    @Source("images/ViewModel.gif")
+    ImageResource viewModel_Image();
+
+    // -----------------------------------
+    // Relational Images
+    // -----------------------------------
+    
+    @Source("images/relational/Table.gif")
+    ImageResource relTable_Image();
+    @Source("images/relational/Column.gif")
+    ImageResource relColumn_Image();
+    @Source("images/relational/Procedure.gif")
+    ImageResource relProcedure_Image();
+    @Source("images/relational/Parameter_in.gif")
+    ImageResource relParameterIn_Image();
+    @Source("images/relational/Parameter_inout.gif")
+    ImageResource relParameterInOut_Image();
+    @Source("images/relational/Parameter_out.gif")
+    ImageResource relParameterOut_Image();
+    @Source("images/relational/Parameter_return.gif")
+    ImageResource relParameterReturn_Image();
+    @Source("images/relational/Parameter_unknown.gif")
+    ImageResource relParameterUnknown_Image();
+    @Source("images/relational/PrimaryKey.gif")
+    ImageResource relPK_Image();
+    @Source("images/relational/ForeignKey.gif")
+    ImageResource relFK_Image();
+    
+
 }

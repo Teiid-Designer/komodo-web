@@ -143,4 +143,16 @@ public class Constants {
 	
 	public static final String SORT_COLID_NAME = "name"; //$NON-NLS-1$
     public static final String SORT_COLID_MODIFIED_ON = "lastModifiedTimestamp"; //$NON-NLS-1$
+    
+	public static String VDB = "VDB";
+	public static String VIEW_MODEL = "VIEW_MODEL";
+	public static String SOURCE_MODEL = "SOURCE_MODEL";
+	public static String TABLE = "TABLE";
+	public static String VIEW = "VIEW";
+	public static String COLUMN = "COLUMN";
+	public static String PARAMETER = "PARAMETER";
+	public static String PROCEDURE = "PROCEDURE";
+	public static String VIRTUAL_PROCEDURE = "VIRTUAL_PROCEDURE";
+	public static String UNKNOWN_TYPE = "UNKNOWN";
+    
 }

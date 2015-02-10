@@ -33,6 +33,6 @@ public interface IKomodoService {
 
     public void shutdownKEngine( ) throws KomodoUiException;
     
-    public List<KomodoObjectBean> getChildren(final String path) throws KomodoUiException;
+    public List<KomodoObjectBean> getKomodoNodes(final String path) throws KomodoUiException;
 
 }

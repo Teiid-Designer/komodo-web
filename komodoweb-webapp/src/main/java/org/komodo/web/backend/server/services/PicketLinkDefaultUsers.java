@@ -33,9 +33,9 @@ public class PicketLinkDefaultUsers {
 
     User admin = new User("admin");
 
-    admin.setEmail("john@doe.com");
-    admin.setFirstName("John");
-    admin.setLastName("Doe");
+    admin.setEmail("admin@admin.com");
+    admin.setFirstName("");
+    admin.setLastName("admin");
 
     User regular = new User("regular");
 

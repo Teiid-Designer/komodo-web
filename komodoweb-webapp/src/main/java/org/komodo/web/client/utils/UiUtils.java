@@ -15,7 +15,8 @@
  */
 package org.komodo.web.client.utils;
 
-import com.google.gwt.user.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Label;
+
 
 /**
  * Ui Utilities

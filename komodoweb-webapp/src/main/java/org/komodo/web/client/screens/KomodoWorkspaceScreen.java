@@ -17,15 +17,18 @@ package org.komodo.web.client.screens;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.komodo.web.client.dialogs.UiEvent;
+import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
-import org.komodo.web.client.services.KomodoRpcService;
-import org.komodo.web.client.services.NotificationService;
-import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
-import org.komodo.web.client.widgets.RepoTreeDisplayer;
+import org.komodo.web.client.resources.AppResource;
+import org.komodo.web.client.utils.UiUtils;
+import org.komodo.web.client.widgets.RepoTreeDisplay;
 import org.komodo.web.share.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -33,9 +36,11 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * KomodoWorkspaceScreen - used for Komodo Workspace demo
@@ -48,20 +53,14 @@ public class KomodoWorkspaceScreen extends Composite {
 
     @Inject
     private ClientMessages i18n;
-
-    @Inject
-    private NotificationService notificationService;
     
-    @Inject
-    private KomodoRpcService komodoService;
-        
-    @Inject @DataField("textbox-komodo-workspace-name")
-    protected TextBox workspaceNameTextBox;
+    @Inject 
+    private RepoTreeDisplay repoTree;
 
     @Inject @DataField("tree-komodo-workspace")
-    protected RepoTreeDisplayer repoTree;
+    protected DeckPanel repoTreePanel;
         
-    @Override
+	@Override
     @WorkbenchPartTitle
     public String getTitle() {
       return Constants.BLANK;
@@ -77,31 +76,33 @@ public class KomodoWorkspaceScreen extends Composite {
      */
     @PostConstruct
     protected void postConstruct() {
-    	
-    	// Tooltips
-    	workspaceNameTextBox.setTitle(i18n.format("komodoworkspace-screen.workspaceNameTextBox.tooltip"));
+    	// Deck panel for DataSource list
+    	HTMLPanel spinnerPanel = new HTMLPanel(AbstractImagePrototype.create(AppResource.INSTANCE.images().spinnner24x24Image()).getHTML());
+    	repoTreePanel.add(spinnerPanel);
+    	repoTreePanel.add(repoTree);
+    	Label errorLabel = new Label("Error Loading Tree");
+    	UiUtils.setMessageStyle(errorLabel, UiUtils.MessageType.ERROR);
+    	repoTreePanel.add(errorLabel);
+    	repoTreePanel.showWidget(0);
+    	repoTree.initTree();
     }
     
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {   	    	
-    	// Start the KEngine
-    	startKEngine();
+    public void onStartup( final PlaceRequest place ) {   
     }
     
     /**
-     * Populate list of all current VDB names
+     * Handles UiEvents
+     * @param dEvent
      */
-    protected void startKEngine( ) {
-    	komodoService.startKEngine(new IRpcServiceInvocationHandler<Void>() {
-    		@Override
-    		public void onReturn( Void data ) {
-    			repoTree.addTree();
-    		}
-    		@Override
-    		public void onError(Throwable error) {
-                notificationService.sendErrorNotification(i18n.format("komodoworkspace-screen.startengine-error"), error); //$NON-NLS-1$
-    		}
-    	});
+    public void onUiEvent(@Observes UiEvent dEvent) {
+    	// Tree Loaded OK
+    	if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_OK) {
+        	repoTreePanel.showWidget(1);
+    	// Tree Load Error
+    	} else if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_ERROR) {
+        	repoTreePanel.showWidget(2);
+    	} 
     }
-            
+                    
 }

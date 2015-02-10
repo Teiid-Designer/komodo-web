@@ -160,7 +160,10 @@ public class KomodoService implements IKomodoService {
     	return isStarted;
     }
     
-    public List<KomodoObjectBean> getChildren(final String kObjPath) throws KomodoUiException {
+    public List<KomodoObjectBean> getKomodoNodes(final String kObjPath) throws KomodoUiException {
+    	if(!isKEngineStarted()) {
+    		startKEngine();
+    	}
    	    Utils utils = Utils.getInstance();
     	List<KomodoObjectBean> result = new ArrayList<KomodoObjectBean>();
     	
