@@ -17,6 +17,8 @@ package org.komodo.web.client.dialogs;
 
 import java.util.List;
 
+import org.komodo.web.share.beans.KomodoObjectBean;
+
 public class UiEvent {
 	
 	private UiEventType type;
@@ -25,6 +27,7 @@ public class UiEvent {
 	private String eventSource;
 	private String viewDdl;
 	private List<String> viewSources;
+	private KomodoObjectBean komodoObject;
 	
 	public UiEvent(UiEventType type) {
 		this.type = type;
@@ -72,5 +75,13 @@ public class UiEvent {
 
 	public void setViewSources(List<String> viewSources) {
 		this.viewSources = viewSources;
+	}
+
+	public KomodoObjectBean getKomodoObject() {
+		return komodoObject;
+	}
+
+	public void setKomodoObject(KomodoObjectBean komodoObject) {
+		this.komodoObject = komodoObject;
 	}
 }

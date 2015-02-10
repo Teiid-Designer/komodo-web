@@ -28,8 +28,10 @@ import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.utils.UiUtils;
+import org.komodo.web.client.widgets.KomodoObjectPropertiesPanel;
 import org.komodo.web.client.widgets.RepoTreeDisplay;
 import org.komodo.web.share.Constants;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -59,7 +61,13 @@ public class KomodoWorkspaceScreen extends Composite {
 
     @Inject @DataField("tree-komodo-workspace")
     protected DeckPanel repoTreePanel;
+
+    @Inject @DataField("details-deckpanel")
+    protected DeckPanel detailsDeckPanel;
         
+    @Inject 
+    protected KomodoObjectPropertiesPanel propsPanel;
+    
 	@Override
     @WorkbenchPartTitle
     public String getTitle() {
@@ -85,6 +93,13 @@ public class KomodoWorkspaceScreen extends Composite {
     	repoTreePanel.add(errorLabel);
     	repoTreePanel.showWidget(0);
     	repoTree.initTree();
+    	
+        HTMLPanel selectSourcePanel = new HTMLPanel("Choose an item to see its properties");
+        
+    	// Add properties panel and Select label to deckPanel
+    	detailsDeckPanel.add(propsPanel);
+    	detailsDeckPanel.add(selectSourcePanel);
+    	detailsDeckPanel.showWidget(1);
     }
     
     @OnStartup
@@ -102,7 +117,11 @@ public class KomodoWorkspaceScreen extends Composite {
     	// Tree Load Error
     	} else if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_ERROR) {
         	repoTreePanel.showWidget(2);
-    	} 
+    	} else if(dEvent.getType() == UiEventType.KOBJECT_SELECTED) {
+    		KomodoObjectBean kObj = dEvent.getKomodoObject();
+    		propsPanel.setKObject(kObj);
+    		detailsDeckPanel.showWidget(0);
+    	}
     }
                     
 }

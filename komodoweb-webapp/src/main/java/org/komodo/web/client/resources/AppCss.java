@@ -30,6 +30,10 @@ public interface AppCss extends ClientBundle {
     CssResource customDataGridStyle();
 
 	@NotStrict
+    @Source("css/KomodoTree.css")
+    CssResource komodoTreeStyle();
+	
+	@NotStrict
     @Source("css/komodoweb.css")
     CssResource komodoWebStyle();
 	

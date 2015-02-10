@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
+import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.services.KomodoRpcService;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.share.beans.KomodoObjectBean;
@@ -33,6 +34,8 @@ public class RepoTreeDisplay extends Composite {
     private Tree tree = new Tree();
     
     public RepoTreeDisplay() {
+       	AppResource.INSTANCE.css().komodoTreeStyle().ensureInjected();
+       	
     	mainPanel.setWidth("100%");
         initWidget( mainPanel );
         
@@ -51,7 +54,7 @@ public class RepoTreeDisplay extends Composite {
             public void onSelection(SelectionEvent<TreeItem> event) {
                 TreeItem ti = event.getSelectedItem();
                 KomodoObjectBean node = (KomodoObjectBean) ti.getUserObject();
-                //Window.alert("Node Selected: "+node.getName());
+                fireSelectionEvent(node);
             }
         });
         tree.addOpenHandler(new OpenHandler<TreeItem>() {
@@ -94,6 +97,16 @@ public class RepoTreeDisplay extends Composite {
         HorizontalPanel hPanel = new HorizontalPanel();
         hPanel.add(tree);
         return hPanel;
+    }
+    
+    /**
+     * Fire selection event for a node
+     * @param kObj the selected kObj
+     */
+    private void fireSelectionEvent(KomodoObjectBean kObj) {
+		UiEvent event = new UiEvent(UiEventType.KOBJECT_SELECTED);
+		event.setKomodoObject(kObj);
+		uiEvent.fire(event);
     }
     
     public void initTree() {

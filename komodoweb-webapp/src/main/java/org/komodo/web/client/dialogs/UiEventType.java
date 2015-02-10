@@ -18,6 +18,7 @@ package org.komodo.web.client.dialogs;
 public enum UiEventType {
 	REPO_TREE_LOAD_OK,
 	REPO_TREE_LOAD_ERROR,
+	KOBJECT_SELECTED,
     CREATE_SOURCE_OK, 
     CREATE_SOURCE_CANCEL,
     DELETE_SOURCE_OK, 
