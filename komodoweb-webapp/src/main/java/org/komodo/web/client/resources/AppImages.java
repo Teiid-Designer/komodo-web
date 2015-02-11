@@ -26,9 +26,6 @@ public interface AppImages extends ClientBundle {
     @Source("images/teiid_user_logo.png")
     ImageResource ufUserLogo();
     
-    @Source("images/EmptyLibraryImage.png")
-    ImageResource emptyLibraryImage();
-    
     @Source("images/spinner_16.gif")
     ImageResource spinnner16x16Image();
     
@@ -52,87 +49,6 @@ public interface AppImages extends ClientBundle {
     
     @Source("images/Ok_32x32.png")
     ImageResource okIcon32x32Image();
-    
-    @Source("images/Google_dv_logos_170x50.png")
-    ImageResource dsType_google();
-
-    @Source("images/H2_dv_logos_170x50.png")
-    ImageResource dsType_h2();
-
-    @Source("images/Infinispan_dv_logos_170x50.png")
-    ImageResource dsType_infinispan();
-
-    @Source("images/ModeShape_dv_logos_170x50.png")
-    ImageResource dsType_modeshape();
-
-    @Source("images/MongoDB_dv_logos_170x50.png")
-    ImageResource dsType_mongodb();
-
-    @Source("images/MySQL_dv_logos_170x50.png")
-    ImageResource dsType_mysql();
-
-    @Source("images/PostgresSql_dv_logos_170x50.png")
-    ImageResource dsType_postgres();
-
-    @Source("images/Salesforce_dv_logos_170x50.png")
-    ImageResource dsType_salesforce();
-
-    @Source("images/Teiid_dv_logos_170x50.png")
-    ImageResource dsType_teiid();
-
-    @Source("images/Teiid_dv_logos_170x50.png")
-    ImageResource dsType_teiid_local();
-    
-    @Source("images/LDAP_dv_logos_170x50.png")
-    ImageResource dsType_ldap();
-    
-    @Source("images/FileSystem_dv_logos_170x50.png")
-    ImageResource dsType_file();
-    
-    @Source("images/WebService_dv_logos_170x50.png")
-    ImageResource dsType_webservice();
-    
-    @Source("images/addtype_dv_logos_170x50.png")
-    ImageResource dsType_addtype_Image();
-
-    @Source("images/dstype_blankbox_small.png")
-    ImageResource dsType_blankbox_small_Image();
-
-    @Source("images/Google_dv_logos_70x40.png")
-    ImageResource dsType_google_small_Image();
-
-    @Source("images/H2_dv_logos_70x40.png")
-    ImageResource dsType_h2_small_Image();
-
-    @Source("images/Infinispan_dv_logos_70x40.png")
-    ImageResource dsType_infinispan_small_Image();
-
-    @Source("images/ModeShape_dv_logos_70x40.png")
-    ImageResource dsType_modeshape_small_Image();
-
-    @Source("images/MongoDB_dv_logos_70x40.png")
-    ImageResource dsType_mongodb_small_Image();
-
-    @Source("images/MySQL_dv_logos_70x40.png")
-    ImageResource dsType_mysql_small_Image();
-
-    @Source("images/PostgresSql_dv_logos_70x40.png")
-    ImageResource dsType_postgres_small_Image();
-
-    @Source("images/Salesforce_dv_logos_70x40.png")
-    ImageResource dsType_salesforce_small_Image();
-
-    @Source("images/Teiid_dv_logos_70x40.png")
-    ImageResource dsType_teiid_small_Image();
-    
-    @Source("images/LDAP_dv_logos_70x40.png")
-    ImageResource dsType_ldap_small_Image();
-    
-    @Source("images/FileSystem_dv_logos_70x40.png")
-    ImageResource dsType_file_small_Image();
-    
-    @Source("images/WebService_dv_logos_70x40.png")
-    ImageResource dsType_webservice_small_Image();
     
     @Source("images/JoinInner.png")
     ImageResource joinInner_Image();

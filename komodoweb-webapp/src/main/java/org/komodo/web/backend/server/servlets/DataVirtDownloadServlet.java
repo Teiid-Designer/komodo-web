@@ -15,22 +15,18 @@
  */
 package org.komodo.web.backend.server.servlets;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.komodo.web.backend.server.services.TeiidService;
-import org.komodo.web.share.Constants;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.StringUtils;
 
@@ -44,9 +40,6 @@ public class DataVirtDownloadServlet extends HttpServlet {
 	private static final long serialVersionUID = DataVirtDownloadServlet.class.hashCode();
 	private static final String DV600_JDBC_JAR = "teiid-8.4.1-redhat-7-jdbc.jar";
 	private static final String DV610_JDBC_JAR = "teiid-8.7.1.redhat-6-jdbc.jar";
-
-    @Inject
-    protected TeiidService teiidService;
 
     /**
 	 * Constructor.
@@ -62,16 +55,16 @@ public class DataVirtDownloadServlet extends HttpServlet {
 			IOException {
         HttpServletResponse httpResponse = resp;
 		try {
-	        String vdbName = req.getParameter("vdbname"); //$NON-NLS-1$
-	        String jarName = req.getParameter("jarname"); //$NON-NLS-1$
-			
-	        if(vdbName!=null && !vdbName.isEmpty()) {
-	    		String vdbXml = teiidService.getVdbXml(vdbName);
-
-				doDownloadVdb(httpResponse, vdbName + Constants.DYNAMIC_VDB_SUFFIX, new ByteArrayInputStream(vdbXml.getBytes("UTF-8")));
-	        } else if(jarName!=null && !jarName.isEmpty()) {
-				doDownloadJar(httpResponse);
-	        }
+//	        String vdbName = req.getParameter("vdbname"); //$NON-NLS-1$
+//	        String jarName = req.getParameter("jarname"); //$NON-NLS-1$
+//			
+//	        if(vdbName!=null && !vdbName.isEmpty()) {
+//	    		String vdbXml = teiidService.getVdbXml(vdbName);
+//
+//				doDownloadVdb(httpResponse, vdbName + Constants.DYNAMIC_VDB_SUFFIX, new ByteArrayInputStream(vdbXml.getBytes("UTF-8")));
+//	        } else if(jarName!=null && !jarName.isEmpty()) {
+//				doDownloadJar(httpResponse);
+//	        }
 			
 		} catch (Exception e) {
 			// TODO throw sensible errors (http responses - 404, 500, etc)

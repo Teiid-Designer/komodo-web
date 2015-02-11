@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,9 +35,6 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.komodo.web.backend.server.api.AdminApiClientAccessor;
-import org.komodo.web.backend.server.services.TeiidService;
-import org.komodo.web.share.Constants;
 
 /**
  * A standard servlet that file content is POSTed to in order to add new files (drivers and vdbs) to the Teiid Server.
@@ -48,12 +44,6 @@ import org.komodo.web.share.Constants;
 public class DataVirtUploadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = DataVirtUploadServlet.class.hashCode();
-
-    @Inject
-    private AdminApiClientAccessor clientAccessor;
-    
-    @Inject
-    protected TeiidService teiidService;
 
 	/**
 	 * Constructor.
@@ -128,13 +118,13 @@ public class DataVirtUploadServlet extends HttpServlet {
 
     	Map<String, String> responseParams = new HashMap<String, String>();
     	
-		// Deploy the driver
-        InputStream contentStream = null;
-		try {
-			clientAccessor.getClient().deploy(driverDeploymentName, driverContent);
-		} finally {
-			IOUtils.closeQuietly(contentStream);
-		}
+//		// Deploy the driver
+//        InputStream contentStream = null;
+//		try {
+//			clientAccessor.getClient().deploy(driverDeploymentName, driverContent);
+//		} finally {
+//			IOUtils.closeQuietly(contentStream);
+//		}
 		
 		return responseParams;		
     }
@@ -150,9 +140,9 @@ public class DataVirtUploadServlet extends HttpServlet {
 
     	Map<String, String> responseParams = new HashMap<String, String>();
 
-    	if(vdbFileName.endsWith(Constants.DYNAMIC_VDB_SUFFIX) || vdbFileName.endsWith(".vdb")) {
-    		teiidService.deployVdbWithSource(vdbFileName, vdbContent);
-    	}
+//    	if(vdbFileName.endsWith(Constants.DYNAMIC_VDB_SUFFIX) || vdbFileName.endsWith(".vdb")) {
+//    		teiidService.deployVdbWithSource(vdbFileName, vdbContent);
+//    	}
 		
 		return responseParams;
 		
