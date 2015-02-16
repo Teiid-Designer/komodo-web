@@ -84,7 +84,8 @@ public class Utils {
 			} else {
 				objBean.setHasChildren(false);
 			}
-			objBean.setType(getType(kObj));
+			objBean.setType(RelationalIdentifier.getType(kObj));
+			objBean.setIsVirtual(RelationalIdentifier.isVirtual(kObj));
 		} catch (KException e) {
 			throw new KomodoUiException(e);
 		}
@@ -92,60 +93,5 @@ public class Utils {
 		return objBean;
 	}
 	
-	public String getType(KomodoObject kObj) throws KomodoUiException {
-			
-			try {
-
-				// check primary type
-				Descriptor pType = kObj.getPrimaryType(null);
-				if( pType != null ) {
-					if( pType.getName().equalsIgnoreCase(VdbLexicon.Vdb.VIRTUAL_DATABASE)) {
-						return VDB;
-					}
-					if( pType.getName().equalsIgnoreCase(KomodoLexicon.VdbModel.NODE_TYPE)) {
-						try {
-							Property type = (kObj.getParent(null)).getProperty(null, CoreLexicon.JcrId.MODEL_TYPE);
-							if( type != null && type.getStringValue(null).equalsIgnoreCase(ModelType.VIRTUAL)) {
-								return VIEW_MODEL;
-							} else {
-								return SOURCE_MODEL;
-							}
-						} catch (KException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				
-				Descriptor[] descriptors = kObj.getDescriptors(null);
-				if( descriptors.length > 0 ) {
-					for( Descriptor des : descriptors ) {
-						if( des.getName().equalsIgnoreCase(KomodoLexicon.Vdb.NODE_TYPE)) return VDB;
-						else if( des.getName().equalsIgnoreCase(KomodoLexicon.VdbModel.NODE_TYPE)) return VIEW_MODEL;
-						else if( des.getName().equalsIgnoreCase(CreateTable.TABLE_STATEMENT)) return TABLE;
-						else if( des.getName().equalsIgnoreCase(CreateTable.VIEW_STATEMENT)) return VIEW;
-						else if( des.getName().equalsIgnoreCase(CreateProcedure.PROCEDURE_STATEMENT)) {
-							try {
-								Property type = (kObj.getParent(null)).getProperty(null, CoreLexicon.JcrId.MODEL_TYPE);
-								if( type != null && type.getStringValue(null).equalsIgnoreCase(ModelType.VIRTUAL)) {
-									return VIRTUAL_PROCEDURE;
-								}
-							} catch (KException e) {
-								e.printStackTrace();
-							}
-							return PROCEDURE;
-						}
-						else if( des.getName().equalsIgnoreCase(CreateTable.TABLE_ELEMENT)) return COLUMN;
-						else if( des.getName().equalsIgnoreCase(CreateProcedure.PARAMETER)) return PARAMETER;
-					}
-				}
-			} catch (KException e) {
-				e.printStackTrace();
-			}
-			
-			
-			return UNKNOWN;
-		
-	}
-
 }
 

@@ -16,46 +16,46 @@ import org.picketlink.idm.model.basic.User;
 @ApplicationScoped
 public class PicketLinkDefaultUsers {
 
-  @Inject
-  private PartitionManager partitionManager;
+	@Inject
+	private PartitionManager partitionManager;
 
-  private boolean alreadyDone = false;
+	private boolean alreadyDone = false;
 
-  public synchronized void create( @Observes PreAuthenticateEvent event ) {
-    if ( alreadyDone ) {
-      return;
-    }
+	public synchronized void create( @Observes PreAuthenticateEvent event ) {
+		if ( alreadyDone ) {
+			return;
+		}
 
-    alreadyDone = true;
+		alreadyDone = true;
 
-    final IdentityManager identityManager = partitionManager.createIdentityManager();
-    final RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
+		final IdentityManager identityManager = partitionManager.createIdentityManager();
+		final RelationshipManager relationshipManager = partitionManager.createRelationshipManager();
 
-    User admin = new User("admin");
+		User admin = new User("admin");
 
-    admin.setEmail("admin@admin.com");
-    admin.setFirstName("");
-    admin.setLastName("admin");
+		admin.setEmail("admin@admin.com");
+		admin.setFirstName("");
+		admin.setLastName("admin");
 
-    User regular = new User("regular");
+		User regular = new User("regular");
 
-    regular.setEmail("regular@example.com");
-    regular.setFirstName("Regular");
-    regular.setLastName("User");
+		regular.setEmail("regular@example.com");
+		regular.setFirstName("Regular");
+		regular.setLastName("User");
 
-    identityManager.add(admin);
-    identityManager.add(regular);
-    identityManager.updateCredential(admin, new Password("admin"));
-    identityManager.updateCredential(regular, new Password("123"));
+		identityManager.add(admin);
+		identityManager.add(regular);
+		identityManager.updateCredential(admin, new Password("admin"));
+		identityManager.updateCredential(regular, new Password("123"));
 
-    Role roleDeveloper = new Role("simple");
-    Role roleAdmin = new Role("admin");
+		Role roleDeveloper = new Role("simple");
+		Role roleAdmin = new Role("admin");
 
-    identityManager.add(roleDeveloper);
-    identityManager.add(roleAdmin);
+		identityManager.add(roleDeveloper);
+		identityManager.add(roleAdmin);
 
-    relationshipManager.add(new Grant(admin, roleDeveloper));
-    relationshipManager.add(new Grant(admin, roleAdmin));
-  }
+		relationshipManager.add(new Grant(admin, roleDeveloper));
+		relationshipManager.add(new Grant(admin, roleAdmin));
+	}
 
 }

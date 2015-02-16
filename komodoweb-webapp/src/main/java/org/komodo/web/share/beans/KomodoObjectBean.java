@@ -29,8 +29,9 @@ public class KomodoObjectBean {
 
     private String name;
     private String path;
-    private String type;
+    private int type;
     private boolean hasChildren = false;
+    private boolean isVirtual = false;
 
     /**
      * Constructor.
@@ -66,11 +67,11 @@ public class KomodoObjectBean {
         this.path = path;
     }
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 
@@ -81,5 +82,14 @@ public class KomodoObjectBean {
 	public void setHasChildren(boolean hasChildren) {
 		this.hasChildren = hasChildren;
 	}
+	
+	public boolean isVirtual() {
+		return isVirtual;
+	}
+
+	public void setIsVirtual(boolean isVirtual) {
+		this.isVirtual = isVirtual;
+	}
+
 
 }

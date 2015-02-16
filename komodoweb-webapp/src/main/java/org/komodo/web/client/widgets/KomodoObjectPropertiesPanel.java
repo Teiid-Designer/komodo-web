@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.komodo.web.client.utils.UiUtils;
 import org.komodo.web.share.beans.KomodoObjectBean;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -49,7 +50,7 @@ public class KomodoObjectPropertiesPanel extends Composite {
     
     public void setKObject(KomodoObjectBean kObj) {
     	labelKObjectName.setText(kObj.getName());
-    	labelKObjectType.setText(kObj.getType());
+    	labelKObjectType.setText(UiUtils.getTypeDisplayName(kObj.getType()));
     	labelKObjectPath.setText(kObj.getPath());
     }
     
