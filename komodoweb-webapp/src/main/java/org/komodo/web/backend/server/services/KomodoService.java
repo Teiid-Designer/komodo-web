@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
-import org.komodo.relational.RelationalConstants.Direction;
+import org.komodo.relational.model.Parameter.Direction;
 import org.komodo.relational.model.Column;
 import org.komodo.relational.model.Model;
 import org.komodo.relational.model.Parameter;

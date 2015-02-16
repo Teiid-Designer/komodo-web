@@ -69,6 +69,7 @@ public class RepoTreeDisplay extends Composite {
     						openedItem.removeItems();
         					for (KomodoObjectBean kObject: result) {
         						TreeItem ti = new TreeItem(new RepoTreeNodeRenderer(kObject));
+        						ti.getElement().addClassName("gwt-TreeItem"); 
         						//ti.setText(kObject.getName());
         						ti.setState(true);
         						ti.setUserObject(kObject);

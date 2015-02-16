@@ -1,3 +1,4 @@
 .gwt-Tree .gwt-TreeItem-selected {
-  background: #ebeff9;
+   display: table !important;  
+   background: #B2C4F2;
 }

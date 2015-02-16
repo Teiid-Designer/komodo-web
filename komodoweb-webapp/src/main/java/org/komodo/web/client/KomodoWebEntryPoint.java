@@ -143,20 +143,7 @@ public class KomodoWebEntryPoint {
     	@Override
     	public void execute() {
     		// Shutdown KEngine
-			//shutdownKEngine();
-			
-    		authService.call(new RemoteCallback<Void>() {
-    			@Override
-    			public void callback(Void response) {
-    				redirect(GWT.getHostPageBaseURL() + "login.jsp");
-    			}
-    		}, new BusErrorCallback() {
-    			@Override
-    			public boolean error(Message message, Throwable throwable) {
-    				Window.alert("Logout failed: " + throwable);
-    				return true;
-    			}
-    		}).logout();
+			shutdownKEngine();
     	}
     }
     
@@ -167,10 +154,22 @@ public class KomodoWebEntryPoint {
     	komodoService.shutdownKEngine(new IRpcServiceInvocationHandler<Void>() {
     		@Override
     		public void onReturn( Void data ) {
+    			authService.call(new RemoteCallback<Void>() {
+    				@Override
+    				public void callback(Void response) {
+    					redirect(GWT.getHostPageBaseURL() + "login.jsp");
+    				}
+    			}, new BusErrorCallback() {
+    				@Override
+    				public boolean error(Message message, Throwable throwable) {
+    					Window.alert("Logout failed: " + throwable);
+    					return true;
+    				}
+    			}).logout();
     		}
     		@Override
     		public void onError(Throwable error) {
-                notificationService.sendErrorNotification(i18n.format("createdataservice.getvdbnames-error"), error); //$NON-NLS-1$
+    			notificationService.sendErrorNotification(i18n.format("createdataservice.getvdbnames-error"), error); //$NON-NLS-1$
     		}
     	});
     }
