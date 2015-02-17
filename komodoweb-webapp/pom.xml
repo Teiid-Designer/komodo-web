@@ -131,6 +131,7 @@
     </dependency>
     
     <!-- Third party libraries -->
+    <!-- 
     <dependency>
       <groupId>org.owasp.encoder</groupId>
       <artifactId>encoder</artifactId>
@@ -139,7 +140,18 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
-          
+    -->
+      
+    <!-- 
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <version>6.0.2.Final</version>
+    </dependency>
+    -->
+    
+    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></dependency>
+    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-ext</artifactId></dependency>
     <!-- Errai AS -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -158,8 +170,6 @@
 
     <!-- All of this stuff is supplied by the app server and must not
     be deployed with the WAR file! -->
-    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.slf4j</groupId><artifactId>slf4j-ext</artifactId><scope>provided</scope></dependency>
     <dependency><groupId>javax.enterprise</groupId><artifactId>cdi-api</artifactId><scope>provided</scope></dependency>
     <dependency><groupId>javax.inject</groupId><artifactId>javax.inject</artifactId><scope>provided</scope></dependency>
     <dependency><groupId>javax.validation</groupId><artifactId>validation-api</artifactId><scope>provided</scope></dependency>
@@ -188,7 +198,6 @@
     <dependency><groupId>org.jboss.weld</groupId><artifactId>weld-spi</artifactId><scope>provided</scope></dependency>
     <dependency><groupId>xml-apis</groupId><artifactId>xml-apis</artifactId><scope>provided</scope></dependency>
     <dependency><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.infinispan</groupId><artifactId>infinispan-core</artifactId><scope>provided</scope></dependency>
     
   </dependencies>
 

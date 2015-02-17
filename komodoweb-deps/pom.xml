@@ -28,6 +28,7 @@
     <version.jboss-as-cli>7.2.0.Final</version.jboss-as-cli>
     <version.jboss-as-controller>7.2.0.Final</version.jboss-as-controller>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
+    <version.org.infinispan>6.0.2.Final</version.org.infinispan>
     
     <!-- temporary: makes the enforcerRule (illegal-transitive-dependency-check) not to break the build -->
     <illegaltransitivereportonly>true</illegaltransitivereportonly>
@@ -136,6 +137,12 @@
         <version>3.0</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-core</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      
       <dependency>
         <groupId>org.owasp.encoder</groupId>
         <artifactId>encoder</artifactId>
