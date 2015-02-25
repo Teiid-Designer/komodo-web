@@ -21,7 +21,9 @@ public class RepoTreeNodeRenderer extends HorizontalPanel {
 				
 		Image theImage = UiUtils.getImage(objType,isVirtual);
 		// Add the type image
-		add(theImage);
+		if(theImage!=null) {
+			add(theImage);
+		}
 		
 		add(new Label(kObj.getName()));
 	}

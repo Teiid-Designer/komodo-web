@@ -25,10 +25,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
-import org.komodo.relational.model.Parameter.Direction;
 import org.komodo.relational.model.Column;
 import org.komodo.relational.model.Model;
+import org.komodo.relational.model.Model.Type;
 import org.komodo.relational.model.Parameter;
+import org.komodo.relational.model.Parameter.Direction;
 import org.komodo.relational.model.Procedure;
 import org.komodo.relational.model.Table;
 import org.komodo.relational.vdb.Vdb;
@@ -126,7 +127,7 @@ public class KomodoService implements IKomodoService {
 
     	wsManager = WorkspaceManager.getInstance(defaultRepo);
     	
-//    	loadTestWorkspace();
+    	//loadTestWorkspace();
     }
     
     /**
@@ -134,17 +135,15 @@ public class KomodoService implements IKomodoService {
      * @throws KomodoUiException
      */
     public void shutdownKEngine( ) throws KomodoUiException {
-    	// If KEngine already started, return
-    	if(!isKEngineStarted()) return;
-    	
-    	kEngine = KEngine.getInstance();
-
-    	// Start KEngine
-    	try {
-			kEngine.shutdown();
-		} catch (KException e) {
-			throw new KomodoUiException(e);
-		}
+    	if(kEngine!=null) {
+        	// Stop KEngine
+        	try {
+    			kEngine.shutdown();
+    		} catch (KException e) {
+    			throw new KomodoUiException(e);
+    		}
+    	}
+    	return;
     }
     
     private static boolean isKEngineStarted() {
@@ -208,61 +207,61 @@ public class KomodoService implements IKomodoService {
         }
     }
     
-//    public static void loadTestWorkspace() {
-//  		Repository repo = kEngine.getDefaultRepository();
-//  		
-//  		try {
-//  			UnitOfWork transaction = repo.createTransaction("GET WORKSPACE", false, null);
-//  			Vdb vdb = wsManager.createVdb(transaction, null, "ProductsVDB", "extPath");
-//  			vdb.setDescription(transaction, "Description for ProductsVDB");
-//  			//DataRole role = vdb.addDataRole(transaction, "Full Access Data Role");
-//  			//Permission perm = role.addPermission(transaction, "Read-Only");
-//  			//Translator trans = vdb.addTranslator(transaction, "my oracle override", "oracle");
-//  			Model model = wsManager.createModel(transaction, vdb, "ProductModel");
-//  			model.setProperty(transaction, "vdb:description", "Description for ProductModel....");
-//  			Table table = model.addTable(transaction, "productData");
-//  			table.addColumn(transaction, "ID");
-//  			table.addColumn(transaction, "Value");
-//  			table.addColumn(transaction, "Reference");
-//  			table = model.addTable(transaction, "productInfo");
-//  			table.addColumn(transaction, "ID");
-//  			table.addColumn(transaction, "vendor");
-//  			table.addColumn(transaction, "quantity");
-//  			Column col = table.addColumn(transaction, "weight");
-//  			col.setDatatypeName(transaction, "integer");
-//  			
-//  			vdb = wsManager.createVdb(transaction, null, "BooksVdb", "extPath");
-//  			model = wsManager.createModel(transaction, vdb, "BooksSource");
-//  			table = model.addTable(transaction, "books");
-//  			table.addColumn(transaction, "title");
-//  			table.addColumn(transaction, "author");
-//  			table.addColumn(transaction, "publisherID");
-//  			table = model.addTable(transaction, "publishers");
-//  			table.addColumn(transaction, "publisherID");
-//  			table.addColumn(transaction, "name");
-//  			table.addColumn(transaction, "address");
-//  			Procedure proc = model.addProcedure(transaction, "getProductData");
-//  			Parameter param = proc.addParameter(transaction, "PRODUCT_ID");
-//  			param.setDirection(transaction, Direction.IN);
-//  			
-//  			param = proc.addParameter(transaction, "CATEGORY");
-//  			param.setDirection(transaction, Direction.IN);
-////  			param = proc.addParameter(transaction, "PRODUCT_DATA");
-////  			param.setDirection(transaction, Direction.RETURN);
-//  			
-//  			model = wsManager.createModel(transaction, vdb, "BooksViews");
-//  			model.setModelType(transaction, "VIRTUAL");
-//  			table = model.addView(transaction, "booksViewInfo");
-//  			table.addColumn(transaction, "column_1");
-//  			table.addColumn(transaction, "column_2");
-//  			table.addColumn(transaction, "column_3");
-//  			
-//  			transaction.commit();
-//  		} catch (Exception e) {
-//  			// TODO Auto-generated catch block
-//  			e.printStackTrace();
-//  		}
-//      }
+    public static void loadTestWorkspace() {
+  		Repository repo = kEngine.getDefaultRepository();
+  		
+  		try {
+  			UnitOfWork transaction = repo.createTransaction("GET WORKSPACE", false, null);
+  			Vdb vdb = wsManager.createVdb(transaction, null, "ProductsVDB", "extPath");
+  			vdb.setDescription(transaction, "Description for ProductsVDB");
+  			//DataRole role = vdb.addDataRole(transaction, "Full Access Data Role");
+  			//Permission perm = role.addPermission(transaction, "Read-Only");
+  			//Translator trans = vdb.addTranslator(transaction, "my oracle override", "oracle");
+  			Model model = wsManager.createModel(transaction, vdb, "ProductModel");
+  			model.setProperty(transaction, "vdb:description", "Description for ProductModel....");
+  			Table table = model.addTable(transaction, "productData");
+  			table.addColumn(transaction, "ID");
+  			table.addColumn(transaction, "Value");
+  			table.addColumn(transaction, "Reference");
+  			table = model.addTable(transaction, "productInfo");
+  			table.addColumn(transaction, "ID");
+  			table.addColumn(transaction, "vendor");
+  			table.addColumn(transaction, "quantity");
+  			Column col = table.addColumn(transaction, "weight");
+  			col.setDatatypeName(transaction, "integer");
+  			
+  			vdb = wsManager.createVdb(transaction, null, "BooksVdb", "extPath");
+  			model = wsManager.createModel(transaction, vdb, "BooksSource");
+  			table = model.addTable(transaction, "books");
+  			table.addColumn(transaction, "title");
+  			table.addColumn(transaction, "author");
+  			table.addColumn(transaction, "publisherID");
+  			table = model.addTable(transaction, "publishers");
+  			table.addColumn(transaction, "publisherID");
+  			table.addColumn(transaction, "name");
+  			table.addColumn(transaction, "address");
+  			Procedure proc = model.addProcedure(transaction, "getProductData");
+  			Parameter param = proc.addParameter(transaction, "PRODUCT_ID");
+  			param.setDirection(transaction, Direction.IN);
+  			
+  			param = proc.addParameter(transaction, "CATEGORY");
+  			param.setDirection(transaction, Direction.IN);
+//  			param = proc.addParameter(transaction, "PRODUCT_DATA");
+//  			param.setDirection(transaction, Direction.RETURN);
+  			
+  			model = wsManager.createModel(transaction, vdb, "BooksViews");
+  			model.setModelType(transaction, Type.VIRTUAL);
+  			table = model.addView(transaction, "booksViewInfo");
+  			table.addColumn(transaction, "column_1");
+  			table.addColumn(transaction, "column_2");
+  			table.addColumn(transaction, "column_3");
+  			
+  			transaction.commit();
+  		} catch (Exception e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  		}
+      }
       
 
       protected static LocalRepository _repo = null;
