@@ -112,6 +112,14 @@
       <groupId>org.jboss.tools.komodo.plugins</groupId>
       <artifactId>org.komodo.utils.logger.modeshape</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.tools.komodo.plugins</groupId>
+      <artifactId>org.komodo.modeshape.vdb</artifactId>
+    </dependency>   
+    <dependency>
+      <groupId>org.jboss.tools.komodo.plugins</groupId>
+      <artifactId>org.komodo.teiid.client</artifactId>
+    </dependency>   
 
     <!-- Third party libraries -->
     <dependency>

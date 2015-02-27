@@ -86,4 +86,14 @@ public class KomodoRpcService {
         }
     }
     
+    public void getVdbDDL(final String vdbPath, final IRpcServiceInvocationHandler<String> handler) {
+        RemoteCallback<String> successCallback = new DelegatingRemoteCallback<String>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+        	remoteKomodoService.call(successCallback, errorCallback).getVdbDDL(vdbPath);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
 }

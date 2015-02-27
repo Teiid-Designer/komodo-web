@@ -26,11 +26,13 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
+import org.komodo.web.client.panels.vdb.VdbPanel;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.utils.UiUtils;
 import org.komodo.web.client.widgets.KomodoObjectPropertiesPanel;
 import org.komodo.web.client.widgets.RepoTreeDisplay;
 import org.komodo.web.share.Constants;
+import org.komodo.web.share.CoreConstants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -65,6 +67,9 @@ public class KomodoWorkspaceScreen extends Composite {
         
     @Inject 
     protected KomodoObjectPropertiesPanel propsPanel;
+
+    @Inject 
+    protected VdbPanel vdbPanel;
     
 	@Override
     @WorkbenchPartTitle
@@ -96,8 +101,9 @@ public class KomodoWorkspaceScreen extends Composite {
         
     	// Add properties panel and Select label to deckPanel
     	detailsDeckPanel.add(propsPanel);
+    	detailsDeckPanel.add(vdbPanel);
     	detailsDeckPanel.add(selectSourcePanel);
-    	detailsDeckPanel.showWidget(1);
+    	detailsDeckPanel.showWidget(2);
     }
     
     /**
@@ -113,8 +119,13 @@ public class KomodoWorkspaceScreen extends Composite {
         	repoTreePanel.showWidget(2);
     	} else if(dEvent.getType() == UiEventType.KOBJECT_SELECTED) {
     		KomodoObjectBean kObj = dEvent.getKomodoObject();
-    		propsPanel.setKObject(kObj);
-    		detailsDeckPanel.showWidget(0);
+    		if(kObj.getType()==CoreConstants.RelationalType.VDB) {
+    			vdbPanel.setKObject(kObj);
+    			detailsDeckPanel.showWidget(1);
+    		} else {
+    			propsPanel.setKObject(kObj);
+    			detailsDeckPanel.showWidget(0);
+    		}
     	}
     }
                     

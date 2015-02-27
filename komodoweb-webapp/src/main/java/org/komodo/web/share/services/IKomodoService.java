@@ -35,4 +35,6 @@ public interface IKomodoService {
     
     public List<KomodoObjectBean> getKomodoNodes(final String path) throws KomodoUiException;
 
+    public String getVdbDDL(final String vdbPath) throws KomodoUiException;
+
 }
