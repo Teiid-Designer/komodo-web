@@ -34,6 +34,7 @@ import org.komodo.relational.model.Parameter.Direction;
 import org.komodo.relational.model.Procedure;
 import org.komodo.relational.model.Table;
 import org.komodo.relational.vdb.Vdb;
+import org.komodo.relational.vdb.internal.VdbImpl;
 import org.komodo.relational.workspace.WorkspaceManager;
 import org.komodo.repository.LocalRepository;
 import org.komodo.repository.LocalRepository.LocalRepositoryId;
@@ -275,6 +276,30 @@ public class KomodoService implements IKomodoService {
   		}
       }
       
+      public String getVdbDDL(final String vdbPath) throws KomodoUiException {
+      	if(!isKEngineStarted()) {
+    		startKEngine();
+    	}
+    	
+  		Repository repo = kEngine.getDefaultRepository();
+  		
+  		// If kObjPath is null, get the root Vdbs
+  		
+    	String vdbDdl = null;
+		try {
+			Vdb[] vdbs = wsManager.findVdbs(null);
+			for(Vdb vdb : vdbs) {
+				String thePath = vdb.getAbsolutePath();
+				if(thePath.equals(vdbPath)) {
+					vdbDdl = ((VdbImpl)vdb).export(null);
+				}
+			}
+		} catch (KException e) {
+			throw new KomodoUiException(e);
+		}
+    	
+    	return vdbDdl;
+      }
 
       protected static LocalRepository _repo = null;
 
