@@ -24,9 +24,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 
 public class RepoTreeDisplay extends Composite {
 
-	@Inject
-	private KomodoRpcService komodoService;
-
 	@Inject Event<UiEvent> uiEvent;
 
     protected HorizontalPanel mainPanel = new HorizontalPanel();
@@ -62,7 +59,7 @@ public class RepoTreeDisplay extends Composite {
                 final TreeItem openedItem = event.getTarget();
                 KomodoObjectBean node = (KomodoObjectBean) openedItem.getUserObject();
                 String path = node.getPath();
-        		komodoService.getKomodoNodes(path, new IRpcServiceInvocationHandler<List<KomodoObjectBean>>() {
+        		KomodoRpcService.get().getKomodoNodes(path, new IRpcServiceInvocationHandler<List<KomodoObjectBean>>() {
         			@Override
         			public void onReturn(final List<KomodoObjectBean> result) {	
         				if (result.size()>0) {
@@ -111,7 +108,7 @@ public class RepoTreeDisplay extends Composite {
     }
     
     public void initTree() {
-		komodoService.getKomodoNodes(null, new IRpcServiceInvocationHandler<List<KomodoObjectBean>>() {
+		KomodoRpcService.get().getKomodoNodes(null, new IRpcServiceInvocationHandler<List<KomodoObjectBean>>() {
 			@Override
 			public void onReturn(final List<KomodoObjectBean> result) {	
 				if (result.size()>0) {

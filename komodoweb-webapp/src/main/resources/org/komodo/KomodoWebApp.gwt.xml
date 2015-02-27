@@ -23,6 +23,8 @@
   <set-property name="compiler.useSourceMaps" value="true"/>
   <set-configuration-property name='xsiframe.failIfScriptTag' value='false'/>
   
+  <set-property name="gwt.logging.popupHandler" value="DISABLED"/>  
+  
   <source path='web/client' />
   <source path='web/share' />
 </module>

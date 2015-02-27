@@ -35,8 +35,6 @@ import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
 
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
@@ -100,10 +98,6 @@ public class KomodoWorkspaceScreen extends Composite {
     	detailsDeckPanel.add(propsPanel);
     	detailsDeckPanel.add(selectSourcePanel);
     	detailsDeckPanel.showWidget(1);
-    }
-    
-    @OnStartup
-    public void onStartup( final PlaceRequest place ) {   
     }
     
     /**

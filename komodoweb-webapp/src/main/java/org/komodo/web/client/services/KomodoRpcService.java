@@ -15,6 +15,7 @@
  */
 package org.komodo.web.client.services;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -23,6 +24,8 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.container.IOC;
+import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.komodo.web.client.services.rpc.DelegatingErrorCallback;
 import org.komodo.web.client.services.rpc.DelegatingRemoteCallback;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
@@ -37,6 +40,12 @@ import org.komodo.web.share.services.IKomodoService;
  */
 @ApplicationScoped
 public class KomodoRpcService {
+	
+    public static KomodoRpcService get() {
+        Collection<IOCBeanDef<KomodoRpcService>> beans = IOC.getBeanManager().lookupBeans(KomodoRpcService.class);
+        IOCBeanDef<KomodoRpcService> beanDef = beans.iterator().next();
+        return beanDef.getInstance();
+    }
 
     @Inject
     private Caller<IKomodoService> remoteKomodoService;
