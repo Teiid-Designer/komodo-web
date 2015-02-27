@@ -22,6 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
@@ -43,6 +44,7 @@ import org.komodo.spi.repository.Repository;
 import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.spi.repository.RepositoryClient.State;
 import org.komodo.spi.repository.RepositoryObserver;
+import org.komodo.utils.KLog;
 import org.komodo.web.backend.server.services.util.Utils;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.beans.KomodoObjectBean;
@@ -76,7 +78,17 @@ public class KomodoService implements IKomodoService {
     public void startKEngine( ) throws KomodoUiException {
     	// If KEngine already started, return
     	if(isKEngineStarted()) return;
-    	
+
+		/*
+		 * Ensure Logging on Modeshape Engine is set to a sane level By default,
+		 * it seems to revert to TRACE or ALL.
+		 */
+		try {
+			KLog.getLogger().setLevel(Level.INFO);
+		} catch (Exception e) {
+			throw new KomodoUiException(e);
+		}
+
     	kEngine = KEngine.getInstance();
     	final Repository defaultRepo = kEngine.getDefaultRepository();
 
