@@ -63,15 +63,6 @@
     <url-pattern>/services/dataVirtDownload</url-pattern>
   </servlet-mapping>
   
-  <servlet> 
-    <servlet-name>jUnitHostImpl</servlet-name> 
-    <servlet-class>com.google.gwt.junit.server.JUnitHostImpl</servlet-class> 
-  </servlet> 
-  <servlet-mapping> 
-    <servlet-name>jUnitHostImpl</servlet-name> 
-    <url-pattern>/org.komodo.KomodoWebApp/junithost/*</url-pattern> 
-  </servlet-mapping>
-  
   <resource-env-ref>
     <description>Object factory for the CDI Bean Manager</description>
     <resource-env-ref-name>BeanManager</resource-env-ref-name>
@@ -79,7 +70,7 @@
   </resource-env-ref>
 
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>login.jsp</welcome-file>
   </welcome-file-list>
 
 </web-app>
