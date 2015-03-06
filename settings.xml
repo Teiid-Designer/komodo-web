@@ -56,7 +56,6 @@ http://maven.apache.org/xsd/settings-1.0.0.xsd">
         </repository>
       </repositories>
     </profile> 
-    <!--
     <profile>
       <id>jboss-eap</id>
       <repositories>
@@ -75,12 +74,12 @@ http://maven.apache.org/xsd/settings-1.0.0.xsd">
         </repository>
       </repositories>
     </profile> 
-    -->   
   </profiles>
 
   <activeProfiles>
     <activeProfile>jboss-public-repository</activeProfile>
     <activeProfile>jboss-eap-alpha</activeProfile>
+    <activeProfile>jboss-eap</activeProfile>
   </activeProfiles>
 
 </settings>
