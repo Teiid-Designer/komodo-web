@@ -75,6 +75,7 @@ public abstract class AbstractAnimation extends Animation {
 	 * Called when the animation is cancelled.
 	 */
 	protected void doOnCancel() {
+	    // Nothing to do
 	}
 
 	/**
@@ -93,12 +94,14 @@ public abstract class AbstractAnimation extends Animation {
 	 * animation is cancelled.
 	 */
 	protected void doOnComplete() {
+	 // Nothing to do
 	}
 
 	/**
 	 * @return the running
 	 */
-	public boolean isRunning() {
+	@Override
+    public boolean isRunning() {
 		return running;
 	}
 

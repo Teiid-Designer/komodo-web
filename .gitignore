@@ -24,3 +24,8 @@
 
 # Bitronix transactin logs
 *.tlog
+
+# Ignore deployment runtime type files
+komodoweb-webapp/src/main/webapp/WEB-INF/deploy
+komodoweb-webapp/src/main/webapp/org.komodo.KomodoWebApp
+

@@ -23,7 +23,6 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
 import org.komodo.relational.model.Column;
@@ -51,7 +50,6 @@ import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
-
 import com.google.gwt.resources.client.DataResource;
 
 /**
@@ -76,6 +74,7 @@ public class KomodoService implements IKomodoService {
      * Start the KEngine
      * @throws KomodoUiException
      */
+    @Override
     public void startKEngine( ) throws KomodoUiException {
     	// If KEngine already started, return
     	if(isKEngineStarted()) return;
@@ -116,6 +115,7 @@ public class KomodoService implements IKomodoService {
     	TimerTask progressTask = new TimerTask() {
     		@Override
     		public void run() {
+    		    // Do Nothing
     		}
     	};
 
@@ -147,6 +147,7 @@ public class KomodoService implements IKomodoService {
      * Shutdown the KEngine
      * @throws KomodoUiException
      */
+    @Override
     public void shutdownKEngine( ) throws KomodoUiException {
     	if(kEngine!=null) {
         	// Stop KEngine
@@ -172,6 +173,7 @@ public class KomodoService implements IKomodoService {
     	return isStarted;
     }
     
+    @Override
     public List<KomodoObjectBean> getKomodoNodes(final String kObjPath) throws KomodoUiException {
     	if(!isKEngineStarted()) {
     		startKEngine();
@@ -276,7 +278,8 @@ public class KomodoService implements IKomodoService {
   		}
       }
       
-      public String getVdbDDL(final String vdbPath) throws KomodoUiException {
+      @Override
+    public String getVdbDDL(final String vdbPath) throws KomodoUiException {
       	if(!isKEngineStarted()) {
     		startKEngine();
     	}
