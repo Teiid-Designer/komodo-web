@@ -23,15 +23,9 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
-import org.komodo.relational.model.Column;
-import org.komodo.relational.model.Model;
-import org.komodo.relational.model.Model.Type;
-import org.komodo.relational.model.Parameter;
-import org.komodo.relational.model.Parameter.Direction;
-import org.komodo.relational.model.Procedure;
-import org.komodo.relational.model.Table;
 import org.komodo.relational.vdb.Vdb;
 import org.komodo.relational.vdb.internal.VdbImpl;
 import org.komodo.relational.workspace.WorkspaceManager;
@@ -41,7 +35,6 @@ import org.komodo.spi.KException;
 import org.komodo.spi.constants.StringConstants;
 import org.komodo.spi.repository.KomodoObject;
 import org.komodo.spi.repository.Repository;
-import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.spi.repository.RepositoryClient.State;
 import org.komodo.spi.repository.RepositoryObserver;
 import org.komodo.utils.KLog;
@@ -50,6 +43,7 @@ import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
+
 import com.google.gwt.resources.client.DataResource;
 
 /**
@@ -61,7 +55,7 @@ import com.google.gwt.resources.client.DataResource;
 public class KomodoService implements IKomodoService {
 
 	private static KEngine kEngine;
-	
+
 	private static WorkspaceManager wsManager;
 	
     /**
@@ -89,24 +83,24 @@ public class KomodoService implements IKomodoService {
 			throw new KomodoUiException(e);
 		}
 
-    	kEngine = KEngine.getInstance();
-    	final Repository defaultRepo = kEngine.getDefaultRepository();
+		kEngine = KEngine.getInstance();
+		final Repository defaultRepo = kEngine.getDefaultRepository();
 
-    	// Latch for awaiting the start of the default repository
-    	final CountDownLatch updateLatch = new CountDownLatch(1);
+		// Latch for awaiting the start of the default repository
+		final CountDownLatch updateLatch = new CountDownLatch(1);
 
-    	// Observer attached to the default repository for listening for the change of state
-    	RepositoryObserver stateObserver = new RepositoryObserver() {
+		// Observer attached to the default repository for listening for the change of state
+		RepositoryObserver stateObserver = new RepositoryObserver() {
 
-    		@Override
-    		public void eventOccurred() {
-    			updateLatch.countDown();
-    		}
-    	};
-    	defaultRepo.addObserver(stateObserver);
+			@Override
+			public void eventOccurred() {
+				updateLatch.countDown();
+			}
+		};
+		defaultRepo.addObserver(stateObserver);
 
-    	// Start KEngine
-    	try {
+		// Start KEngine
+		try {
 			kEngine.start();
 		} catch (KException e) {
 			throw new KomodoUiException(e);
@@ -119,12 +113,12 @@ public class KomodoService implements IKomodoService {
     		}
     	};
 
-    	Timer timer = new Timer();
-    	timer.schedule(progressTask, 0, 500);
+		Timer timer = new Timer();
+		timer.schedule(progressTask, 0, 500);
 
-    	// Block the thread until the latch has counted down or timeout has been reached
-    	boolean localRepoWaiting = true;
-    	try {
+		// Block the thread until the latch has counted down or timeout has been reached
+		boolean localRepoWaiting = true;
+		try {
 			localRepoWaiting = updateLatch.await(3, TimeUnit.MINUTES);
 		} catch (InterruptedException e) {
 			throw new KomodoUiException(e);
@@ -201,94 +195,76 @@ public class KomodoService implements IKomodoService {
 				result.add(utils.createKomodoObjectBean(child));
 			}
 		}
-    	
-    	return result;
-    }
 
-    public static void initLocalRepository() throws Exception {
-    	DataResource config = AppResource.INSTANCE.data().repositoryConfig();
-    	URL configUrl = new URL(config.getUrl());
-    	
-        LocalRepositoryId id = new LocalRepositoryId(configUrl, StringConstants.DEFAULT_LOCAL_WORKSPACE_NAME);
-        _repo = new LocalRepository(id);
+		return result;
+	}
 
-        _repoObserver = new LocalRepositoryObserver();
-        _repo.addObserver(_repoObserver);
+	public KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException {
+		if(!isKEngineStarted()) {
+			startKEngine();
+		}
+		Utils utils = Utils.getInstance();
+		KomodoObjectBean result = null;
+
+		Vdb newVdb;
+		try {
+			newVdb = wsManager.createVdb(null, null, vdbName, "extPath");
+			result = utils.createKomodoObjectBean(newVdb);
+		} catch (KException ex) {
+			throw new KomodoUiException(ex);
+		}
+
+		return result;
+	}
+
+	public List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException {
+		if(!isKEngineStarted()) {
+			startKEngine();
+		}
+
+		try {
+			KomodoObject[] vdbs = wsManager.findVdbs(null);
+			for(KomodoObject vdb : vdbs) {
+				String kVdbName = vdb.getName(null);
+				if(vdbName.equals(kVdbName)) {
+					wsManager.delete(null, vdb);
+					break;
+				}
+			}
+		} catch (KException ex) {
+			throw new KomodoUiException(ex);
+		}
+
+		return getKomodoNodes(null);
+	}
+
+	public static void initLocalRepository() throws Exception {
+		DataResource config = AppResource.INSTANCE.data().repositoryConfig();
+		URL configUrl = new URL(config.getUrl());
+
+		LocalRepositoryId id = new LocalRepositoryId(configUrl, StringConstants.DEFAULT_LOCAL_WORKSPACE_NAME);
+		_repo = new LocalRepository(id);
+
+		_repoObserver = new LocalRepositoryObserver();
+		_repo.addObserver(_repoObserver);
 
 
-        // Wait for the starting of the repository or timeout of 1 minute
-        if (!_repoObserver.getLatch().await(1, TimeUnit.MINUTES)) {
-            throw new RuntimeException("Local repository did not start");
-        }
-    }
-    
-    public static void loadTestWorkspace() {
-  		Repository repo = kEngine.getDefaultRepository();
-  		
-  		try {
-  			UnitOfWork transaction = repo.createTransaction("GET WORKSPACE", false, null);
-  			Vdb vdb = wsManager.createVdb(transaction, null, "ProductsVDB", "extPath");
-  			vdb.setDescription(transaction, "Description for ProductsVDB");
-  			//DataRole role = vdb.addDataRole(transaction, "Full Access Data Role");
-  			//Permission perm = role.addPermission(transaction, "Read-Only");
-  			//Translator trans = vdb.addTranslator(transaction, "my oracle override", "oracle");
-  			Model model = wsManager.createModel(transaction, vdb, "ProductModel");
-  			model.setProperty(transaction, "vdb:description", "Description for ProductModel....");
-  			Table table = model.addTable(transaction, "productData");
-  			table.addColumn(transaction, "ID");
-  			table.addColumn(transaction, "Value");
-  			table.addColumn(transaction, "Reference");
-  			table = model.addTable(transaction, "productInfo");
-  			table.addColumn(transaction, "ID");
-  			table.addColumn(transaction, "vendor");
-  			table.addColumn(transaction, "quantity");
-  			Column col = table.addColumn(transaction, "weight");
-  			col.setDatatypeName(transaction, "integer");
-  			
-  			vdb = wsManager.createVdb(transaction, null, "BooksVdb", "extPath");
-  			model = wsManager.createModel(transaction, vdb, "BooksSource");
-  			table = model.addTable(transaction, "books");
-  			table.addColumn(transaction, "title");
-  			table.addColumn(transaction, "author");
-  			table.addColumn(transaction, "publisherID");
-  			table = model.addTable(transaction, "publishers");
-  			table.addColumn(transaction, "publisherID");
-  			table.addColumn(transaction, "name");
-  			table.addColumn(transaction, "address");
-  			Procedure proc = model.addProcedure(transaction, "getProductData");
-  			Parameter param = proc.addParameter(transaction, "PRODUCT_ID");
-  			param.setDirection(transaction, Direction.IN);
-  			
-  			param = proc.addParameter(transaction, "CATEGORY");
-  			param.setDirection(transaction, Direction.IN);
-//  			param = proc.addParameter(transaction, "PRODUCT_DATA");
-//  			param.setDirection(transaction, Direction.RETURN);
-  			
-  			model = wsManager.createModel(transaction, vdb, "BooksViews");
-  			model.setModelType(transaction, Type.VIRTUAL);
-  			table = model.addView(transaction, "booksViewInfo");
-  			table.addColumn(transaction, "column_1");
-  			table.addColumn(transaction, "column_2");
-  			table.addColumn(transaction, "column_3");
-  			
-  			transaction.commit();
-  		} catch (Exception e) {
-  			// TODO Auto-generated catch block
-  			e.printStackTrace();
-  		}
-      }
-      
-      @Override
-    public String getVdbDDL(final String vdbPath) throws KomodoUiException {
-      	if(!isKEngineStarted()) {
-    		startKEngine();
-    	}
-    	
-  		Repository repo = kEngine.getDefaultRepository();
-  		
-  		// If kObjPath is null, get the root Vdbs
-  		
-    	String vdbDdl = null;
+		// Wait for the starting of the repository or timeout of 1 minute
+		if (!_repoObserver.getLatch().await(1, TimeUnit.MINUTES)) {
+			throw new RuntimeException("Local repository did not start");
+		}
+	}    
+
+	public String getVdbDDL(final String vdbPath) throws KomodoUiException {
+		if(!isKEngineStarted()) {
+			startKEngine();
+		}
+
+		Repository repo = kEngine.getDefaultRepository();
+
+		// If kObjPath is null, get the root Vdbs
+
+		String vdbDdl = null;
 		try {
 			Vdb[] vdbs = wsManager.findVdbs(null);
 			for(Vdb vdb : vdbs) {
@@ -300,37 +276,37 @@ public class KomodoService implements IKomodoService {
 		} catch (KException e) {
 			throw new KomodoUiException(e);
 		}
-    	
-    	return vdbDdl;
-      }
 
-      protected static LocalRepository _repo = null;
+		return vdbDdl;
+	}
 
-      protected static LocalRepositoryObserver _repoObserver = null;
-      
-      protected static class LocalRepositoryObserver implements RepositoryObserver {
+	protected static LocalRepository _repo = null;
 
-          private CountDownLatch latch;
+	protected static LocalRepositoryObserver _repoObserver = null;
 
-          public LocalRepositoryObserver() {
-              resetLatch();
-          }
+	protected static class LocalRepositoryObserver implements RepositoryObserver {
 
-          public void resetLatch() {
-              latch = new CountDownLatch(1);
-          }
+		private CountDownLatch latch;
 
-          /**
-           * @return the latch
-           */
-          public CountDownLatch getLatch() {
-              return this.latch;
-          }
+		public LocalRepositoryObserver() {
+			resetLatch();
+		}
 
-          @Override
-          public void eventOccurred() {
-              latch.countDown();
-          }
-      }
-    
+		public void resetLatch() {
+			latch = new CountDownLatch(1);
+		}
+
+		/**
+		 * @return the latch
+		 */
+		 public CountDownLatch getLatch() {
+			 return this.latch;
+		 }
+
+		 @Override
+		 public void eventOccurred() {
+			 latch.countDown();
+		 }
+	}
+
 }

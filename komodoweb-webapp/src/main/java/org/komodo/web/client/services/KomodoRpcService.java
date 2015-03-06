@@ -86,6 +86,26 @@ public class KomodoRpcService {
         }
     }
     
+    public void createVdb(final String vdbName, final IRpcServiceInvocationHandler<KomodoObjectBean> handler) {
+        RemoteCallback<KomodoObjectBean> successCallback = new DelegatingRemoteCallback<KomodoObjectBean>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+        	remoteKomodoService.call(successCallback, errorCallback).createVdb(vdbName);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
+    public void deleteVdb(final String vdbName, final IRpcServiceInvocationHandler<List<KomodoObjectBean>> handler) {
+        RemoteCallback<List<KomodoObjectBean>> successCallback = new DelegatingRemoteCallback<List<KomodoObjectBean>>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+        	remoteKomodoService.call(successCallback, errorCallback).deleteVdb(vdbName);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+    
     public void getVdbDDL(final String vdbPath, final IRpcServiceInvocationHandler<String> handler) {
         RemoteCallback<String> successCallback = new DelegatingRemoteCallback<String>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);

@@ -34,7 +34,11 @@ public interface IKomodoService {
     public void shutdownKEngine( ) throws KomodoUiException;
     
     public List<KomodoObjectBean> getKomodoNodes(final String path) throws KomodoUiException;
+    
+    public KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException;
 
+    public List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException;
+    
     public String getVdbDDL(final String vdbPath) throws KomodoUiException;
 
 }
