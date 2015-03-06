@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.komodo.web.client.resources;
+ package org.komodo.web.client.resources;
 
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.CssResource.NotStrict;
+import com.google.gwt.user.cellview.client.CellList;
+import com.google.gwt.user.cellview.client.CellList.Style;
 
-public interface AppCss extends ClientBundle {
+/**
+ * GWT managed images for Workbench
+ */
+public interface CellListResources extends CellList.Resources {
 
-	@NotStrict
-    @Source("css/KomodoTree.css")
-    CssResource komodoTreeStyle();
-	
-	@NotStrict
-    @Source("css/komodoweb.css")
-    CssResource komodoWebStyle();
-	
-	@NotStrict
-    @Source("css/filterToggle.css")
-    CssResource filterToggleStyle();
-	
+    @Source("css/CellList.css")
+    Style cellListStyle();
 }

@@ -26,6 +26,24 @@ public interface AppImages extends ClientBundle {
     @Source("images/teiid_user_logo.png")
     ImageResource ufUserLogo();
     
+    @Source("images/filterConnections.png")
+    ImageResource filterConnectionsImage();
+    
+    @Source("images/filterViews.png")
+    ImageResource filterViewsImage();
+    
+    @Source("images/filterVdbs.png")
+    ImageResource filterVdbsImage();
+    
+    @Source("images/glyphicons-151-edit.png")
+    ImageResource editIconImage();
+    
+    @Source("images/glyphicons-191-circle-plus.png")
+    ImageResource addIconImage();
+
+    @Source("images/glyphicons-193-circle-remove.png")
+    ImageResource removeIconImage();
+    
     @Source("images/spinner_16.gif")
     ImageResource spinnner16x16Image();
     

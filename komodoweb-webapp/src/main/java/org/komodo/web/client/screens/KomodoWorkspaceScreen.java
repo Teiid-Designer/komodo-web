@@ -20,15 +20,14 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
+import org.komodo.web.client.panels.repo.RepoContentPanel;
+import org.komodo.web.client.panels.repo.RepoDefinitionPanel;
 import org.komodo.web.client.panels.vdb.VdbPanel;
-import org.komodo.web.client.resources.AppResource;
-import org.komodo.web.client.utils.UiUtils;
 import org.komodo.web.client.widgets.KomodoObjectPropertiesPanel;
 import org.komodo.web.client.widgets.RepoTreeDisplay;
 import org.komodo.web.share.Constants;
@@ -38,7 +37,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -59,8 +57,11 @@ public class KomodoWorkspaceScreen extends Composite {
     @Inject 
     private RepoTreeDisplay repoTree;
 
-    @Inject @DataField("tree-komodo-workspace")
-    protected DeckPanel repoTreePanel;
+    @Inject @DataField("repo-definition-panel")
+    protected RepoDefinitionPanel repoDefinitionPanel;
+    
+    @Inject @DataField("repo-content-panel")
+    protected RepoContentPanel repoContentPanel;
 
     @Inject @DataField("details-deckpanel")
     protected DeckPanel detailsDeckPanel;
@@ -87,15 +88,15 @@ public class KomodoWorkspaceScreen extends Composite {
      */
     @PostConstruct
     protected void postConstruct() {
-    	// Deck panel for DataSource list
-    	HTMLPanel spinnerPanel = new HTMLPanel(AbstractImagePrototype.create(AppResource.INSTANCE.images().spinnner24x24Image()).getHTML());
-    	repoTreePanel.add(spinnerPanel);
-    	repoTreePanel.add(repoTree);
-    	Label errorLabel = new Label("Error Loading Tree");
-    	UiUtils.setMessageStyle(errorLabel, UiUtils.MessageType.ERROR);
-    	repoTreePanel.add(errorLabel);
-    	repoTreePanel.showWidget(0);
-    	repoTree.initTree();
+//    	// Deck panel for DataSource list
+//    	HTMLPanel spinnerPanel = new HTMLPanel(AbstractImagePrototype.create(AppResource.INSTANCE.images().spinnner24x24Image()).getHTML());
+//    	repoTreePanel.add(spinnerPanel);
+//    	repoTreePanel.add(repoTree);
+//    	Label errorLabel = new Label("Error Loading Tree");
+//    	UiUtils.setMessageStyle(errorLabel, UiUtils.MessageType.ERROR);
+//    	repoTreePanel.add(errorLabel);
+//    	repoTreePanel.showWidget(0);
+//    	repoTree.initTree();
     	
         HTMLPanel selectSourcePanel = new HTMLPanel("Choose an item to see its properties");
         
@@ -113,10 +114,10 @@ public class KomodoWorkspaceScreen extends Composite {
     public void onUiEvent(@Observes UiEvent dEvent) {
     	// Tree Loaded OK
     	if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_OK) {
-        	repoTreePanel.showWidget(1);
+        	//repoTreePanel.showWidget(1);
     	// Tree Load Error
     	} else if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_ERROR) {
-        	repoTreePanel.showWidget(2);
+        	//repoTreePanel.showWidget(2);
     	} else if(dEvent.getType() == UiEventType.KOBJECT_SELECTED) {
     		KomodoObjectBean kObj = dEvent.getKomodoObject();
     		if(kObj.getType()==CoreConstants.RelationalType.VDB) {
