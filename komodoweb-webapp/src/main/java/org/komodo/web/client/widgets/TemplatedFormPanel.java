@@ -45,6 +45,7 @@ public class TemplatedFormPanel extends FormPanel implements HasText {
      */
     @Override
     public void setText(String text) {
+     // Nothing to do
     }
 
 }

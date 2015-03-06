@@ -16,10 +16,8 @@
 package org.komodo.web.client.widgets.table;
 
 import java.util.List;
-
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -56,6 +54,7 @@ public class PagedTable<T>
             extends
             UiBinder<Widget, PagedTable> {
 
+	        // Nothing to do
     }
 
     private static Binder uiBinder = GWT.create( Binder.class );

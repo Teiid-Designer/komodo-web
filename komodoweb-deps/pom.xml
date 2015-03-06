@@ -30,8 +30,8 @@
     <version.org.uberfire>0.6.0-SNAPSHOT</version.org.uberfire>
     <version.org.jboss.teiid>8.7.0.Final</version.org.jboss.teiid>
     <version.org.komodo>1.0.0-SNAPSHOT</version.org.komodo>
-    <version.jboss-as-cli>7.2.0.Final</version.jboss-as-cli>
-    <version.jboss-as-controller>7.2.0.Final</version.jboss-as-controller>
+    <version.jboss>8.0.0.Final</version.jboss>
+    <jbossas-version>${version.jboss}</jbossas-version>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.infinispan>6.0.2.Final</version.org.infinispan>
     <version.org.owasp.encoder>1.1.1</version.org.owasp.encoder>
@@ -141,24 +141,14 @@
         <groupId>org.jboss.tools.komodo.plugins</groupId>
         <artifactId>org.komodo.modeshape.vdb</artifactId>
         <version>${version.org.komodo}</version>
-      </dependency>   
+      </dependency>
       <dependency>
         <groupId>org.jboss.tools.komodo.plugins</groupId>
         <artifactId>org.komodo.teiid.client</artifactId>
         <version>${version.org.komodo}</version>
-      </dependency>   
-      
+      </dependency>
+
       <!-- Third party libraries -->
-      <dependency>
-        <groupId>org.jboss.as</groupId>
-        <artifactId>jboss-as-cli</artifactId>
-        <version>${version.jboss-as-cli}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.as</groupId>
-        <artifactId>jboss-as-controller</artifactId>
-        <version>${version.jboss-as-controller}</version>
-      </dependency>
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
