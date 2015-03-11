@@ -35,13 +35,13 @@ public interface AppImages extends ClientBundle {
     @Source("images/filterVdbs.png")
     ImageResource filterVdbsImage();
     
-    @Source("images/glyphicons-151-edit.png")
-    ImageResource editIconImage();
+    @Source("images/relational/VDB-edit.png")
+    ImageResource editVdbIconImage();
     
-    @Source("images/glyphicons-191-circle-plus.png")
+    @Source("images/add_16x16.gif")
     ImageResource addIconImage();
 
-    @Source("images/glyphicons-193-circle-remove.png")
+    @Source("images/delete_16x16.gif")
     ImageResource removeIconImage();
     
     @Source("images/spinner_16.gif")

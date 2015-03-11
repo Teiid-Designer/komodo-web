@@ -57,7 +57,7 @@ http://maven.apache.org/xsd/settings-1.0.0.xsd">
       </repositories>
     </profile> 
     <profile>
-      <id>redhat-techpreview-all-repository</id>
+      <id>jboss-eap</id>
       <repositories>
         <repository>
           <id>redhat-techpreview-all-repository</id>
