@@ -73,7 +73,7 @@ public class ImagesCell extends AbstractSafeHtmlCell<String> {
 
 	private static Templates templates = GWT.create(Templates.class);
 	private static final SafeHtml ICON_ADD = makeImage(AppResource.INSTANCE.images().addIconImage());
-	private static final SafeHtml ICON_EDIT = makeImage(AppResource.INSTANCE.images().editIconImage());
+	private static final SafeHtml ICON_EDIT = makeImage(AppResource.INSTANCE.images().editVdbIconImage());
 	private static final SafeHtml ICON_REMOVE = makeImage(AppResource.INSTANCE.images().removeIconImage());
 
 	/**
