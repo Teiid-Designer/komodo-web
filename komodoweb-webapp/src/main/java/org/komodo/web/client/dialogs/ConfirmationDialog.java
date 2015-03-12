@@ -34,7 +34,7 @@ public class ConfirmationDialog {
 	@Inject
     private ClientMessages i18n;
 	
-	@Inject Event<UiEvent> buttonEvent;
+	@Inject Event<ConfirmationDialogEvent> buttonEvent;
 
     @Inject
 	private PlaceManager placeManager;
@@ -44,11 +44,12 @@ public class ConfirmationDialog {
 	private Button okButton;
 	private Button closeButton;
 	private String dialogType;
+	private String dialogArg; 
 	
 	@PostConstruct
 	public void setup() {
 		messagePanel = new HTMLPanel("<p>Click to close</p>");
-		closeButton = new Button( "Cancel" );
+		closeButton = new Button(Constants.CANCEL_BUTTON_TXT);
 		closeButton.addClickHandler( new ClickHandler() {
 			@Override
 			public void onClick( final ClickEvent event ) {
@@ -56,7 +57,7 @@ public class ConfirmationDialog {
 				placeManager.closePlace( place );
 			}
 		} );
-		okButton = new Button( "Ok" );
+		okButton = new Button(Constants.OK_BUTTON_TXT);
 		okButton.addClickHandler( new ClickHandler() {
 			@Override
 			public void onClick( final ClickEvent event ) {
@@ -76,11 +77,12 @@ public class ConfirmationDialog {
 	public void onStartup( final PlaceRequest place ) {
 		this.place = place;
 		
-    	// Parameters are passed in for the message content and the confirmation dialog type
-    	String message = place.getParameter(Constants.CONFIRMATION_DIALOG_MESSAGE, "NONE");
-    	dialogType = place.getParameter(Constants.CONFIRMATION_DIALOG_TYPE, "NONE");
+    	// Parameter is passed in for the confirmation dialog type
+    	dialogType = place.getParameter(Constants.CONFIRMATION_DIALOG_TYPE_KEY, Constants.NONE);
+    	dialogArg = place.getParameter(Constants.CONFIRMATION_DIALOG_ARG_KEY, Constants.NONE);
     	
     	view.remove(messagePanel);
+    	String message = getMessage(dialogType);
     	messagePanel = new HTMLPanel("<p>"+message+"</p>");
     	view.insert(messagePanel, 0);
     	
@@ -89,52 +91,70 @@ public class ConfirmationDialog {
 	
 	@WorkbenchPartTitle
 	public String getTitle() {
-		String dialogTitle = "Confirm the Operation";
-		
-		if(dialogType==null) {
-			return dialogTitle;
-		}
-    	if(Constants.CONFIRMATION_DIALOG_DELETE_SERVICE.equals(dialogType)) {
-			dialogTitle = i18n.format("dslibrary.confirm-delete-dialog-title");
-    	} else if(Constants.CONFIRMATION_DIALOG_EDIT_SERVICE_ABORT.equals(dialogType)) {
-			dialogTitle = i18n.format("editdataservice.confirm-abort-edit-dialog-title");
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_RENAME.equals(dialogType)) {
-			dialogTitle = i18n.format("ds-properties-panel.confirm-rename-dialog-title");
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_REDEPLOY.equals(dialogType)) {
-			dialogTitle = i18n.format("ds-properties-panel.confirm-redeploy-dialog-title");
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_CHANGETYPE.equals(dialogType)) {
-			dialogTitle = i18n.format("ds-properties-panel.confirm-changetype-dialog-title");
-		} else if(Constants.CONFIRMATION_DIALOG_SOURCE_DELETE.equals(dialogType)) {
-			dialogTitle = i18n.format("managesources.confirm-delete-dialog-title");
-		} else if(Constants.CONFIRMATION_DIALOG_REPLACE_VIEW_DEFN.equals(dialogType)) {
-			dialogTitle = i18n.format("ds-properties-panel.confirm-overwrite-dialog-title");
-		}
-		return dialogTitle;
+		return getTitle(dialogType);
 	}
 	
 	@WorkbenchPartView
 	public IsWidget getView() {
 		return view;
 	}
+	
+	/**
+	 * Get the dialog title for the specified ConfirmationDialog type
+	 * @param dialogType the dialog type
+	 * @return the title
+	 */
+	private String getTitle(String dialogType) {
+		String dialogTitle = "Confirm the Operation";
+		
+		if(dialogType!=null) {
+	    	if(Constants.CONFIRMATION_DIALOG_CREATE_VDB.equals(dialogType)) {
+	    		dialogTitle = i18n.format("confirmation-dialog.confirm-vdb-create-title");
+	    	} else if(Constants.CONFIRMATION_DIALOG_DELETE_VDB.equals(dialogType)) {
+	    		dialogTitle = i18n.format("confirmation-dialog.confirm-vdb-delete-title");
+			}
+		}
+		return dialogTitle;
+	}
+	
+	/**
+	 * Get the dialog message for the specified ConfirmationDialog type
+	 * @param dialogType the dialog type
+	 * @return the message
+	 */
+	private String getMessage(String dialogType) {
+		String dialogMessage = "Confirm the Operation";
+		
+		if(dialogType!=null) {
+	    	if(Constants.CONFIRMATION_DIALOG_CREATE_VDB.equals(dialogType)) {
+	    		dialogMessage = i18n.format("confirmation-dialog.confirm-vdb-create-msg");
+	    	} else if(Constants.CONFIRMATION_DIALOG_DELETE_VDB.equals(dialogType)) {
+	    		String vdbName = hasValidArg(dialogArg) ? dialogArg : Constants.UNKNOWN;
+	    		dialogMessage = i18n.format("confirmation-dialog.confirm-vdb-delete-msg",vdbName);
+			}
+		}
+		return dialogMessage;
+	}
+	
+	/**
+	 * Determine if a valid arg was supplied
+	 * @return 'true' if arg was supplied, 'false' if not.
+	 */
+	private boolean hasValidArg(String dialogArg) {
+		if(dialogArg!=null && !dialogArg.equals(Constants.NONE)) {
+			return true;
+		}
+		return false;
+	}
 
 	/*
 	 * Fires different Cancel events, depending on the type of confirmation
 	 */
 	private void fireCancelEvent() {
-    	if(Constants.CONFIRMATION_DIALOG_DELETE_SERVICE.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.DELETE_SERVICE_CANCEL));
-    	} else if(Constants.CONFIRMATION_DIALOG_EDIT_SERVICE_ABORT.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.EDIT_SERVICE_ABORT_CANCEL));
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_RENAME.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.SOURCE_RENAME_CANCEL));
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_REDEPLOY.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.SOURCE_REDEPLOY_CANCEL));
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_CHANGETYPE.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.SOURCE_CHANGETYPE_CANCEL));
-		} else if(Constants.CONFIRMATION_DIALOG_SOURCE_DELETE.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.DELETE_SOURCE_CANCEL));
-		} else if(Constants.CONFIRMATION_DIALOG_REPLACE_VIEW_DEFN.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.VIEW_DEFN_REPLACE_CANCEL));
+    	if(Constants.CONFIRMATION_DIALOG_CREATE_VDB.equals(dialogType)) {
+    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.CREATE_VDB_CANCEL));
+    	} else if(Constants.CONFIRMATION_DIALOG_DELETE_VDB.equals(dialogType)) {
+    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.DELETE_VDB_CANCEL));
     	}
 	}
 
@@ -142,20 +162,10 @@ public class ConfirmationDialog {
 	 * Fires different OK events, depending on the type of confirmation
 	 */
 	private void fireOkEvent() {
-    	if(Constants.CONFIRMATION_DIALOG_DELETE_SERVICE.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.DELETE_SERVICE_OK));
-    	} else if(Constants.CONFIRMATION_DIALOG_EDIT_SERVICE_ABORT.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.EDIT_SERVICE_ABORT_OK));
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_RENAME.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.SOURCE_RENAME_OK));
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_REDEPLOY.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.SOURCE_REDEPLOY_OK));
-    	} else if(Constants.CONFIRMATION_DIALOG_SOURCE_CHANGETYPE.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.SOURCE_CHANGETYPE_OK));
-		} else if(Constants.CONFIRMATION_DIALOG_SOURCE_DELETE.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.DELETE_SOURCE_OK));
-		} else if(Constants.CONFIRMATION_DIALOG_REPLACE_VIEW_DEFN.equals(dialogType)) {
-    		buttonEvent.fire(new UiEvent(UiEventType.VIEW_DEFN_REPLACE_OK));
+    	if(Constants.CONFIRMATION_DIALOG_CREATE_VDB.equals(dialogType)) {
+    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.CREATE_VDB_OK));
+    	} else if(Constants.CONFIRMATION_DIALOG_DELETE_VDB.equals(dialogType)) {
+    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.DELETE_VDB_OK));
     	}
 	}
 

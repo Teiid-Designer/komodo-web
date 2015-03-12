@@ -75,7 +75,14 @@ public class RepoDefinitionPanel extends Composite {
     	DOM.setStyleAttribute(filterConnectionsButton.getElement(), "margin", "5px");
     	DOM.setStyleAttribute(filterConnectionsButton.getElement(), "padding", "0px");
     	
-        ImageResource filterViewsImg = AppResource.INSTANCE.images().filterViewsImage();
+        ImageResource filterDataSourcesImg = AppResource.INSTANCE.images().filterViewsImage();
+        final ToggleButton filterDataSourcesButton = new ToggleButton(new Image(filterDataSourcesImg));
+        filterDataSourcesButton.setStylePrimaryName("filterToggle");
+    	DOM.setStyleAttribute(filterDataSourcesButton.getElement(), "cssFloat", "left");
+    	DOM.setStyleAttribute(filterDataSourcesButton.getElement(), "margin", "5px");
+    	DOM.setStyleAttribute(filterDataSourcesButton.getElement(), "padding", "0px");
+
+    	ImageResource filterViewsImg = AppResource.INSTANCE.images().filterViewsImage();
         final ToggleButton filterViewsButton = new ToggleButton(new Image(filterViewsImg));
         filterViewsButton.setStylePrimaryName("filterToggle");
     	DOM.setStyleAttribute(filterViewsButton.getElement(), "cssFloat", "left");
@@ -91,12 +98,14 @@ public class RepoDefinitionPanel extends Composite {
     	
     	// Initial state is pressed
     	filterConnectionsButton.setDown(true);
+    	filterDataSourcesButton.setDown(true);
     	filterViewsButton.setDown(true);
     	filterVdbsButton.setDown(true);
     	
     	// button handlers
         filterConnectionsButton.addClickHandler(new ClickHandler() {
-    		public void onClick(ClickEvent event) {
+    		@Override
+			public void onClick(ClickEvent event) {
     			if(filterConnectionsButton.isDown()) {
             		toggleEvent.fire(new UiEvent(UiEventType.REPO_SHOW_CONNECTIONS));
     			} else {
@@ -104,8 +113,19 @@ public class RepoDefinitionPanel extends Composite {
     		    }
     		}
     	}); 
+        filterDataSourcesButton.addClickHandler(new ClickHandler() {
+    		@Override
+			public void onClick(ClickEvent event) {
+    			if(filterDataSourcesButton.isDown()) {
+            		toggleEvent.fire(new UiEvent(UiEventType.REPO_SHOW_DATASOURCES));
+    			} else {
+            		toggleEvent.fire(new UiEvent(UiEventType.REPO_HIDE_DATASOURCES));
+    		    }
+    		}
+    	});                	
         filterViewsButton.addClickHandler(new ClickHandler() {
-    		public void onClick(ClickEvent event) {
+    		@Override
+			public void onClick(ClickEvent event) {
     			if(filterViewsButton.isDown()) {
             		toggleEvent.fire(new UiEvent(UiEventType.REPO_SHOW_VIEWS));
     			} else {
@@ -114,7 +134,8 @@ public class RepoDefinitionPanel extends Composite {
     		}
     	});                	
         filterVdbsButton.addClickHandler(new ClickHandler() {
-    		public void onClick(ClickEvent event) {
+    		@Override
+			public void onClick(ClickEvent event) {
     			if(filterVdbsButton.isDown()) {
             		toggleEvent.fire(new UiEvent(UiEventType.REPO_SHOW_VDBS));
     			} else {
@@ -124,6 +145,7 @@ public class RepoDefinitionPanel extends Composite {
     	});
         
         filterButtonsPanel.add(filterConnectionsButton);
+        filterButtonsPanel.add(filterDataSourcesButton);
         filterButtonsPanel.add(filterViewsButton);
         filterButtonsPanel.add(filterVdbsButton);
     }
