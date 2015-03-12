@@ -16,17 +16,24 @@
 package org.komodo.web.client.panels.repo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.komodo.web.client.dialogs.ConfirmationDialogEvent;
+import org.komodo.web.client.dialogs.ConfirmationDialogEventType;
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.resources.CellListResources;
 import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
@@ -44,30 +51,32 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 /**
- * Composite for display of Table and Procedure names
+ * VdbList - contains list of VDBs with add, edit, delete icons
  */
 public class VdbList extends Composite {
 
+    @Inject
+	private PlaceManager placeManager;
+    
+	@Inject Event<UiEvent> uiEvent;
+	
     protected VerticalPanel panel = new VerticalPanel();
     protected Label label = new Label();
 
     private CellList<KomodoObjectBean> cellList;
     private SingleSelectionModel<KomodoObjectBean> listSelectionModel;
-    private SelectionModel<KomodoObjectBean> deleteSelectionModel;
     
-    public static String vdbImgHtml;
-    private String deleteImgHtml;
+    private static String VDB_IMG_HTML = AbstractImagePrototype.create(AppResource.INSTANCE.images().filterVdbsImage()).getHTML();
 
-	@Inject Event<UiEvent> uiEvent;
-	
-    public VdbList() {
-        this.vdbImgHtml = AbstractImagePrototype.create(AppResource.INSTANCE.images().filterVdbsImage()).getHTML();
-        this.deleteImgHtml = AbstractImagePrototype.create(AppResource.INSTANCE.images().filterVdbsImage()).getHTML();
-    	
+    private KomodoObjectBean vdbForDelete;
+    
+    /**
+     * Constructor
+     */
+    public VdbList() {    	
         initWidget( panel );
         panel.add(createListPanel());
     }
@@ -91,7 +100,8 @@ public class VdbList extends Composite {
     	listSelectionModel = new SingleSelectionModel<KomodoObjectBean>();
     	cellList.setSelectionModel(listSelectionModel);
     	listSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-    		public void onSelectionChange(SelectionChangeEvent event) {
+    		@Override
+			public void onSelectionChange(SelectionChangeEvent event) {
                 KomodoObjectBean vdb = listSelectionModel.getSelectedObject();
                 fireUiEvent(vdb,UiEventType.KOBJECT_SELECTED);
     		}
@@ -101,19 +111,27 @@ public class VdbList extends Composite {
     	return outerPanel;
     }
     
+    /**
+     * Set the list of VDBs
+     * @param data the vdb list
+     */
     public void setData (List<KomodoObjectBean> data) {
     	// Push data into the CellList.
     	cellList.setRowCount(data.size(), true);
     	cellList.setRowData(0, data);
     }
     
+    /**
+     * Get the list of VDBs
+     * @return the vdb list
+     */
     public List<KomodoObjectBean> getData( ) {
     	return cellList.getVisibleItems();
     }
     
     /**
      * Set the VDB selection
-     * @param vdbName
+     * @param vdbName the name of the vdb
      */
     public void setSelection(String vdbName) {
     	for(KomodoObjectBean vdb : getData()) {
@@ -162,15 +180,15 @@ public class VdbList extends Composite {
     			return;
     		}
 
-    		sb.appendHtmlConstant("<table style=\"width:150px\">");
+    		sb.appendHtmlConstant("<table style=\"width:180px\">");
 
     		// Add the VDB image.
-    		sb.appendHtmlConstant("<tr><td rowspan='3'>");
-    		sb.appendHtmlConstant(VdbList.vdbImgHtml);
+    		sb.appendHtmlConstant("<tr><td>");
+    		sb.appendHtmlConstant(VdbList.VDB_IMG_HTML);
     		sb.appendHtmlConstant("</td>");
 
     		// Add the VDB name
-    		sb.appendHtmlConstant("<td>");
+    		sb.appendHtmlConstant("<td style=\"text-align:left\">");
     		sb.appendEscaped(value.getName());
     		sb.appendHtmlConstant("</td></tr></table>");
     	}
@@ -186,15 +204,18 @@ public class VdbList extends Composite {
 
     		private VdbCell cell = new VdbCell( );
 
-    		public Cell<KomodoObjectBean> getCell() {
+    		@Override
+			public Cell<KomodoObjectBean> getCell() {
     			return cell;
     		}
 
-    		public FieldUpdater<KomodoObjectBean, KomodoObjectBean> getFieldUpdater() {
+    		@Override
+			public FieldUpdater<KomodoObjectBean, KomodoObjectBean> getFieldUpdater() {
     			return null;
     		}
 
-    		public KomodoObjectBean getValue(KomodoObjectBean object) {
+    		@Override
+			public KomodoObjectBean getValue(KomodoObjectBean object) {
     			return object;
     		}
     	});
@@ -205,18 +226,22 @@ public class VdbList extends Composite {
 
     		private ImagesCell cell = new ImagesCell( );
     		
-    		public Cell<String> getCell() {
+    		@Override
+			public Cell<String> getCell() {
     			return cell;
     		}
 
-    		public FieldUpdater<KomodoObjectBean, String> getFieldUpdater() {
+    		@Override
+			public FieldUpdater<KomodoObjectBean, String> getFieldUpdater() {
     			return new FieldUpdater<KomodoObjectBean, String>() {
     				@Override
     				public void update(int index, KomodoObjectBean object, String value) {
     					if(value.equals(ImagesCell.ADD_VDB)) {
-    						fireUiEvent(object,UiEventType.VDB_CREATE);
+    						// Show confirmation dialog for VDB create
+    						showConfirmVdbCreateDialog();
     					} else if(value.equals(ImagesCell.DELETE_VDB)) {
-    						fireUiEvent(object,UiEventType.VDB_DELETE);
+    						// Show confirmation dialog for VDB delete
+    						showConfirmVdbDeleteDialog(object);
     					} else if(value.equals(ImagesCell.EDIT_VDB)) {
     						// Do Nothing
     					}
@@ -224,8 +249,9 @@ public class VdbList extends Composite {
     			};
     		}
 
-    		public String getValue(KomodoObjectBean object) {
-    			return "";
+    		@Override
+			public String getValue(KomodoObjectBean object) {
+    			return Constants.BLANK;
     		}
     	});
     	
@@ -258,5 +284,52 @@ public class VdbList extends Composite {
     	return compositeCell;
     	
     }
+    
+    /**
+     * Shows the confirmation dialog for creating a new VDB
+     */
+    private void showConfirmVdbCreateDialog() {
+		// Display the Confirmation Dialog for creation of a new VDB
+		Map<String,String> parameters = new HashMap<String,String>();
+		parameters.put(Constants.CONFIRMATION_DIALOG_TYPE_KEY, Constants.CONFIRMATION_DIALOG_CREATE_VDB);
+    	placeManager.goTo(new DefaultPlaceRequest(Constants.CONFIRMATION_DIALOG,parameters));    	
+    }
+
+    /**
+     * Shows the confirmation dialog for deleting a VDB
+     */
+    private void showConfirmVdbDeleteDialog(KomodoObjectBean kObj) {
+    	// Remember VDB whose delete is requested.
+    	vdbForDelete = kObj;
+    	
+		// Display the Confirmation Dialog for deletion of an existing VDB
+		Map<String,String> parameters = new HashMap<String,String>();
+		parameters.put(Constants.CONFIRMATION_DIALOG_ARG_KEY, kObj.getName());
+		parameters.put(Constants.CONFIRMATION_DIALOG_TYPE_KEY, Constants.CONFIRMATION_DIALOG_DELETE_VDB);
+    	placeManager.goTo(new DefaultPlaceRequest(Constants.CONFIRMATION_DIALOG,parameters));    	
+    }
+    
+    /**
+     * Handles events from the ConfirmationDialog.  Action is take for the OK events; CANCEL events ignored
+     * @param dialogEvent the ConfirmationDialogEvent to handle
+     */
+    public void onConfirmationDialogEvent(@Observes ConfirmationDialogEvent dialogEvent) {
+    	// Create VDB was confirmed
+    	if(dialogEvent.getType() == ConfirmationDialogEventType.CREATE_VDB_OK) {
+    		fireUiEvent(new UiEvent(UiEventType.VDB_CREATE));
+        // Delete VDB was confirmed
+    	} else if(dialogEvent.getType() == ConfirmationDialogEventType.DELETE_VDB_OK) {
+    		UiEvent deleteVdbEvent = new UiEvent(UiEventType.VDB_DELETE);
+    		deleteVdbEvent.setKomodoObject(vdbForDelete);
+    		fireUiEvent(deleteVdbEvent);
+    	}
+    }
+    
+	/*
+	 * Fires UiEvent events when action is required
+	 */
+	private void fireUiEvent(UiEvent event) {
+		uiEvent.fire(event);
+	}
     
 }

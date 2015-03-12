@@ -15,18 +15,17 @@
  */
 package org.komodo.web.client.dialogs;
 
-public enum UiEventType {
-	REPO_TREE_LOAD_OK,
-	REPO_TREE_LOAD_ERROR,
-	KOBJECT_SELECTED,
-	VDB_CREATE,
-	VDB_DELETE,
-	REPO_SHOW_VDBS,
-	REPO_HIDE_VDBS,
-	REPO_SHOW_CONNECTIONS,
-	REPO_HIDE_CONNECTIONS,
-	REPO_SHOW_DATASOURCES,
-	REPO_HIDE_DATASOURCES,
-	REPO_SHOW_VIEWS,
-	REPO_HIDE_VIEWS;
+
+public class ConfirmationDialogEvent {
+	
+	private ConfirmationDialogEventType type;
+	
+	public ConfirmationDialogEvent(ConfirmationDialogEventType type) {
+		this.type = type;
+	}
+	
+	public ConfirmationDialogEventType getType() {
+		return type;
+	}
+
 }

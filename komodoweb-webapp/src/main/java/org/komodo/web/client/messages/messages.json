@@ -2,6 +2,10 @@
   "no-value" : "<no value>",
   "komodoworkspace-screen.startengine-error" : "Error Starting the Komodo Engine",
   "komodoworkspace-screen.workspaceNameTextBox.tooltip" : "Sample Name field",
-  "editdataservice.saving-service-msg" : "Saving service '{0}', please wait..."
+  "confirmation-dialog.confirm-vdb-create-title" : "Confirm VDB Create",
+  "confirmation-dialog.confirm-vdb-create-msg" : "Continue with creation of VDB?",
+  "confirmation-dialog.confirm-vdb-delete-title" : "Confirm VDB Delete",
+  "confirmation-dialog.confirm-vdb-delete-msg" : "Continue with deletion of VDB '{0}'?",
+  "RepoVdbContentPanel.error-loading-msg" : "Error Loading VDBs"
 }
 		

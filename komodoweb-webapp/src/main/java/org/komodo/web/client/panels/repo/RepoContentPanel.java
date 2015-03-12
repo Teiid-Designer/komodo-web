@@ -39,6 +39,8 @@ public class RepoContentPanel extends Composite {
     @Inject
     private RepoConnectionContentPanel connectionPanel;
     @Inject
+    private RepoDataSourceContentPanel datasourcePanel;
+    @Inject
     private RepoViewContentPanel viewPanel;
     @Inject
     private RepoVdbContentPanel vdbPanel;
@@ -49,6 +51,7 @@ public class RepoContentPanel extends Composite {
     @PostConstruct
     protected void postConstruct() {
     	repoContentPanel.add(connectionPanel);
+    	repoContentPanel.add(datasourcePanel);
     	repoContentPanel.add(viewPanel);
     	repoContentPanel.add(vdbPanel);
     }
@@ -63,6 +66,10 @@ public class RepoContentPanel extends Composite {
 			vdbPanel.setVisible(true);
 		} else if(dEvent.getType() == UiEventType.REPO_HIDE_VDBS) {
 			vdbPanel.setVisible(false);
+		} else if(dEvent.getType() == UiEventType.REPO_SHOW_DATASOURCES) {
+			datasourcePanel.setVisible(true);
+		} else if(dEvent.getType() == UiEventType.REPO_HIDE_DATASOURCES) {
+			datasourcePanel.setVisible(false);
 		} else if(dEvent.getType() == UiEventType.REPO_SHOW_VIEWS) {
 			viewPanel.setVisible(true);
 		} else if(dEvent.getType() == UiEventType.REPO_HIDE_VIEWS) {
