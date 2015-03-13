@@ -16,6 +16,8 @@
   
   <inherits name="org.uberfire.security.UberfireSecurityClient"/>
   <inherits name="org.uberfire.client.views.PatternFly"/>
+
+  <inherits name='com.github.gwtd3.D3' />
   
   <!-- SuperDevMode -->
   <add-linker name="xsiframe"/>

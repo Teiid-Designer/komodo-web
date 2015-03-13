@@ -17,27 +17,50 @@ package org.komodo.web.client.panels.vdb;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-
+import org.komodo.web.client.panels.vdb.editor.VdbEditor;
+import org.komodo.web.share.Constants;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.inject.Inject;
 
+/**
+ * Vdb Editing Panel
+ */
 @Dependent
-@Templated("./VdbEditPanel.html")
-public class VdbEditPanel extends Composite {
+@Templated("VdbEditPanel.html")
+public class VdbEditPanel extends Composite implements Constants {
 
-    @Inject @DataField("lbl-vdb-edit-message")
-    protected Label messageLabel;
-        
+    @Inject @DataField("vdb-edit-panel")
+    private VerticalPanel vdbEditPanel;
+
+    @Inject
+    private VdbEditor editor;
+
+    private Integer scrollPanelWidth = 800;
+
+    private Integer scrollPanelHeight = 600;
+
     /**
      * Called after construction.
      */
     @PostConstruct
     protected void postConstruct() {
-    	messageLabel.setText("There could potentially be multiple tabs for editing the VDB");
+        ScrollPanel scroller = new ScrollPanel(editor);
+        scroller.setTitle(VDB_EDIT_SCROLLPANEL);
+        scroller.setWidth(scrollPanelWidth + Unit.PX.getType());
+        scroller.setHeight(scrollPanelHeight + Unit.PX.getType());
+
+        Style style = scroller.getElement().getStyle();
+        style.setBorderWidth(1, Unit.PX);
+        style.setBorderStyle(BorderStyle.SOLID);
+
+        vdbEditPanel.add(scroller);
     }
         
 }
