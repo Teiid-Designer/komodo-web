@@ -36,6 +36,7 @@
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.infinispan>6.0.2.Final</version.org.infinispan>
     <version.org.owasp.encoder>1.1.1</version.org.owasp.encoder>
+    <version.com.github.gwtd3>1.1.1</version.com.github.gwtd3>
 
     <!-- temporary: makes the enforcerRule (illegal-transitive-dependency-check) not to break the build -->
     <illegaltransitivereportonly>true</illegaltransitivereportonly>
@@ -196,6 +197,11 @@
         <version>${version.org.mortbay.jetty}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.github.gwtd3</groupId>
+        <artifactId>gwt-d3-api</artifactId>
+        <version>${version.com.github.gwtd3}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

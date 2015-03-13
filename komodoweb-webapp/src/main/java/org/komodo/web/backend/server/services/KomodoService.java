@@ -18,8 +18,6 @@ package org.komodo.web.backend.server.services;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -106,16 +104,6 @@ public class KomodoService implements IKomodoService {
 			throw new KomodoUiException(e);
 		}
 
-    	TimerTask progressTask = new TimerTask() {
-    		@Override
-    		public void run() {
-    		    // Do Nothing
-    		}
-    	};
-
-		Timer timer = new Timer();
-		timer.schedule(progressTask, 0, 500);
-
 		// Block the thread until the latch has counted down or timeout has been reached
 		boolean localRepoWaiting = true;
 		try {
@@ -123,9 +111,6 @@ public class KomodoService implements IKomodoService {
 		} catch (InterruptedException e) {
 			throw new KomodoUiException(e);
 		}
-
-    	// Cancel timer and display repository message
-    	timer.cancel();
 
     	if (localRepoWaiting)
     		System.out.println("Started");
@@ -199,7 +184,8 @@ public class KomodoService implements IKomodoService {
 		return result;
 	}
 
-	public KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException {
+	@Override
+    public KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException {
 		if(!isKEngineStarted()) {
 			startKEngine();
 		}
@@ -217,7 +203,8 @@ public class KomodoService implements IKomodoService {
 		return result;
 	}
 
-	public List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException {
+	@Override
+    public List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException {
 		if(!isKEngineStarted()) {
 			startKEngine();
 		}
@@ -255,7 +242,8 @@ public class KomodoService implements IKomodoService {
 		}
 	}    
 
-	public String getVdbDDL(final String vdbPath) throws KomodoUiException {
+	@Override
+    public String getVdbDDL(final String vdbPath) throws KomodoUiException {
 		if(!isKEngineStarted()) {
 			startKEngine();
 		}

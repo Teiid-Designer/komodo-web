@@ -18,11 +18,9 @@ package org.komodo.web.client.panels.repo;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.web.client.resources.AppResource;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 
@@ -42,14 +40,6 @@ public class RepoDataSourceContentPanel extends Composite {
     @PostConstruct
     protected void postConstruct() {
     	this.datasourceImage.setResource(AppResource.INSTANCE.images().filterViewsImage());
-    }
-    
-    private void doCreateDataSource() {
-    	
-    }
-    
-    private void doDeleteDataSource() {
-    	
     }
     
 }

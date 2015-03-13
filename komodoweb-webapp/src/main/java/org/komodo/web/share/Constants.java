@@ -15,79 +15,89 @@
  */
 package org.komodo.web.share;
 
-
-
-
 /**
  * Application constants
  * @author mdrillin@redhat.com
  */
-public class Constants {
+@SuppressWarnings( {"javadoc", "nls"} )
+public interface Constants {
 
-	public static final String COMMA = ",";
-	public static final String OK = "OK";
-	public static final String QUESTION_MARK = "?";
-	public static final String DOT = ".";
-	public static final String SELECT_STAR_FROM = "SELECT * FROM";
-	public static final String LIMIT_10 = "LIMIT 10";
-	public static final String SPACE = " ";
-	public static final String BLANK = "";
-	public static final String NONE = "NONE";
-	public static final String OK_BUTTON_TXT = "Ok";
-	public static final String CANCEL_BUTTON_TXT = "Cancel";
+    String COMMA = ",";
+    String OK = "OK";
+    String QUESTION_MARK = "?";
+    String DOT = ".";
+    String SELECT_STAR_FROM = "SELECT * FROM";
+    String LIMIT_10 = "LIMIT 10";
+    String SPACE = " ";
+    String BLANK = "";
+    String NONE = "NONE";
+    String OK_BUTTON_TXT = "Ok";
+    String CANCEL_BUTTON_TXT = "Cancel";
 
-	public static final String NEW_VDB_BASENAME = "NewVDB";
-	
-	public static final String KOMODO_WORKSPACE_SCREEN = "KomodoWorkspaceScreen";
-	public static final String UNKNOWN = "[unknown]";
-	
-	public static final String CONFIRMATION_DIALOG = "ConfirmationDialog";
-	public static final String CONFIRMATION_DIALOG_TYPE_KEY = "ConfirmDialog_TypeKey";
-	public static final String CONFIRMATION_DIALOG_ARG_KEY = "ConfirmDialog_ArgKey";
-    public static final String CONFIRMATION_DIALOG_DELETE_VDB = "ConfirmDeleteVDB";
-    public static final String CONFIRMATION_DIALOG_CREATE_VDB = "ConfirmCreateVDB";
+    String NEW_VDB_BASENAME = "NewVDB";
+
+    String KOMODO_WORKSPACE_SCREEN = "KomodoWorkspaceScreen";
+    String UNKNOWN = "[unknown]";
     
-	public static final String ADD_VIEW_SRC_DIALOG = "AddViewSrcDialog";
-	public static final String ADD_VIEW_SRC_AVAILABLE_SRCS = "AddViewAvailSrcs";
-	public static final String UPLOAD_DRIVER_DIALOG = "UploadDriverDialog";
-	
-	public static final int DATASOURCES_TABLE_PAGE_SIZE = 15;
-	public static final int DATASOURCE_TYPES_TABLE_PAGE_SIZE = 15;
-	public static final int VDBS_TABLE_PAGE_SIZE = 15;
-	public static final int VDB_MODELS_TABLE_PAGE_SIZE = 15;
-	public static final int QUERY_RESULTS_TABLE_PAGE_SIZE = 15;
-	public static final int QUERY_COLUMNS_TABLE_PAGE_SIZE = 6;
-	
-	public static final String FROM_SCREEN = "from-screen";
-	
-	public static final String JNDI_PREFIX = "java:/";
-	public static final String JBOSS_JNDI_PREFIX = "java:jboss/datasources/";
-	public static final String MODESHAPE_JNDI_PREFIX = "java:/datasources/";
-	public static final String SERVICE_NAME_KEY = "service-name";
-	public static final String SERVICE_VIEW_NAME = "SvcView";
-	public static final String CLONE_SERVICE_KEY = "clone-service";
-	public static final String DELETE_SERVICE_KEY = "delete-service";
-	
-    public static final String VDB_PROP_KEY_REST_AUTOGEN = "{http://teiid.org/rest}auto-generate";
-    public static final String VDB_PROP_KEY_DATASERVICE_VIEWNAME = "data-service-view";
-    
-	public static final String OPENSHIFT_HOST_PREFIX = "[OPENSHIFT]";
-	
-	public static final String DYNAMIC_VDB_SUFFIX = "-vdb.xml";
-	public static final String STATUS_ACTIVE = "ACTIVE";
-	public static final String STATUS_INACTIVE = "INACTIVE";
-	public static final String STATUS_LOADING = "LOADING";
-	public static final String STATUS_UNKNOWN = "Unknown";
-	
-	public static String VDB = "VDB";
-	public static String VIEW_MODEL = "VIEW_MODEL";
-	public static String SOURCE_MODEL = "SOURCE_MODEL";
-	public static String TABLE = "TABLE";
-	public static String VIEW = "VIEW";
-	public static String COLUMN = "COLUMN";
-	public static String PARAMETER = "PARAMETER";
-	public static String PROCEDURE = "PROCEDURE";
-	public static String VIRTUAL_PROCEDURE = "VIRTUAL_PROCEDURE";
-	public static String UNKNOWN_TYPE = "UNKNOWN";
-    
+    String CONFIRMATION_DIALOG = "ConfirmationDialog";
+    String CONFIRMATION_DIALOG_TYPE_KEY = "ConfirmDialog_TypeKey";
+    String CONFIRMATION_DIALOG_ARG_KEY = "ConfirmDialog_ArgKey";
+
+    String CONFIRMATION_DIALOG_DELETE_VDB = "ConfirmDeleteVDB";
+    String CONFIRMATION_DIALOG_CREATE_VDB = "ConfirmCreateVDB";
+
+    String ADD_VIEW_SRC_DIALOG = "AddViewSrcDialog";
+    String ADD_VIEW_SRC_AVAILABLE_SRCS = "AddViewAvailSrcs";
+    String UPLOAD_DRIVER_DIALOG = "UploadDriverDialog";
+
+    int DATASOURCES_TABLE_PAGE_SIZE = 15;
+    int DATASOURCE_TYPES_TABLE_PAGE_SIZE = 15;
+    int VDBS_TABLE_PAGE_SIZE = 15;
+    int VDB_MODELS_TABLE_PAGE_SIZE = 15;
+    int QUERY_RESULTS_TABLE_PAGE_SIZE = 15;
+    int QUERY_COLUMNS_TABLE_PAGE_SIZE = 6;
+
+    String FROM_SCREEN = "from-screen";
+
+    String JNDI_PREFIX = "java:/";
+    String JBOSS_JNDI_PREFIX = "java:jboss/datasources/";
+    String MODESHAPE_JNDI_PREFIX = "java:/datasources/";
+    String SERVICE_NAME_KEY = "service-name";
+    String SERVICE_VIEW_NAME = "SvcView";
+    String CLONE_SERVICE_KEY = "clone-service";
+    String DELETE_SERVICE_KEY = "delete-service";
+
+    String VDB_PROP_KEY_REST_AUTOGEN = "{http://teiid.org/rest}auto-generate";
+    String VDB_PROP_KEY_DATASERVICE_VIEWNAME = "data-service-view";
+
+    String OPENSHIFT_HOST_PREFIX = "[OPENSHIFT]";
+
+    String DYNAMIC_VDB_SUFFIX = "-vdb.xml";
+    String STATUS_ACTIVE = "ACTIVE";
+    String STATUS_INACTIVE = "INACTIVE";
+    String STATUS_LOADING = "LOADING";
+    String STATUS_UNKNOWN = "Unknown";
+
+    String VDB = "VDB";
+    String VIEW_MODEL = "VIEW_MODEL";
+    String SOURCE_MODEL = "SOURCE_MODEL";
+    String TABLE = "TABLE";
+    String VIEW = "VIEW";
+    String COLUMN = "COLUMN";
+    String PARAMETER = "PARAMETER";
+    String PROCEDURE = "PROCEDURE";
+    String VIRTUAL_PROCEDURE = "VIRTUAL_PROCEDURE";
+    String UNKNOWN_TYPE = "UNKNOWN";
+
+    /*
+     * d3 diagram processing
+     */
+    String SVG_ELEMENT = "svg";
+    String GROUP_ELEMENT = "g";
+    String SVG_PATH = "path";
+    String SVG_TRANSFORM = "transform";
+
+    /* Vdb Editor */
+    String VDB_EDIT_SCROLLPANEL = "vdb-edit-scrollpanel";
+    String VDB_EDITOR = "vdb-editor";
 }

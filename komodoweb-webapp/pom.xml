@@ -134,6 +134,10 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-ext</artifactId>
     </dependency>
+    <dependency>
+	   <groupId>com.github.gwtd3</groupId>
+       <artifactId>gwt-d3-api</artifactId>
+    </dependency>
 
     <!-- Errai AS -->
     <dependency>

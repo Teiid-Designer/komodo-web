@@ -18,11 +18,9 @@ package org.komodo.web.client.panels.repo;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.web.client.resources.AppResource;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 
@@ -39,14 +37,6 @@ public class RepoConnectionContentPanel extends Composite {
     @PostConstruct
     protected void postConstruct() {
     	this.connectionImage.setResource(AppResource.INSTANCE.images().filterConnectionsImage());
-    }
-    
-    private void doCreateConnection() {
-    	
-    }
-    
-    private void doDeleteConnection() {
-    	
     }
     
 }
