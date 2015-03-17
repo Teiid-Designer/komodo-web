@@ -126,6 +126,11 @@ public interface AppImages extends ClientBundle {
     ImageResource relFK_Image();
     @Source("images/relational/UniqueConstraint.gif")
     ImageResource relUC_Image();
-    
+
+    // -----------------------------------
+    // Diagramming Images
+    // -----------------------------------
+    @Source ("images/diagramming/vdb.png")
+    ImageResource diagVdb_Image();
 
 }

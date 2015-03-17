@@ -21,6 +21,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.web.client.panels.vdb.editor.VdbEditor;
 import org.komodo.web.share.Constants;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
@@ -62,5 +63,9 @@ public class VdbEditPanel extends Composite implements Constants {
 
         vdbEditPanel.add(scroller);
     }
-        
+
+    protected void setContent(KomodoObjectBean kObject) {
+        editor.setContent(kObject);
+    }
+
 }

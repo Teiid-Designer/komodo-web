@@ -93,6 +93,23 @@ public interface Constants extends StringConstants {
     String GROUP_ELEMENT = "g";
     String SVG_PATH = "path";
     String SVG_TRANSFORM = "transform";
+    String SVG_DATA_ELEMENT = "d";
+
+    String CSS_CLASS = "class";
+    String CSS_FILL_OPACITY = "fill-opacity";
+
+    String HTML_XLINK_REF = "xlink:href";
+    String HTML_X = "x";
+    String HTML_Y = "y";
+    String HTML_WIDTH = "width";
+    String HTML_HEIGHT = "height";
+    String HTML_IMAGE = "image";
+    String HTML_TEXT = "text";
+    String HTML_DY = "dy";
+    String HTML_TEXT_ANCHOR = "text-anchor";
+
+    String MIDDLE = "middle";
+    String NODE = "node";
 
     /* Vdb Editor */
     String VDB_EDIT_SCROLLPANEL = "vdb-edit-scrollpanel";

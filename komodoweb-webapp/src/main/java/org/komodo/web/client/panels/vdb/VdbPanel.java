@@ -18,12 +18,9 @@ package org.komodo.web.client.panels.vdb;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.beans.KomodoObjectBean;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 
@@ -55,8 +52,11 @@ public class VdbPanel extends Composite {
     }
     
     public void setKObject(KomodoObjectBean kObj) {
-    	labelKObjectName.setText("Komodo VDB: "+kObj.getName());
-    	vdbDdlPanel.setVdbPath(kObj.getPath());
+        labelKObjectName.setText("Komodo VDB: " + kObj.getName());
+        String vdbPath = kObj.getPath();
+
+        vdbEditPanel.setContent(kObj);
+        vdbDdlPanel.setVdbPath(vdbPath);
     }
     
 }
