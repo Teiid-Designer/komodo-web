@@ -37,20 +37,21 @@ public class RepoContentPanel extends Composite {
     private VerticalPanel repoContentPanel;
     
     @Inject
-    private RepoConnectionContentPanel connectionPanel;
-    @Inject
     private RepoDataSourceContentPanel datasourcePanel;
     @Inject
     private RepoViewContentPanel viewPanel;
     @Inject
     private RepoVdbContentPanel vdbPanel;
-
+ 
+    private RepoConnectionContent connectionPanel;
     /**
      * Called after construction.
      */
     @PostConstruct
     protected void postConstruct() {
+        connectionPanel = new RepoConnectionContent();
     	repoContentPanel.add(connectionPanel);
+    	
     	repoContentPanel.add(datasourcePanel);
     	repoContentPanel.add(viewPanel);
     	repoContentPanel.add(vdbPanel);
