@@ -1,8 +1,8 @@
 package org.komodo.web.client.widgets;
 
+import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.utils.UiUtils;
 import org.komodo.web.share.beans.KomodoObjectBean;
-
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -16,10 +16,10 @@ public class RepoTreeNodeRenderer extends HorizontalPanel {
 	
 	private void init(KomodoObjectBean kObj) {
 		
-		int objType = kObj.getType();
+		KomodoType objType = kObj.getType();
 		boolean isVirtual = kObj.isVirtual();
 				
-		Image theImage = UiUtils.getImage(objType,isVirtual);
+		Image theImage = UiUtils.getImage(objType, isVirtual);
 		// Add the type image
 		if(theImage!=null) {
 			add(theImage);

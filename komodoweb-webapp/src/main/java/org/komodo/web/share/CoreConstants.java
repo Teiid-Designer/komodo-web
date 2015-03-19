@@ -1,5 +1,10 @@
 package org.komodo.web.share;
 
+
+
+/**
+ * Constants shared between server and client
+ */
 public interface CoreConstants {
     /**
      * Keys for images and image descriptors stored in the image registry.
@@ -97,30 +102,5 @@ public interface CoreConstants {
         
         String TRANSLATOR_ICON	= OBJ16 + "connector.gif";  //$NON-NLS-1$
         String CONNECTION_ICON	= OBJ16 + "connector.gif";  //$NON-NLS-1$
-    }
-    
-    interface RelationalType {
-    	
-    	int UNKNOWN = -1;
-    	int VDB = 0;
-    	int MODEL = 1;
-    	int TABLE = 2;
-    	int VIEW = 3;
-    	int PROCEDURE = 4;
-    	int VIRTUAL_PROCEDURE = 5;
-    	int INDEX = 6;
-    	int COLUMN = 7;
-    	int PARAMETER = 8;
-    	int RESULT_SET = 9;
-    	int FK = 10;
-    	int UC = 11;
-    	int PK = 12;
-    	int AP = 13;
-		int MODEL_SOURCE = 14;
-		int ENTRY = 15;
-		int DATA_ROLE = 16;
-		int VDB_IMPORT = 17;
-		int TRANSLATOR = 18;
-		int PERMISSION = 19;
     }
 }

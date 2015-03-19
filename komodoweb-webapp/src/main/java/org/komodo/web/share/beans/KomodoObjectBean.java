@@ -17,6 +17,7 @@ package org.komodo.web.share.beans;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.komodo.spi.repository.KomodoType;
 
 /**
  * A data bean for returning KomodoObject info
@@ -29,7 +30,7 @@ public class KomodoObjectBean {
 
     private String name;
     private String path;
-    private int type;
+    private KomodoType type;
     private boolean hasChildren = false;
     private boolean isVirtual = false;
 
@@ -67,26 +68,44 @@ public class KomodoObjectBean {
         this.path = path;
     }
 
-	public int getType() {
+    /**
+     * @return the type
+     */
+	public KomodoType getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	/**
+	 * @param type the type
+	 */
+	public void setType(KomodoType type) {
 		this.type = type;
 	}
 
+	/**
+	 * @return hasChildren
+	 */
 	public boolean hasChildren() {
 		return hasChildren;
 	}
 
+	/**
+	 * @param hasChildren has children flag
+	 */
 	public void setHasChildren(boolean hasChildren) {
 		this.hasChildren = hasChildren;
 	}
 	
+	/**
+	 * @return isVirtual
+	 */
 	public boolean isVirtual() {
 		return isVirtual;
 	}
 
+	/**
+	 * @param isVirtual is virtual flag
+	 */
 	public void setIsVirtual(boolean isVirtual) {
 		this.isVirtual = isVirtual;
 	}

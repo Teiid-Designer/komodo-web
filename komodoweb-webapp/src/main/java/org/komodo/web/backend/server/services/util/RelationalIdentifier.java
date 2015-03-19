@@ -1,195 +1,163 @@
 package org.komodo.web.backend.server.services.util;
 
 import org.komodo.core.KomodoLexicon;
-import org.komodo.core.KomodoLexicon.VdbEntry;
-import org.komodo.core.KomodoLexicon.VdbModelSource;
-import org.komodo.relational.model.Column;
-import org.komodo.relational.model.Model;
-import org.komodo.relational.model.Parameter;
-import org.komodo.relational.model.Procedure;
-import org.komodo.relational.model.ProcedureResultSet;
-import org.komodo.relational.model.Table;
-import org.komodo.relational.model.View;
-import org.komodo.relational.vdb.Translator;
-import org.komodo.relational.vdb.Vdb;
-import org.komodo.relational.vdb.VdbImport;
 import org.komodo.spi.KException;
 import org.komodo.spi.repository.Descriptor;
 import org.komodo.spi.repository.KomodoObject;
+import org.komodo.spi.repository.KomodoType;
 import org.komodo.spi.repository.Property;
-import org.komodo.web.client.resources.AppResource;
+import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.web.share.CoreConstants;
-import org.komodo.web.share.CoreConstants.Images;
-import org.komodo.web.share.CoreConstants.RelationalType;
 import org.modeshape.sequencer.ddl.dialect.teiid.TeiidDdlLexicon.CreateProcedure;
 import org.modeshape.sequencer.ddl.dialect.teiid.TeiidDdlLexicon.CreateTable;
 import org.modeshape.sequencer.teiid.lexicon.CoreLexicon;
 import org.modeshape.sequencer.teiid.lexicon.CoreLexicon.ModelType;
 import org.modeshape.sequencer.teiid.lexicon.VdbLexicon;
 
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
-import com.google.gwt.user.client.ui.Image;
+/**
+ * Relational Identifier Utilities
+ */
+public class RelationalIdentifier implements CoreConstants.Images {
 
-public class RelationalIdentifier implements CoreConstants.RelationalType, CoreConstants.Images {
+	/**
+	 * @param ko the komodo object
+	 * @param uow transaction (can be null)
+	 * @return the type of the komodo object
+	 */
+	public static KomodoType getType(KomodoObject ko, UnitOfWork uow) {
+	    try {
+	        UnitOfWork transaction = uow;
 
-	public static boolean isType(KomodoObject ko, int targetType) {
-		int type = getType(ko);
-		
-		return type == targetType;
-	}
-	
-	public static int getType(KomodoObject ko) {
-		int instanceOfType = 	getTypeByInstanceOf(ko);
-		if( instanceOfType != UNKNOWN ) return instanceOfType;
-		
-		try {
+	        if (uow == null) {
+	            transaction = ko.getRepository().createTransaction("relational-indentifier-gettype", false, null); //$NON-NLS-1$
+	        }
+
+	        KomodoType relationalType = ko.getTypeIdentifier(transaction);
+	        if (relationalType != KomodoType.UNKNOWN)
+	            return relationalType;
 
 			// check primary type
-			Descriptor pType = ko.getPrimaryType(null);
-			if( pType != null ) {
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.Vdb.VIRTUAL_DATABASE)) {
-					return VDB;
-				}
-				if( pType.getName().equalsIgnoreCase(KomodoLexicon.VdbModel.NODE_TYPE)) {
-					return MODEL;
-				}
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.Translator.TRANSLATOR)) {
-					return TRANSLATOR;
-				}
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.Source.SOURCE)) {
-					return MODEL_SOURCE;
-				}
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB)) {
-					return ENTRY;
-				}
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB)) {
-					return VDB_IMPORT;
-				}
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.DataRole.DATA_ROLE)) {
-					return DATA_ROLE;
-				}
-				if( pType.getName().equalsIgnoreCase(VdbLexicon.DataRole.Permission.PERMISSION)) {
-					return PERMISSION;
-				}
-			}
-			
-			Descriptor[] descriptors = ko.getDescriptors(null);
-			if( descriptors.length > 0 ) {
-				for( Descriptor des : descriptors ) {
-					if( des.getName().equalsIgnoreCase(KomodoLexicon.Vdb.NODE_TYPE)) return VDB;
-					else if( des.getName().equalsIgnoreCase(KomodoLexicon.VdbModel.NODE_TYPE)) return MODEL;
-					else if( des.getName().equalsIgnoreCase(CreateTable.TABLE_STATEMENT)) return TABLE;
-					else if( des.getName().equalsIgnoreCase(CreateTable.VIEW_STATEMENT)) return VIEW;
-					else if( des.getName().equalsIgnoreCase(CreateProcedure.PROCEDURE_STATEMENT)) {
-						try {
-							Property type = (ko.getParent(null)).getProperty(null, CoreLexicon.JcrId.MODEL_TYPE);
-							if( type != null && type.getStringValue(null).equalsIgnoreCase(ModelType.VIRTUAL)) {
-								return VIRTUAL_PROCEDURE;
-							}
-						} catch (KException e) {
-							e.printStackTrace();
-						}
-						return PROCEDURE;
-					}
-					else if( des.getName().equalsIgnoreCase(CreateProcedure.RESULT_SET)) return RESULT_SET;
-					else if( des.getName().equalsIgnoreCase(CreateTable.TABLE_ELEMENT)) return COLUMN;
-					else if( des.getName().equalsIgnoreCase(CreateProcedure.PARAMETER)) return PARAMETER;
-					else if( des.getName().equalsIgnoreCase(VdbLexicon.Translator.TRANSLATOR)) return TRANSLATOR;
-					else if( des.getName().equalsIgnoreCase(VdbLexicon.Source.SOURCE)) return MODEL_SOURCE;
-					else if( des.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB)) return ENTRY;
-					else if( des.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB)) return VDB_IMPORT;
-				}
-			}
-		} catch (KException e) {
-			e.printStackTrace();
-		}
-		
-		
-		return UNKNOWN;
+			Descriptor pType = ko.getPrimaryType(transaction);
+            if (pType != null) {
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.Vdb.VIRTUAL_DATABASE)) {
+                    return KomodoType.VDB;
+                }
+                if (pType.getName().equalsIgnoreCase(KomodoLexicon.VdbModel.NODE_TYPE)) {
+                    return KomodoType.MODEL;
+                }
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.Translator.TRANSLATOR)) {
+                    return KomodoType.VDB_TRANSLATOR;
+                }
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.Source.SOURCE)) {
+                    return KomodoType.VDB_MODEL_SOURCE;
+                }
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB)) {
+                    return KomodoType.VDB_ENTRY;
+                }
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB)) {
+                    return KomodoType.VDB_IMPORT;
+                }
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.DataRole.DATA_ROLE)) {
+                    return KomodoType.VDB_DATA_ROLE;
+                }
+                if (pType.getName().equalsIgnoreCase(VdbLexicon.DataRole.Permission.PERMISSION)) {
+                    return KomodoType.VDB_PERMISSION;
+                }
+            }
 
-	}
-	
-	public static boolean isVirtual(KomodoObject ko) {
-		switch(RelationalIdentifier.getType(ko)) {
-			case MODEL: {
-				try {
-					Property type = (ko).getProperty(null, CoreLexicon.JcrId.MODEL_TYPE);
-					if( type != null && type.getStringValue(null).equalsIgnoreCase(ModelType.VIRTUAL)) {
-						return true;
-					}
-				} catch (KException e) {
-					e.printStackTrace();
-				}
-				return false;
-			}
-			case TABLE:
-			case PROCEDURE:
-				try {
-					return isVirtual(ko.getParent(null));
-				} catch (KException e) {
-					e.printStackTrace();
-				}
-				return false;
-				
-			case VIEW: return true;
+            Descriptor[] descriptors = ko.getDescriptors(transaction);
+            if (descriptors.length > 0) {
+                for (Descriptor des : descriptors) {
+                    if (des.getName().equalsIgnoreCase(KomodoLexicon.Vdb.NODE_TYPE))
+                        return KomodoType.VDB;
+                    else if (des.getName().equalsIgnoreCase(KomodoLexicon.VdbModel.NODE_TYPE))
+                        return KomodoType.MODEL;
+                    else if (des.getName().equalsIgnoreCase(CreateTable.TABLE_STATEMENT))
+                        return KomodoType.TABLE;
+                    else if (des.getName().equalsIgnoreCase(CreateTable.VIEW_STATEMENT))
+                        return KomodoType.VIEW;
+                    else if (des.getName().equalsIgnoreCase(CreateProcedure.PROCEDURE_STATEMENT)) {
+                        try {
+                            Property type = (ko.getParent(transaction)).getProperty(transaction, CoreLexicon.JcrId.MODEL_TYPE);
+                            if (type != null && type.getStringValue(transaction).equalsIgnoreCase(ModelType.VIRTUAL)) {
+                                return KomodoType.VIRTUAL_PROCEDURE;
+                            }
+                        } catch (KException e) {
+                            e.printStackTrace();
+                        }
+                        return KomodoType.STORED_PROCEDURE;
+                    } else if (des.getName().equalsIgnoreCase(CreateProcedure.RESULT_SET))
+                        return KomodoType.TABULAR_RESULT_SET;
+                    else if (des.getName().equalsIgnoreCase(CreateTable.TABLE_ELEMENT))
+                        return KomodoType.COLUMN;
+                    else if (des.getName().equalsIgnoreCase(CreateProcedure.PARAMETER))
+                        return KomodoType.PARAMETER;
+                    else if (des.getName().equalsIgnoreCase(VdbLexicon.Translator.TRANSLATOR))
+                        return KomodoType.VDB_TRANSLATOR;
+                    else if (des.getName().equalsIgnoreCase(VdbLexicon.Source.SOURCE))
+                        return KomodoType.VDB_MODEL_SOURCE;
+                    else if (des.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB))
+                        return KomodoType.VDB_ENTRY;
+                    else if (des.getName().equalsIgnoreCase(VdbLexicon.ImportVdb.IMPORT_VDB))
+                        return KomodoType.VDB_IMPORT;
+                }
+            }
 
-		}
-		return false;
+            if (uow == null)
+                transaction.commit();
+
+        } catch (KException e) {
+            e.printStackTrace();
+        }
+
+        return KomodoType.UNKNOWN;
 	}
-	
-	public static String getTypeDisplayName(int type) {
-		switch(type) {
-			case VDB: return "VDB";
-			case MODEL: return "Model";
-			case TABLE: return "Table";
-			case VIEW: return "View";
-			case PROCEDURE: return "Procedure";
-			case VIRTUAL_PROCEDURE: return "Virtual Procedure";
-			case COLUMN: return "Column";
-			case PARAMETER: return "Parameter";
-			case RESULT_SET: return "Result Set";
-			case TRANSLATOR: return "Translator";
-			case MODEL_SOURCE: return "Model Source";
-			case ENTRY: return "File Entry";
-			case VDB_IMPORT: return "Vdb Import";
-			case UNKNOWN: return "Unknown";
-		}
-		return "Unknown";
+
+	/**
+	 * @param ko the komodo object
+	 * @param uow the transaction
+	 *
+	 * @return komodo object is virtual
+	 * @throws Exception if error occurs
+	 */
+	public static boolean isVirtual(KomodoObject ko, UnitOfWork uow) throws Exception {
+	    UnitOfWork transaction = uow;
+
+        if (uow == null) {
+            transaction = ko.getRepository().createTransaction("komodo-object-is-virtual", false, null); //$NON-NLS-1$
+        }
+
+        try {
+            switch(ko.getTypeIdentifier(transaction)) {
+                case MODEL: {
+                    try {
+                        Property type = (ko).getProperty(transaction, CoreLexicon.JcrId.MODEL_TYPE);
+                        if( type != null && type.getStringValue(transaction).equalsIgnoreCase(ModelType.VIRTUAL)) {
+                            return true;
+                        }
+                    } catch (KException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                }
+                case TABLE:
+                case STORED_PROCEDURE:
+                case VIRTUAL_PROCEDURE:
+                    try {
+                        return isVirtual(ko.getParent(transaction), transaction);
+                    } catch (KException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+
+                case VIEW:
+                    return true;
+                default:
+                    return false;
+            }
+        } finally {
+            if (uow == null)
+                transaction.commit();
+        }
 	}
-	
-	public static int getTypeByInstanceOf(KomodoObject ko) {
-		if( ko instanceof Vdb ) return VDB;
-		else if( ko instanceof Model) {
-			if(isVirtual(ko)) {
-				return MODEL;
-			} else {
-				return MODEL;
-			}
-		}
-		else if( ko instanceof View) return VIEW;
-		else if( ko instanceof Table) return TABLE;
-		else if( ko instanceof Procedure) {
-			try {
-				Property type = (ko.getParent(null)).getProperty(null, CoreLexicon.JcrId.MODEL_TYPE);
-				if( type != null && type.getStringValue(null).equalsIgnoreCase(ModelType.VIRTUAL)) {
-					return VIRTUAL_PROCEDURE;
-				}
-			} catch (KException e) {
-				e.printStackTrace();
-			}
-			
-			return PROCEDURE;
-		}
-		else if( ko instanceof ProcedureResultSet) return RESULT_SET;
-		else if( ko instanceof Column) return COLUMN;
-		else if( ko instanceof Parameter) return PARAMETER;
-		else if( ko instanceof Translator) return TRANSLATOR;
-		else if( ko instanceof VdbImport) return VDB_IMPORT;
-		else if( ko instanceof VdbModelSource) return MODEL_SOURCE;
-		else if( ko instanceof VdbEntry) return ENTRY;
-		
-		return UNKNOWN;
-	}
-	
 }

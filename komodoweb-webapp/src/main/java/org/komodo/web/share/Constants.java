@@ -15,21 +15,18 @@
  */
 package org.komodo.web.share;
 
+import org.komodo.spi.constants.StringConstants;
+
 /**
  * Application constants
  * @author mdrillin@redhat.com
  */
 @SuppressWarnings( {"javadoc", "nls"} )
-public interface Constants {
+public interface Constants extends StringConstants {
 
-    String COMMA = ",";
     String OK = "OK";
-    String QUESTION_MARK = "?";
-    String DOT = ".";
     String SELECT_STAR_FROM = "SELECT * FROM";
     String LIMIT_10 = "LIMIT 10";
-    String SPACE = " ";
-    String BLANK = "";
     String NONE = "NONE";
     String OK_BUTTON_TXT = "Ok";
     String CANCEL_BUTTON_TXT = "Cancel";

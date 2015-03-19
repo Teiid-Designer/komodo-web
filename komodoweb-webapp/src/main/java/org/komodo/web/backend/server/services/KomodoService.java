@@ -15,34 +15,27 @@
  */
 package org.komodo.web.backend.server.services;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
 import org.komodo.relational.vdb.Vdb;
 import org.komodo.relational.vdb.internal.VdbImpl;
 import org.komodo.relational.workspace.WorkspaceManager;
 import org.komodo.repository.LocalRepository;
-import org.komodo.repository.LocalRepository.LocalRepositoryId;
 import org.komodo.spi.KException;
-import org.komodo.spi.constants.StringConstants;
 import org.komodo.spi.repository.KomodoObject;
 import org.komodo.spi.repository.Repository;
 import org.komodo.spi.repository.RepositoryClient.State;
 import org.komodo.spi.repository.RepositoryObserver;
 import org.komodo.utils.KLog;
 import org.komodo.web.backend.server.services.util.Utils;
-import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
-
-import com.google.gwt.resources.client.DataResource;
 
 /**
  * Concrete implementation of the Komodo service.  This service is used to interact with the Komodo instance
@@ -54,7 +47,7 @@ public class KomodoService implements IKomodoService {
 
 	private static KEngine kEngine;
 
-	private static WorkspaceManager wsManager;
+	private WorkspaceManager wsManager;
 	
     /**
      * Constructor.
@@ -62,10 +55,15 @@ public class KomodoService implements IKomodoService {
     public KomodoService() {
     }
 
-    /**
-     * Start the KEngine
-     * @throws KomodoUiException
-     */
+    private WorkspaceManager getWorkspaceManager() {
+        if (wsManager == null) {
+            Repository repository = kEngine.getDefaultRepository();
+            wsManager = WorkspaceManager.getInstance(repository);
+        }
+
+        return wsManager;
+    }
+
     @Override
     public void startKEngine( ) throws KomodoUiException {
     	// If KEngine already started, return
@@ -108,24 +106,16 @@ public class KomodoService implements IKomodoService {
 		boolean localRepoWaiting = true;
 		try {
 			localRepoWaiting = updateLatch.await(3, TimeUnit.MINUTES);
-		} catch (InterruptedException e) {
+		     if (! localRepoWaiting)
+		         throw new Exception("Timeout while waiting for Komodo Engine to start."); //$NON-NLS-1$
+
+		} catch (Exception e) {
 			throw new KomodoUiException(e);
 		}
-
-    	if (localRepoWaiting)
-    		System.out.println("Started");
-    	else
-    		System.out.println("Local Repo Timeout");
-
-    	wsManager = WorkspaceManager.getInstance(defaultRepo);
     	
     	//loadTestWorkspace();
     }
-    
-    /**
-     * Shutdown the KEngine
-     * @throws KomodoUiException
-     */
+
     @Override
     public void shutdownKEngine( ) throws KomodoUiException {
     	if(kEngine!=null) {
@@ -167,7 +157,7 @@ public class KomodoService implements IKomodoService {
     	KomodoObject[] children = null;
 		try {
 			if(kObjPath==null) {
-				children = wsManager.findVdbs(null);
+				children = getWorkspaceManager().findVdbs(null);
 			} else {
 				KomodoObject kObj = repo.getFromWorkspace(null, kObjPath);
 				children = kObj.getChildren(null);
@@ -194,7 +184,7 @@ public class KomodoService implements IKomodoService {
 
 		Vdb newVdb;
 		try {
-			newVdb = wsManager.createVdb(null, null, vdbName, "extPath");
+			newVdb = getWorkspaceManager().createVdb(null, null, vdbName, "extPath"); //$NON-NLS-1$
 			result = utils.createKomodoObjectBean(newVdb);
 		} catch (KException ex) {
 			throw new KomodoUiException(ex);
@@ -210,11 +200,11 @@ public class KomodoService implements IKomodoService {
 		}
 
 		try {
-			KomodoObject[] vdbs = wsManager.findVdbs(null);
+			KomodoObject[] vdbs = getWorkspaceManager().findVdbs(null);
 			for(KomodoObject vdb : vdbs) {
 				String kVdbName = vdb.getName(null);
 				if(vdbName.equals(kVdbName)) {
-					wsManager.delete(null, vdb);
+				    getWorkspaceManager().delete(null, vdb);
 					break;
 				}
 			}
@@ -225,36 +215,17 @@ public class KomodoService implements IKomodoService {
 		return getKomodoNodes(null);
 	}
 
-	public static void initLocalRepository() throws Exception {
-		DataResource config = AppResource.INSTANCE.data().repositoryConfig();
-		URL configUrl = new URL(config.getUrl());
-
-		LocalRepositoryId id = new LocalRepositoryId(configUrl, StringConstants.DEFAULT_LOCAL_WORKSPACE_NAME);
-		_repo = new LocalRepository(id);
-
-		_repoObserver = new LocalRepositoryObserver();
-		_repo.addObserver(_repoObserver);
-
-
-		// Wait for the starting of the repository or timeout of 1 minute
-		if (!_repoObserver.getLatch().await(1, TimeUnit.MINUTES)) {
-			throw new RuntimeException("Local repository did not start");
-		}
-	}    
-
 	@Override
     public String getVdbDDL(final String vdbPath) throws KomodoUiException {
 		if(!isKEngineStarted()) {
 			startKEngine();
 		}
 
-		Repository repo = kEngine.getDefaultRepository();
-
 		// If kObjPath is null, get the root Vdbs
 
 		String vdbDdl = null;
 		try {
-			Vdb[] vdbs = wsManager.findVdbs(null);
+			Vdb[] vdbs = getWorkspaceManager().findVdbs(null);
 			for(Vdb vdb : vdbs) {
 				String thePath = vdb.getAbsolutePath();
 				if(thePath.equals(vdbPath)) {

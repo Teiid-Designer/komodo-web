@@ -17,10 +17,8 @@ package org.komodo.web.client.services;
 
 import java.util.Collection;
 import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -41,6 +39,9 @@ import org.komodo.web.share.services.IKomodoService;
 @ApplicationScoped
 public class KomodoRpcService {
 	
+    /**
+     * @return the service instance
+     */
     public static KomodoRpcService get() {
         Collection<IOCBeanDef<KomodoRpcService>> beans = IOC.getBeanManager().lookupBeans(KomodoRpcService.class);
         IOCBeanDef<KomodoRpcService> beanDef = beans.iterator().next();
@@ -56,6 +57,11 @@ public class KomodoRpcService {
     public KomodoRpcService() {
     }
 
+    /**
+     * Start the Komodo Engine
+     *
+     * @param handler rpc handler
+     */
     public void startKEngine(final IRpcServiceInvocationHandler<Void> handler) {
         RemoteCallback<Void> successCallback = new DelegatingRemoteCallback<Void>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
@@ -65,7 +71,12 @@ public class KomodoRpcService {
             errorCallback.error(null, e);
         }
     }
-    
+
+    /**
+     * Shutdown the Komodo Engine
+     *
+     * @param handler rpc handler
+     */
     public void shutdownKEngine(final IRpcServiceInvocationHandler<Void> handler) {
         RemoteCallback<Void> successCallback = new DelegatingRemoteCallback<Void>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
@@ -75,7 +86,13 @@ public class KomodoRpcService {
             errorCallback.error(null, e);
         }
     }
-    
+
+    /**
+     * Retrieve the komodo nodes at the given path
+     *
+     * @param kObjectPath komodo object path
+     * @param handler rpc handler
+     */
     public void getKomodoNodes(final String kObjectPath, final IRpcServiceInvocationHandler<List<KomodoObjectBean>> handler) {
         RemoteCallback<List<KomodoObjectBean>> successCallback = new DelegatingRemoteCallback<List<KomodoObjectBean>>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
@@ -85,7 +102,13 @@ public class KomodoRpcService {
             errorCallback.error(null, e);
         }
     }
-    
+
+    /**
+     * Create a new vdb
+     *
+     * @param vdbName the name of the vdb
+     * @param handler rpc handler
+     */
     public void createVdb(final String vdbName, final IRpcServiceInvocationHandler<KomodoObjectBean> handler) {
         RemoteCallback<KomodoObjectBean> successCallback = new DelegatingRemoteCallback<KomodoObjectBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
@@ -96,6 +119,12 @@ public class KomodoRpcService {
         }
     }
 
+    /**
+     * Delete the given vdb
+     *
+     * @param vdbName the name of the vdb
+     * @param handler rpc handler
+     */
     public void deleteVdb(final String vdbName, final IRpcServiceInvocationHandler<List<KomodoObjectBean>> handler) {
         RemoteCallback<List<KomodoObjectBean>> successCallback = new DelegatingRemoteCallback<List<KomodoObjectBean>>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
@@ -105,7 +134,13 @@ public class KomodoRpcService {
             errorCallback.error(null, e);
         }
     }
-    
+
+    /**
+     * Retrieve the DDL for the vdb at the given path
+     *
+     * @param vdbPath the path of the vdb
+     * @param handler rpc handler
+     */
     public void getVdbDDL(final String vdbPath, final IRpcServiceInvocationHandler<String> handler) {
         RemoteCallback<String> successCallback = new DelegatingRemoteCallback<String>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);

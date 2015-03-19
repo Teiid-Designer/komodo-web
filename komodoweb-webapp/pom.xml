@@ -317,9 +317,7 @@
           <logLevel>INFO</logLevel>
           <strict>true</strict>
           <compileSourcesArtifacts>
-              <!-- Komodo Web -->
-              <!-- Add here the client modules -->
-              <!--compileSourcesArtifact>org.komodo:teiid-client-module</compileSourcesArtifact-->
+            <compileSourcesArtifact>org.jboss.tools.komodo.plugins:org.komodo.spi</compileSourcesArtifact>
           </compileSourcesArtifacts>
 
           <!-- do not insert line breaks in this string; it breaks Windows compatibility -->

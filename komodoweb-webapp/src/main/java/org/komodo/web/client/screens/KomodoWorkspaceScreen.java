@@ -19,9 +19,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.komodo.spi.constants.StringConstants;
+import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
@@ -30,13 +31,10 @@ import org.komodo.web.client.panels.repo.RepoDefinitionPanel;
 import org.komodo.web.client.panels.vdb.VdbPanel;
 import org.komodo.web.client.widgets.KomodoObjectPropertiesPanel;
 import org.komodo.web.client.widgets.RepoTreeDisplay;
-import org.komodo.web.share.Constants;
-import org.komodo.web.share.CoreConstants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -75,7 +73,7 @@ public class KomodoWorkspaceScreen extends Composite {
 	@Override
     @WorkbenchPartTitle
     public String getTitle() {
-      return Constants.BLANK;
+      return StringConstants.EMPTY_STRING;
     }
     
     @WorkbenchPartView
@@ -120,7 +118,7 @@ public class KomodoWorkspaceScreen extends Composite {
         	//repoTreePanel.showWidget(2);
     	} else if(dEvent.getType() == UiEventType.KOBJECT_SELECTED) {
     		KomodoObjectBean kObj = dEvent.getKomodoObject();
-    		if(kObj.getType()==CoreConstants.RelationalType.VDB) {
+    		if(kObj.getType()==KomodoType.VDB) {
     			vdbPanel.setKObject(kObj);
     			detailsDeckPanel.showWidget(1);
     		} else {
