@@ -15,18 +15,10 @@
  */
 package org.komodo.web.backend.server.services.util;
 
-import org.komodo.core.KomodoLexicon;
-import org.komodo.spi.KException;
-import org.komodo.spi.repository.Descriptor;
 import org.komodo.spi.repository.KomodoObject;
-import org.komodo.spi.repository.Property;
+import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
-import org.modeshape.sequencer.ddl.dialect.teiid.TeiidDdlLexicon.CreateProcedure;
-import org.modeshape.sequencer.ddl.dialect.teiid.TeiidDdlLexicon.CreateTable;
-import org.modeshape.sequencer.teiid.lexicon.CoreLexicon;
-import org.modeshape.sequencer.teiid.lexicon.CoreLexicon.ModelType;
-import org.modeshape.sequencer.teiid.lexicon.VdbLexicon;
 
 
 /**
@@ -38,17 +30,6 @@ public class Utils {
 	// Static Variables
 
 	private static Utils instance = new Utils();
-	
-	public static String VDB = "VDB";
-	public static String VIEW_MODEL = "VIEW_MODEL";
-	public static String SOURCE_MODEL = "SOURCE_MODEL";
-	public static String TABLE = "TABLE";
-	public static String VIEW = "VIEW";
-	public static String COLUMN = "COLUMN";
-	public static String PARAMETER = "PARAMETER";
-	public static String PROCEDURE = "PROCEDURE";
-	public static String VIRTUAL_PROCEDURE = "VIRTUAL_PROCEDURE";
-	public static String UNKNOWN = "UNKNOWN";
 	
 	// ============================================
 	// Static Methods
@@ -69,24 +50,30 @@ public class Utils {
 
 	/**
 	 * Create a VDB object
-	 * @param vdbName the name of the VDB
-	 * @param vdbVersion the vdb version
-	 * @return the VDBMetadata
+	 *
+	 * @param kObj the komodo object
+	 * @return the komodo object bean
+	 * @throws KomodoUiException if error occurs
 	 */
-	public KomodoObjectBean createKomodoObjectBean(KomodoObject kObj) throws KomodoUiException {
-		KomodoObjectBean objBean = new KomodoObjectBean();
+    public KomodoObjectBean createKomodoObjectBean(KomodoObject kObj) throws KomodoUiException {
+        KomodoObjectBean objBean = new KomodoObjectBean();
 
-		try {
-			objBean.setName(kObj.getName(null));
+        try {
+            UnitOfWork transaction = kObj.getRepository().createTransaction("create-komodo-object-bean", true, null); //$NON-NLS-1$
+
+			objBean.setName(kObj.getName(transaction));
 			objBean.setPath(kObj.getAbsolutePath());
-			if(kObj.hasChildren(null)) {
+			if(kObj.hasChildren(transaction)) {
 				objBean.setHasChildren(true);
 			} else {
 				objBean.setHasChildren(false);
 			}
-			objBean.setType(RelationalIdentifier.getType(kObj));
-			objBean.setIsVirtual(RelationalIdentifier.isVirtual(kObj));
-		} catch (KException e) {
+			objBean.setType(kObj.getTypeIdentifier(transaction));
+			objBean.setIsVirtual(RelationalIdentifier.isVirtual(kObj, transaction));
+
+			transaction.commit();
+
+		} catch (Exception e) {
 			throw new KomodoUiException(e);
 		}
 		

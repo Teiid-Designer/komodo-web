@@ -19,11 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
+import org.komodo.spi.constants.StringConstants;
 import org.komodo.web.client.dialogs.ConfirmationDialogEvent;
 import org.komodo.web.client.dialogs.ConfirmationDialogEventType;
 import org.komodo.web.client.dialogs.UiEvent;
@@ -34,7 +33,6 @@ import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
@@ -151,7 +149,7 @@ public class VdbList extends Composite {
         if(vdb!=null) {
         	return vdb.getName();
         }
-        return Constants.BLANK;
+        return StringConstants.EMPTY_STRING;
     }
 
     
@@ -251,7 +249,7 @@ public class VdbList extends Composite {
 
     		@Override
 			public String getValue(KomodoObjectBean object) {
-    			return Constants.BLANK;
+    			return StringConstants.EMPTY_STRING;
     		}
     	});
     	

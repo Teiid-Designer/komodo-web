@@ -19,18 +19,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
 import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.komodo.web.client.dialogs.ConfirmationDialogEvent;
-import org.komodo.web.client.dialogs.ConfirmationDialogEventType;
+import org.komodo.spi.constants.StringConstants;
+import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
@@ -39,11 +37,9 @@ import org.komodo.web.client.services.KomodoRpcService;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.client.utils.UiUtils;
 import org.komodo.web.share.Constants;
-import org.komodo.web.share.CoreConstants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
@@ -160,7 +156,7 @@ public class RepoVdbContentPanel extends Composite {
         	doCreateVdb(newVdbName);
     	} else if(uiEvent.getType() == UiEventType.VDB_DELETE) {
     		KomodoObjectBean kObj = uiEvent.getKomodoObject();
-    		if(kObj.getType()==CoreConstants.RelationalType.VDB) {
+    		if(kObj.getType()==KomodoType.VDB) {
     	    	doDeleteVdb(kObj.getName());
     		}
     	}
@@ -221,13 +217,13 @@ public class RepoVdbContentPanel extends Composite {
 	private String getUniqueSuffix(String baseName, List<String> existingNames) {
 		// If the name is not contained in existing names, base suffix is ok
 		if(!existingNames.contains(baseName)) {
-			return Constants.BLANK;
+			return StringConstants.EMPTY_STRING;
 		}
 		// Iterate generating new names until a good one is found
 		String newName = null;
 		boolean success = false;
 		int i = 1;
-		String suffix = Constants.BLANK;
+		String suffix = StringConstants.EMPTY_STRING;
 		while(!success) {
 			newName = baseName+i;
 			if(!existingNames.contains(newName)) {

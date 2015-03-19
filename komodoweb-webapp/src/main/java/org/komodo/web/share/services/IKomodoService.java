@@ -16,7 +16,6 @@
 package org.komodo.web.share.services;
 
 import java.util.List;
-
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
@@ -28,17 +27,58 @@ import org.komodo.web.share.exceptions.KomodoUiException;
  */
 @Remote
 public interface IKomodoService {
-    
+
+    /**
+     * Start the Komodo Engine
+     *
+     * @throws KomodoUiException if error occurs
+     */
     public void startKEngine( ) throws KomodoUiException;
 
+    /**
+     * Shutdown the Komodo Engine
+     *
+     * @throws KomodoUiException if error occurs
+     */
     public void shutdownKEngine( ) throws KomodoUiException;
-    
+
+    /**
+     * Retrieve the komodo nodes at the given path
+     *
+     * @param path the path of the children to retrieve
+     * @return list of komodo objects
+     *
+     * @throws KomodoUiException if error occurs 
+     */
     public List<KomodoObjectBean> getKomodoNodes(final String path) throws KomodoUiException;
-    
+
+    /**
+     * Create a vdb
+     *
+     * @param vdbName the name of the vdb
+     * @return new vdb
+     *
+     * @throws KomodoUiException if error occurs
+     */
     public KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException;
 
+    /**
+     * Delete the vdb with the given name
+     *
+     * @param vdbName the vdb name
+     * @return deleted vdb
+     *
+     * @throws KomodoUiException if error occurs
+     */
     public List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException;
-    
+
+    /**
+     * Get the DDL of the given vdb
+     *
+     * @param vdbPath the name path
+     * @return the DDL
+     * @throws KomodoUiException if error occurs
+     */
     public String getVdbDDL(final String vdbPath) throws KomodoUiException;
 
 }
