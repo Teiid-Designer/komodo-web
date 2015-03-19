@@ -15,6 +15,8 @@
  */
 package org.komodo.web.share.beans;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.komodo.spi.repository.KomodoType;
@@ -33,6 +35,7 @@ public class KomodoObjectBean {
     private KomodoType type;
     private boolean hasChildren = false;
     private boolean isVirtual = false;
+    private Set<KomodoObjectPropertyBean> properties = new HashSet<KomodoObjectPropertyBean>();
 
     /**
      * Constructor.
@@ -110,5 +113,31 @@ public class KomodoObjectBean {
 		this.isVirtual = isVirtual;
 	}
 
+	/**
+     * @return the properties
+     */
+    public Set<KomodoObjectPropertyBean> getProperties() {
+        return this.properties;
+    }
+
+    /**
+     * @param name the name of the property to get
+     * @return the property with the given name
+     */
+    public KomodoObjectPropertyBean getProperty(String name) {
+        for (KomodoObjectPropertyBean property : getProperties()) {
+            if (property.getName().equals(name))
+                return property;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param property the property
+     */
+    public void add(KomodoObjectPropertyBean property) {
+        properties.add(property);
+    }
 
 }

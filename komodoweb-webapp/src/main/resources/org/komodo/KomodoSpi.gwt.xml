@@ -6,5 +6,6 @@
   <source path="spi/constants"/>
   <source path="spi/repository">
     <include name="KomodoType.java"/>
+    <include name="PropertyValueType.java"/>
   </source>
 </module>
