@@ -16,8 +16,12 @@
   <inherits name="org.jboss.errai.ui.nav.Navigation"/>
 
   <inherits name='com.github.gwtd3.D3' />
+
   <inherits name="org.komodo.KomodoSpi"/>
-  
+  <inherits name="org.modeshape.sequencer.teiid.TeiidSequencer"/>
+  <inherits name="org.modeshape.sequencer.DdlSequencer"/>
+  <inherits name="org.modeshape.sequencer.teiid.TeiidSqlSequencer"/>
+
   <set-property name="gwt.logging.popupHandler" value="DISABLED"/>  
   
   <set-property name="user.agent" value="gecko1_8,safari"/>

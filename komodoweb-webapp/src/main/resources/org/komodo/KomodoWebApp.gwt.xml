@@ -18,8 +18,12 @@
   <inherits name="org.uberfire.client.views.PatternFly"/>
 
   <inherits name='com.github.gwtd3.D3' />
+
   <inherits name="org.komodo.KomodoSpi"/>
-  
+  <inherits name="org.modeshape.sequencer.teiid.TeiidSequencer"/>
+  <inherits name="org.modeshape.sequencer.DdlSequencer"/>
+  <inherits name="org.modeshape.sequencer.teiid.TeiidSqlSequencer"/>
+
   <!-- SuperDevMode -->
   <add-linker name="xsiframe"/>
   <set-configuration-property name="devModeRedirectEnabled" value="true"/>
