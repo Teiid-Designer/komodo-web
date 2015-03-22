@@ -43,9 +43,9 @@ public class VdbEditPanel extends Composite implements Constants {
     @Inject
     private VdbEditor editor;
 
-    private Integer scrollPanelWidth = 800;
+    private Integer scrollPanelWidth = 1024;
 
-    private Integer scrollPanelHeight = 600;
+    private Integer scrollPanelHeight = 768;
 
     /**
      * Called after construction.

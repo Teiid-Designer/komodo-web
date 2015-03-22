@@ -97,6 +97,7 @@ public interface Constants extends StringConstants {
     String SVG_TRANSFORM = "transform";
     String SVG_DATA_ELEMENT = "d";
     String SVG_TRANSLATE = "translate";
+    String SVG_SCALE = "scale";
 
     String CSS_CLASS = "class";
     String CSS_FILL = "fill";

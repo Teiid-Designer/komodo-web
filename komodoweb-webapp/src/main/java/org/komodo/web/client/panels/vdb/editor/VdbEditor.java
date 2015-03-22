@@ -58,7 +58,7 @@ public class VdbEditor extends FlowPanel implements Constants {
 
     private TreeCanvas canvas;
     private Integer width = 1024;
-    private Integer height = 768;
+    private Integer height = 2048;
     private final DiagramCss css;
 
     /**

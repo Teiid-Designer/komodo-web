@@ -29,6 +29,8 @@ import com.github.gwtd3.api.Coords;
 import com.github.gwtd3.api.D3;
 import com.github.gwtd3.api.arrays.Array;
 import com.github.gwtd3.api.arrays.ForEachCallback;
+import com.github.gwtd3.api.behaviour.Zoom;
+import com.github.gwtd3.api.behaviour.Zoom.ZoomEventType;
 import com.github.gwtd3.api.core.EnteringSelection;
 import com.github.gwtd3.api.core.Selection;
 import com.github.gwtd3.api.core.Transition;
@@ -124,11 +126,15 @@ public class TreeCanvas implements Constants {
 
     private static final int IMAGE_Y = -40;
 
-    private Logger logger = Logger.getLogger("TreeCanvas");
+    private static final Logger LOGGER = Logger.getLogger("TreeCanvas"); //$NON-NLS-1$
 
     private final Widget parent;
 
     private final Selection svg;
+
+    private final Zoom zoom;
+
+    private final Selection svgGroup;
 
     private final Tree layout;
 
@@ -153,7 +159,11 @@ public class TreeCanvas implements Constants {
             Value hasChildrenValue = jsNode.getProperty(HAS_CHILDREN);
             boolean hasChildren = hasChildrenValue.asBoolean();
 
-            return (object != null || hasChildren) ? "lightsteelblue" : "#fff";
+            /*
+             * If we have children then return the colour black else return white
+             * Used for the fill style in the circles beneath the images
+             */
+            return (object != null || hasChildren) ? "#000" : "#fff"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     };
 
@@ -185,13 +195,37 @@ public class TreeCanvas implements Constants {
             }
         });
 
+        zoom = D3.behavior().zoom()
+                                        .scaleExtent(Array.fromDoubles(0.1, 3))
+                                        .on(ZoomEventType.ZOOM, new DatumFunction<Void>() {
+                                            @Override
+                                            public Void apply(Element context, Value jsNode, int index) {
+                                                if (svgGroup == null)
+                                                    return null;
+
+                                                Array<Double> eventTranslate = D3.zoomEvent().translate();
+                                                double eventScale = D3.zoomEvent().scale();
+
+                                                StringBuffer transform = new StringBuffer();
+                                                transform.append(SVG_TRANSLATE).append(OPEN_BRACKET)
+                                                               .append(eventTranslate).append(CLOSE_BRACKET)
+                                                               .append(SVG_SCALE).append(OPEN_BRACKET)
+                                                               .append(eventScale).append(CLOSE_BRACKET);
+
+                                                svgGroup.attr(SVG_TRANSFORM, transform.toString());
+                                                return null;
+                                            }
+                                        });
+
         /*
          * Create the svg canvas by selecting the 'div' of the widget and
          * appending an 'svg' div and inside that a 'g' div
          */
         this.svg = D3.select(parent)
                     .append(SVG_ELEMENT)
-                    .append(GROUP_ELEMENT);
+                    .call(zoom);
+
+        this.svgGroup = this.svg.append(GROUP_ELEMENT);
     }
 
     /**
@@ -239,7 +273,7 @@ public class TreeCanvas implements Constants {
          * Select all existing nodes
          */
         String nodeSelector = GROUP_ELEMENT + DOT + css.node();
-        Selection nodeSelection = svg.selectAll(nodeSelector);
+        Selection nodeSelection = svgGroup.selectAll(nodeSelector);
 
         /*
          * Map and append all new nodes from the data array
@@ -418,7 +452,7 @@ public class TreeCanvas implements Constants {
          * in the links data. Links with an invalid target are those
          * where the child has been collapsed away.
          */
-        UpdateSelection link = svg.selectAll(SVG_PATH + DOT + css.link())
+        UpdateSelection link = svgGroup.selectAll(SVG_PATH + DOT + css.link())
                                                  .data(links, new KeyFunction<Integer>() {
                                                      @Override
                                                      public Integer map(Element context, Array<?> newDataArray,
@@ -476,7 +510,7 @@ public class TreeCanvas implements Constants {
             return;
 
         String definition = this.rootData.toDefinition();
-        logger.severe("Definition: " + definition);
+        LOGGER.fine(definition);
 
         /*
          * Parse the json of the root data. As more children
@@ -498,12 +532,13 @@ public class TreeCanvas implements Constants {
         root = jsRoot.<JSTreeNode>cast();
 
         /* Set the initial location of the root node */
-        root.setAttr(HTML_X0, (parentWidth - 20) / 2);
-        root.setAttr(HTML_Y0, TOP_MARGIN);
+        root.setAttr(HTML_X, (parentWidth - 20) / 3);
+        root.setAttr(HTML_Y, TOP_MARGIN);
 
-//        if (root.children() != null) {
-//            root.children().forEach(new Collapse());
-//        }
+        /* Collapse everything but root initially */
+        if (root.children() != null) {
+            root.children().forEach(new Collapse());
+        }
 
         update(root);
     }
