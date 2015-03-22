@@ -15,6 +15,16 @@
   <inherits name="org.jboss.errai.enterprise.Jaxrs" />
   <inherits name="org.jboss.errai.ui.nav.Navigation"/>
 
+  <inherits name="com.google.gwt.logging.Logging"/>
+  <set-property name="gwt.logging.firebugHandler" value="ENABLED" />
+  <set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />
+  <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
+  <set-property name="gwt.logging.enabled" value="TRUE"/>
+  <set-property name="gwt.logging.logLevel" value="FINEST" />
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED" />
+  <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+  <set-property name="gwt.logging.systemHandler" value="ENABLED" />
+
   <inherits name='com.github.gwtd3.D3' />
 
   <inherits name="org.komodo.KomodoSpi"/>

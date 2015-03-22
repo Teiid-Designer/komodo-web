@@ -28,6 +28,7 @@ public interface Constants extends StringConstants {
     String SELECT_STAR_FROM = "SELECT * FROM";
     String LIMIT_10 = "LIMIT 10";
     String NONE = "NONE";
+    String UNDEFINED = "undefined";
     String OK_BUTTON_TXT = "Ok";
     String CANCEL_BUTTON_TXT = "Cancel";
 
@@ -92,25 +93,51 @@ public interface Constants extends StringConstants {
     String SVG_ELEMENT = "svg";
     String GROUP_ELEMENT = "g";
     String SVG_PATH = "path";
+    String SVG_CIRCLE = "circle";
     String SVG_TRANSFORM = "transform";
     String SVG_DATA_ELEMENT = "d";
+    String SVG_TRANSLATE = "translate";
 
     String CSS_CLASS = "class";
+    String CSS_FILL = "fill";
     String CSS_FILL_OPACITY = "fill-opacity";
+    String CSS_WIDTH = "width";
+    String CSS_HEIGHT = "height";
+
+    String JS_NO_CHILDREN = "_children";
+    String JS_CHILDREN = "children";
 
     String HTML_XLINK_REF = "xlink:href";
     String HTML_X = "x";
+    String HTML_X0 = "x0";
     String HTML_Y = "y";
+    String HTML_Y0 = "y0";
     String HTML_WIDTH = "width";
     String HTML_HEIGHT = "height";
+    String HTML_RADIUS = "r";
     String HTML_IMAGE = "image";
     String HTML_TEXT = "text";
+    String HTML_DX = "dx";
     String HTML_DY = "dy";
     String HTML_TEXT_ANCHOR = "text-anchor";
+    String HTML_CLICK = "click";
 
     String MIDDLE = "middle";
     String NODE = "node";
+    String LINK = "link";
 
+    String ID = "id";
+    String NAME = "name";
+    String PARENT = "parent";
+    String NULL = "null";
+    String ICON = "icon";
+    String ICON_WIDTH = "icon-width";
+    String ICON_HEIGHT = "icon-height";
+    String HAS_CHILDREN = "has-children";
+    String CHILDREN = "children";
+    
+    
+    
     /* Vdb Editor */
     String VDB_EDIT_SCROLLPANEL = "vdb-edit-scrollpanel";
     String VDB_EDITOR = "vdb-editor";

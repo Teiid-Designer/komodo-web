@@ -140,4 +140,13 @@ public class KomodoObjectBean {
         properties.add(property);
     }
 
+	/**
+     * Accepts an <code>KObjectBeanVisitor</code>. Calls the appropriate
+     * <code>KObjectBeanVisitor</code> <code>visit</code> method.
+     *
+     * @param visitor The KObjectBeanVisitor to be accepted.
+     */
+    public void accept(KObjectBeanVisitor visitor) {
+	    visitor.visit(this);
+	}
 }
