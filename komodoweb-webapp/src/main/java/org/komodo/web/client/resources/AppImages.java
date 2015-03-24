@@ -139,4 +139,90 @@ public interface AppImages extends ClientBundle {
     @Source ("images/diagramming/model.png")
     ImageResource diagModel_Image();
 
+    @Source ("images/diagramming/translator.png")
+    ImageResource diagTranslator_Image();
+
+    @Source ("images/diagramming/datarole.png")
+    ImageResource diagDataRole_Image();
+
+    @Source ("images/diagramming/permission.png")
+    ImageResource diagPermission_Image();
+
+    @Source ("images/diagramming/condition.png")
+    ImageResource diagCondition_Image();
+
+    @Source ("images/diagramming/mask.png")
+    ImageResource diagMask_Image();
+
+    @Source ("images/diagramming/source.png")
+    ImageResource diagSource_Image();
+
+    @Source ("images/diagramming/resultset.png")
+    ImageResource diagResultSet_Image();
+
+    @Source ("images/diagramming/datatype-resultset.png")
+    ImageResource diagDataTypeResultSet_Image();
+
+    @Source ("images/diagramming/resultset-column.png")
+    ImageResource diagResultSetColumn_Image();
+
+    @Source ("images/diagramming/parameter.png")
+    ImageResource diagParameter_Image();
+
+    @Source ("images/diagramming/view.png")
+    ImageResource diagView_Image();
+
+    @Source ("images/diagramming/vdb-import.png")
+    ImageResource diagVdbImport_Image();
+
+    @Source ("images/diagramming/column.png")
+    ImageResource diagColumn_Image();
+
+    @Source ("images/diagramming/access-pattern.png")
+    ImageResource diagAccessPattern_Image();
+
+    @Source ("images/diagramming/user-defined-function.png")
+    ImageResource diagUsedDefinedFunction_Image();
+
+    @Source ("images/diagramming/unique-constraint.png")
+    ImageResource diagUniqueConstraint_Image();
+
+    @Source ("images/diagramming/table.png")
+    ImageResource diagTable_Image();
+
+    @Source ("images/diagramming/stored-procedure.png")
+    ImageResource diagStoredProcedure_Image();
+
+    @Source ("images/diagramming/virtual-procedure.png")
+    ImageResource diagVirtualProcedure_Image();
+
+    @Source ("images/diagramming/statement-option.png")
+    ImageResource diagStatementOption_Image();
+
+    @Source ("images/diagramming/schema.png")
+    ImageResource diagSchema_Image();
+
+    @Source ("images/diagramming/pushdown-function.png")
+    ImageResource diagPushdownFunction_Image();
+
+    @Source ("images/diagramming/index.png")
+    ImageResource diagIndex_Image();
+
+    @Source ("images/diagramming/foreign-key.png")
+    ImageResource diagForeignKey_Image();
+
+    @Source ("images/diagramming/primary-key.png")
+    ImageResource diagPrimaryKey_Image();
+
+    @Source ("images/diagramming/vdb-entry.png")
+    ImageResource diagVdbEntry_Image();
+
+    @Source ("images/diagramming/ddl-sql.png")
+    ImageResource diagDdl_Image();
+
+    @Source ("images/diagramming/teiid-sql.png")
+    ImageResource diagTeiidSql_Image();
+
+    @Source ("images/diagramming/vdb-schema.png")
+    ImageResource diagVdbSchema_Image();
 }

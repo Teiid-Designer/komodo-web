@@ -20,6 +20,7 @@ import java.util.Set;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.komodo.spi.repository.KomodoType;
+import org.komodo.web.share.beans.KObjectBeanVisitor.VisitorContext;
 
 /**
  * A data bean for returning KomodoObject info
@@ -146,7 +147,7 @@ public class KomodoObjectBean {
      *
      * @param visitor The KObjectBeanVisitor to be accepted.
      */
-    public void accept(KObjectBeanVisitor visitor) {
-	    visitor.visit(this);
+    public void accept(KObjectBeanVisitor visitor, VisitorContext context) {
+	    visitor.visit(this, context);
 	}
 }

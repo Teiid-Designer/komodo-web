@@ -24,9 +24,26 @@ package org.komodo.web.share.beans;
 
 
 /**
- *
+ * @param <T> Type of object created by the visitor
  */
-public interface KObjectBeanVisitor {
+public interface KObjectBeanVisitor<T> {
+
+    /**
+     * The Context for holding parent information for the visitor
+     *
+     * @param <T>
+     */
+    interface VisitorContext<T> {
+        /**
+         * @return the parent
+         */
+        T getParent();
+
+        /**
+         * @param parent the parent to set
+         */
+        void setParent(T parent); 
+    }
 
     /**
      * This method is called when the <code>KObjectBeanVisitor</code> is passed to the
@@ -34,6 +51,7 @@ public interface KObjectBeanVisitor {
      * an exception the visiting process is aborted.
      *
      * @param kObject The <code>KomodoObjectBean</code that is accepting this visitor.
+     * @param context The context holding parent object
      */
-    public void visit(KomodoObjectBean kObject);
+    public void visit(KomodoObjectBean kObject, VisitorContext<T> context);
 }

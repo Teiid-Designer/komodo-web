@@ -92,6 +92,6 @@ public class VdbEditor extends FlowPanel implements Constants {
     public void setContent(KomodoObjectBean vdb) {
         // Set the content of the editor
         TreeVisitor visitor = new TreeVisitor(canvas);
-        vdb.accept(visitor);
+        vdb.accept(visitor, visitor.createContext(null));
     }
 }

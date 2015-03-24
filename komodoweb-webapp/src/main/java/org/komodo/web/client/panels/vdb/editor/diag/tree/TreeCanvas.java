@@ -126,7 +126,7 @@ public class TreeCanvas implements Constants {
 
     private static final int IMAGE_Y = -40;
 
-    private static final Logger LOGGER = Logger.getLogger("TreeCanvas"); //$NON-NLS-1$
+    private static final Logger LOGGER = Logger.getLogger(TreeCanvas.class.getName());
 
     private final Widget parent;
 
@@ -157,7 +157,8 @@ public class TreeCanvas implements Constants {
         public String apply(Element context, Value jsNode, int index) {
             JavaScriptObject object = jsNode.<JSTreeNode> as().getObjAttr(JS_NO_CHILDREN);
             Value hasChildrenValue = jsNode.getProperty(HAS_CHILDREN);
-            boolean hasChildren = hasChildrenValue.asBoolean();
+            String hasChildrenString = hasChildrenValue.asString();
+            boolean hasChildren = Boolean.parseBoolean(hasChildrenString);
 
             /*
              * If we have children then return the colour black else return white
