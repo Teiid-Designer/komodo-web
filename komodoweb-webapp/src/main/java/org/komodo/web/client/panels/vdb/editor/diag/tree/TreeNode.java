@@ -19,20 +19,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-package org.komodo.web.client.panels.vdb.editor.diag;
+package org.komodo.web.client.panels.vdb.editor.diag.tree;
 
-import com.google.gwt.resources.client.CssResource;
+import com.github.gwtd3.api.layout.HierarchicalLayout.Node;
+import com.google.gwt.core.client.JavaScriptObject;
 
 /**
- * Diagramming css resource interface
+ * Implementation of tree node used in the {@link TreeCanvas}
  */
-public interface DiagramCss extends CssResource {
+public class TreeNode extends Node {
 
-    String css();
+    protected TreeNode() {
+        super();
+    }
 
-    String link();
+    protected final native int id() /*-{
+        return this.id || -1;
+    }-*/;
 
-    String node();
+    protected final native int id(int id) /*-{
+        return this.id = id;
+    }-*/;
 
-    String selected();
+    protected final native void setAttr(String name, JavaScriptObject value) /*-{
+        this[name] = value;
+    }-*/;
+
+    protected final native double setAttr(String name, double value) /*-{
+        return this[name] = value;
+    }-*/;
+
+    protected final native JavaScriptObject getObjAttr(String name) /*-{
+        return this[name];
+    }-*/;
+
+    protected final native double getNumAttr(String name) /*-{
+        return this[name];
+    }-*/;
 }

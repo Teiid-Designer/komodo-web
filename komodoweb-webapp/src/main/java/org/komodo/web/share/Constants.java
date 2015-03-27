@@ -94,6 +94,7 @@ public interface Constants extends StringConstants {
     String GROUP_ELEMENT = "g";
     String SVG_PATH = "path";
     String SVG_CIRCLE = "circle";
+    String SVG_RECTANGLE = "rect";
     String SVG_TRANSFORM = "transform";
     String SVG_DATA_ELEMENT = "d";
     String SVG_TRANSLATE = "translate";
@@ -104,6 +105,7 @@ public interface Constants extends StringConstants {
     String CSS_FILL_OPACITY = "fill-opacity";
     String CSS_WIDTH = "width";
     String CSS_HEIGHT = "height";
+    String CSS_SELECTED_CLASS = "selected";
 
     String JS_NO_CHILDREN = "_children";
     String JS_CHILDREN = "children";
@@ -128,6 +130,7 @@ public interface Constants extends StringConstants {
     String LINK = "link";
 
     String ID = "id";
+    String NODE_ID_PREFIX = GROUP_ELEMENT + HYPHEN + NODE;
     String NAME = "name";
     String PARENT = "parent";
     String NULL = "null";

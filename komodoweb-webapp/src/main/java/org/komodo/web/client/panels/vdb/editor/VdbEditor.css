@@ -22,6 +22,12 @@ path.css {
   font: 10px sans-serif;
 }
 
+.selected {
+    stroke: red;
+    stroke-width: 1px;
+    fill: transparent;
+}
+
 .link {
   fill: none;
   stroke: #000;

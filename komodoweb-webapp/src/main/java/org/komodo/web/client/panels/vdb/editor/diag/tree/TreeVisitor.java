@@ -22,8 +22,6 @@
 package org.komodo.web.client.panels.vdb.editor.diag.tree;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.services.KomodoRpcService;
@@ -39,8 +37,6 @@ import com.google.gwt.resources.client.ImageResource;
  *
  */
 public class TreeVisitor implements KObjectBeanVisitor<TreeData>, Constants {
-
-    private static final Logger LOGGER = Logger.getLogger(TreeVisitor.class.getName());
 
     private class TreeVisitorContext implements VisitorContext<TreeData> {
 
@@ -106,10 +102,6 @@ public class TreeVisitor implements KObjectBeanVisitor<TreeData>, Constants {
                  .append(CLOSE_SQUARE_BRACKET);
             data.setLabel(label.toString());
         }
-
-        if (LOGGER.isLoggable(Level.FINE))
-            LOGGER.fine("Definition of " + kObject.getName() + //$NON-NLS-1$
-                                   SPACE + HYPHEN + SPACE + data.toDefinition());
 
         return data;
     }

@@ -22,28 +22,20 @@
 package org.komodo.web.client.panels.vdb.editor.diag.tree;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 import org.komodo.web.client.panels.vdb.editor.diag.DiagramCss;
-import org.komodo.web.share.Constants;
-import com.github.gwtd3.api.Coords;
 import com.github.gwtd3.api.D3;
 import com.github.gwtd3.api.arrays.Array;
-import com.github.gwtd3.api.arrays.ForEachCallback;
 import com.github.gwtd3.api.behaviour.Zoom;
 import com.github.gwtd3.api.behaviour.Zoom.ZoomEventType;
 import com.github.gwtd3.api.core.EnteringSelection;
 import com.github.gwtd3.api.core.Selection;
 import com.github.gwtd3.api.core.Transition;
 import com.github.gwtd3.api.core.UpdateSelection;
-import com.github.gwtd3.api.core.Value;
-import com.github.gwtd3.api.functions.DatumFunction;
-import com.github.gwtd3.api.functions.KeyFunction;
 import com.github.gwtd3.api.layout.HierarchicalLayout.Node;
 import com.github.gwtd3.api.layout.Link;
 import com.github.gwtd3.api.layout.Tree;
 import com.github.gwtd3.api.svg.Diagonal;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
@@ -52,69 +44,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  *
  */
-public class TreeCanvas implements Constants {
-
-    private static class JSTreeNode extends Node {
-        protected JSTreeNode() {
-            super();
-        }
-
-        protected final native int id() /*-{
-            return this.id || -1;
-        }-*/;
-
-        protected final native int id(int id) /*-{
-            return this.id = id;
-        }-*/;
-
-        protected final native void setAttr(String name, JavaScriptObject value) /*-{
-            this[name] = value;
-        }-*/;
-
-        protected final native double setAttr(String name, double value) /*-{
-            return this[name] = value;
-        }-*/;
-
-        protected final native JavaScriptObject getObjAttr(String name) /*-{
-            return this[name];
-        }-*/;
-
-        protected final native double getNumAttr(String name) /*-{
-            return this[name];
-        }-*/;
-    }
-
-    private class Click implements DatumFunction<Void> {
-        @Override
-        public Void apply(Element context, Value d, int index) {
-            JSTreeNode node = d.<JSTreeNode> as();
-            if (node.children() != null) {
-                node.setAttr(JS_NO_CHILDREN, node.children());
-                node.setAttr(JS_CHILDREN, null);
-            } else {
-                node.setAttr(JS_CHILDREN, node.getObjAttr(JS_NO_CHILDREN));
-                node.setAttr(JS_NO_CHILDREN, null);
-            }
-            update(node);
-            return null;
-        }
-    }
-
-    private class Collapse implements ForEachCallback<Void> {
-        @Override
-        public Void forEach(Object thisArg, Value element, int index,
-                Array<?> array) {
-            JSTreeNode datum = element.<JSTreeNode> as();
-            Array<Node> children = datum.children();
-            if (children != null) {
-                datum.setAttr(JS_NO_CHILDREN, children);
-                datum.getObjAttr(JS_NO_CHILDREN).<Array<Node>> cast()
-                        .forEach(this);
-                datum.setAttr(JS_CHILDREN, null);
-            }
-            return null;
-        }
-    }
+public class TreeCanvas extends TreeCanvasUtilities {
 
     private static final int TOP_MARGIN = 100;
 
@@ -125,8 +55,6 @@ public class TreeCanvas implements Constants {
     private static final int IMAGE_X = -16;
 
     private static final int IMAGE_Y = -40;
-
-    private static final Logger LOGGER = Logger.getLogger(TreeCanvas.class.getName());
 
     private final Widget parent;
 
@@ -142,6 +70,36 @@ public class TreeCanvas implements Constants {
 
     private final DiagramCss css;
 
+    private final ZoomListenerCallback zoomListenerCallback;
+
+    private final SelectionListener selectionListener;
+
+    private final ExpandCollapseListener expandCollapseListener;
+
+    private final ChildStatusCallback childStatusCallback;
+
+    private final NodeIdMappingCallback nodeIdMappingCallback;
+
+    private final LinkIdMappingCallback linkIdMappingCallback;
+
+    private final StringPropertyCallback iconLinkCallback;
+
+    private final StringPropertyCallback iconWidthCallback;
+
+    private final StringPropertyCallback iconHeightCallback;
+
+    private final StringPropertyCallback labelCallback;
+
+    private final YNodeLocationCallback nodeYLocationCallback;
+
+    private final GroupIdCallback groupIdCallback;
+
+    private final NodeEnterTransformCallback nodeEnterTransformCallback;
+
+    private final NodeUpdateLocationCallback nodeUpdateLocationCallback;
+
+    private final CollapseCallback collapseCallback;
+    
     private int parentWidth;
 
     private int parentHeight;
@@ -150,23 +108,7 @@ public class TreeCanvas implements Constants {
 
     private final AtomicInteger intGenerator;
 
-    private JSTreeNode root;
-
-    private final DatumFunction<String> childStatusCallback = new DatumFunction<String>() {
-        @Override
-        public String apply(Element context, Value jsNode, int index) {
-            JavaScriptObject object = jsNode.<JSTreeNode> as().getObjAttr(JS_NO_CHILDREN);
-            Value hasChildrenValue = jsNode.getProperty(HAS_CHILDREN);
-            String hasChildrenString = hasChildrenValue.asString();
-            boolean hasChildren = Boolean.parseBoolean(hasChildrenString);
-
-            /*
-             * If we have children then return the colour black else return white
-             * Used for the fill style in the circles beneath the images
-             */
-            return (object != null || hasChildren) ? "#000" : "#fff"; //$NON-NLS-1$ //$NON-NLS-2$
-        }
-    };
+    private TreeNode root;
 
     /**
      * @param widget the widget to place the canvas on
@@ -188,45 +130,85 @@ public class TreeCanvas implements Constants {
          * Projection determines the location of the source and target points
          * of the diagonal line to be drawn.
          */
-        this.pathDataGenerator = D3.svg().diagonal().projection(new DatumFunction<Array<Double>>() {
-            @Override
-            public Array<Double> apply(Element element, Value jsNode, int elementIndex) {
-                JSTreeNode treeNode = jsNode.<JSTreeNode> as();
-                return Array.fromDoubles(treeNode.x(), treeNode.y());
-            }
-        });
-
-        zoom = D3.behavior().zoom()
-                                        .scaleExtent(Array.fromDoubles(0.1, 3))
-                                        .on(ZoomEventType.ZOOM, new DatumFunction<Void>() {
-                                            @Override
-                                            public Void apply(Element context, Value jsNode, int index) {
-                                                if (svgGroup == null)
-                                                    return null;
-
-                                                Array<Double> eventTranslate = D3.zoomEvent().translate();
-                                                double eventScale = D3.zoomEvent().scale();
-
-                                                StringBuffer transform = new StringBuffer();
-                                                transform.append(SVG_TRANSLATE).append(OPEN_BRACKET)
-                                                               .append(eventTranslate).append(CLOSE_BRACKET)
-                                                               .append(SVG_SCALE).append(OPEN_BRACKET)
-                                                               .append(eventScale).append(CLOSE_BRACKET);
-
-                                                svgGroup.attr(SVG_TRANSFORM, transform.toString());
-                                                return null;
-                                            }
-                                        });
+        PathProjectionCallback pathProjectionCallback = new PathProjectionCallback();
+        this.pathDataGenerator = D3.svg().diagonal().projection(pathProjectionCallback);
 
         /*
          * Create the svg canvas by selecting the 'div' of the widget and
          * appending an 'svg' div and inside that a 'g' div
          */
-        this.svg = D3.select(parent)
-                    .append(SVG_ELEMENT)
-                    .call(zoom);
+        this.svg = D3.select(parent).append(SVG_ELEMENT);
 
+        /*
+         * Create the root group element of the svg
+         */
         this.svgGroup = this.svg.append(GROUP_ELEMENT);
+
+        /*
+         * Create listeners for interactivity of diagram
+         */
+        this.selectionListener = new SelectionListener(svgGroup);
+        this.expandCollapseListener = new ExpandCollapseListener();
+
+        /*
+         * Create callbacks for displaying nodes and links
+         */
+        this.collapseCallback = new CollapseCallback();
+        this.childStatusCallback = new ChildStatusCallback();
+        this.nodeIdMappingCallback = new NodeIdMappingCallback();
+        this.linkIdMappingCallback = new LinkIdMappingCallback();
+
+        this.iconLinkCallback = new StringPropertyCallback(ICON);
+        this.iconWidthCallback = new StringPropertyCallback(ICON_WIDTH);
+        this.iconHeightCallback = new StringPropertyCallback(ICON_HEIGHT);
+
+        this.labelCallback = new StringPropertyCallback(NAME);
+
+        this.nodeYLocationCallback = new YNodeLocationCallback(DEPTH_HEIGHT, TOP_MARGIN);
+        this.groupIdCallback = new GroupIdCallback();
+        this.nodeEnterTransformCallback = new NodeEnterTransformCallback();
+        this.nodeUpdateLocationCallback = new NodeUpdateLocationCallback();
+
+        /*
+         * Create zoom behavious and assign the zoom listener callback
+         */
+        this.zoomListenerCallback = new ZoomListenerCallback(svgGroup);
+        zoom = D3.behavior().zoom()
+                                          .scaleExtent(Array.fromDoubles(0.1, 3))
+                                          .on(ZoomEventType.ZOOM, zoomListenerCallback);
+
+        /*
+         * Assign the selection listener to the click event of the svg
+         * Call an initial zoom on the svg
+         */
+        this.svg.on(HTML_CLICK, selectionListener).call(zoom);
+
+    }
+
+    /**
+     * @return the parentWidth
+     */
+    public int getParentWidth() {
+        return this.parentWidth;
+    }
+
+    /**
+     * @return the parentHeight
+     */
+    public int getParentHeight() {
+        return this.parentHeight;
+    }
+
+    @Override
+    protected DiagramCss css() {
+        return this.css;
+    }
+
+    /**
+     * @return a unique id
+     */
+    int createId() {
+        return intGenerator.incrementAndGet();
     }
 
     /**
@@ -238,15 +220,103 @@ public class TreeCanvas implements Constants {
         this.rootData = rootData;
     }
 
+
     /*
-     * Updates all the new, updated and removed nodes
-     *
-     * The source is the node at the "top" of the section
-     * being explanded/collapsed. Normally, this would be root
-     * but when a node is clicked on to be expanded then it
-     * would be the clicked node.
+     * Update all new, existing and outdated links
      */
-    private void update(final JSTreeNode source) {
+    private void updateLinks(final TreeNode source, Array<Node> nodes) {
+        /*
+         * Determine the array of links given the
+         * nodes provided to the layout
+         */
+        Array<Link> links = layout.links(nodes);
+
+        /*
+         * Update link paths for all new node locations
+         * Select all the svg links on the page that have a valid target
+         * in the links data. Links with an invalid target are those
+         * where the child has been collapsed away.
+         */
+        UpdateSelection link = svgGroup.selectAll(SVG_PATH + DOT + css.link())
+                                                           .data(links, linkIdMappingCallback);
+
+        /*
+         * For all links not yet drawn, build an svg path using the
+         * co-ordinates of the source, ie. parent.
+         */
+        LinkGeneratorCallback linkEnterCallback = new LinkGeneratorCallback(pathDataGenerator,
+                                                                                                                               source.getNumAttr(HTML_X0),
+                                                                                                                               source.getNumAttr(HTML_Y0));
+        link.enter().insert(SVG_ELEMENT + COLON + SVG_PATH, GROUP_ELEMENT)
+                         .classed(css.link(), true)
+                         .attr(SVG_DATA_ELEMENT, linkEnterCallback);
+
+        /*
+         * Starts an animtion of the link's svg data element using the path generator
+         */
+        link.transition().duration(TRANSITION_DURATION)
+                                .attr(SVG_DATA_ELEMENT, pathDataGenerator);
+
+        /*
+         * Removal of invalid links where their targets have been collapsed away
+         * Animate their removal by regenerating the link back to pointing their
+         * source and target to the source, ie. parent.
+         */
+        LinkGeneratorCallback linkExitCallback = new LinkGeneratorCallback(pathDataGenerator,
+                                                                                                                      source.x(),
+                                                                                                                      source.y());
+        link.exit().transition().duration(TRANSITION_DURATION)
+                .attr(SVG_DATA_ELEMENT, linkExitCallback).remove();
+    }
+
+    /*
+     * Add children indicator circles below the image 
+     */
+    private void addChildrenIndicator(Selection enterNodesGroup) {
+        enterNodesGroup.append(SVG_CIRCLE)
+                                   .attr(HTML_RADIUS, 1e-6)
+                                   .style(CSS_FILL, childStatusCallback)
+                                   .on(HTML_CLICK, expandCollapseListener);
+    }
+
+    /*
+     * Append the image to each new node
+     */
+    private void addImage(Selection enterNodesGroup) {
+        Selection imgSelection = enterNodesGroup.append(HTML_IMAGE);
+
+        /*
+         * Centre the icon above the circle
+         */
+        imgSelection.attr(HTML_X, IMAGE_X);
+        imgSelection.attr(HTML_Y, IMAGE_Y);
+
+        imgSelection.attr(HTML_XLINK_REF, iconLinkCallback);
+        imgSelection.attr(HTML_WIDTH, iconWidthCallback);
+        imgSelection.attr(HTML_HEIGHT, iconHeightCallback);
+    }
+
+    /*
+     * Append the label to each new node
+     */
+    private void addLabel(Selection enterNodesGroup) {
+        Selection txtSelection = enterNodesGroup.append(HTML_TEXT);
+
+        /*
+         * text-anchor="middle" will anchor the text using the centre
+         * of the label at the location specified by the x attribute
+         *
+         * Note: the y and dy attributes locate the text using the
+         *          bottom-left of the text block
+         */
+        txtSelection.attr(HTML_TEXT_ANCHOR, MIDDLE);
+        txtSelection.style(CSS_FILL_OPACITY, 1);
+        txtSelection.attr(HTML_DY, IMAGE_Y - 5);
+        txtSelection.text(labelCallback);
+    }
+
+    @Override
+    protected void update(final TreeNode source) {
         if (root == null)
             return;
 
@@ -260,15 +330,7 @@ public class TreeCanvas implements Constants {
          * Set the y location of the nodes based on the depth
          * of each node in the hierarchy
          */
-        nodes.forEach(new ForEachCallback<Void>() {
-            @Override
-            public Void forEach(Object thisArg, Value jsNode, int index, Array<?> array) {
-                JSTreeNode treeNode = jsNode.<JSTreeNode> as();
-                double value = (treeNode.depth() * DEPTH_HEIGHT) + TOP_MARGIN;
-                treeNode.setAttr(HTML_Y, value);
-                return null;
-            }
-        });
+        nodes.forEach(nodeYLocationCallback);
 
         /*
          * Select all existing nodes
@@ -280,21 +342,7 @@ public class TreeCanvas implements Constants {
          * Map and append all new nodes from the data array
          * to the node selection
          */
-        UpdateSelection updateNodeSelection = nodeSelection.data(nodes,
-                new KeyFunction<Integer>() {
-                    @Override
-                    public Integer map(Element context, Array<?> newDataArray,
-                                                    Value jsNode, int index) {
-                        /*
-                         * jsNode has the properties gathered from the key/values
-                         * in the json data presented to the layout initially.
-                         */
-                        JSTreeNode treeNode = jsNode.<JSTreeNode> as();
-                        Value idValue = jsNode.getProperty(ID);
-                        int id = idValue.asInt();
-                        return ((treeNode.id() == -1) ? treeNode.id(id) : treeNode.id());
-                    }
-                });
+        UpdateSelection updateNodeSelection = nodeSelection.data(nodes, nodeIdMappingCallback);
 
         /*
          * Selection of new nodes being added to layout
@@ -309,80 +357,18 @@ public class TreeCanvas implements Constants {
         /*
          * Adds the click handler to new nodes
          */
-        enterNodesGroup.attr(CSS_CLASS, css.node())
+        enterNodesGroup.classed(css.node(), true)
                                    .attr(SVG_TRANSFORM, SVG_TRANSLATE + OPEN_BRACKET +
-                                                                                 source.getNumAttr(HTML_X0) + COMMA +
-                                                                                 source.getNumAttr(HTML_Y0) + CLOSE_BRACKET)
-                                   .on(HTML_CLICK, new Click());
+                                                                                 source.getNumAttr(HTML_X) + COMMA +
+                                                                                 source.getNumAttr(HTML_Y) + CLOSE_BRACKET)
+                                   .attr(ID, groupIdCallback)
+                                   .on(HTML_CLICK, selectionListener);
 
-        /*
-         * Append the label to each new node
-         */
-        Selection txtSelection = enterNodesGroup.append(HTML_TEXT);
-        
-        /*
-         * text-anchor="middle" will anchor the text using the centre
-         * of the label at the location specified by the x attribute
-         *
-         * Note: the y and dy attributes locate the text using the
-         *          bottom-left of the text block
-         */
-        txtSelection.attr(HTML_TEXT_ANCHOR, MIDDLE);
-        txtSelection.style(CSS_FILL_OPACITY, 1);
-        txtSelection.attr(HTML_DY, IMAGE_Y - 5);
+        addLabel(enterNodesGroup);
 
-        txtSelection.text(new DatumFunction<String>() {
-            @Override
-            public String apply(Element context, Value jsNode, int index) {
-                Value labelValue = jsNode.getProperty(NAME);
-                String label = labelValue.asString();
-                return label;
+        addImage(enterNodesGroup);
 
-            }
-        });
-
-        /*
-         * Append the image to each new node
-         */
-        Selection imgSelection = enterNodesGroup.append(HTML_IMAGE);
-
-        /*
-         * Centre the icon above the circle
-         */
-        imgSelection.attr(HTML_X, IMAGE_X);
-        imgSelection.attr(HTML_Y, IMAGE_Y);
-
-        imgSelection.attr(HTML_XLINK_REF, new DatumFunction<String>() {
-            @Override
-            public String apply(Element context, Value jsNode, int index) {
-                Value iconValue = jsNode.getProperty(ICON);
-                String imgHref = iconValue.asString();
-                return imgHref;
-            }
-        });
-        imgSelection.attr(HTML_WIDTH, new DatumFunction<String>() {
-            @Override
-            public String apply(Element context, Value jsNode, int index) {
-                Value iconValue = jsNode.getProperty(ICON_WIDTH);
-                String imgWidth = iconValue.asString();
-                return imgWidth;
-            }
-        });
-        imgSelection.attr(HTML_HEIGHT, new DatumFunction<String>() {
-            @Override
-            public String apply(Element context, Value jsNode, int index) {
-                Value iconValue = jsNode.getProperty(ICON_HEIGHT);
-                String imgHeight = iconValue.asString();
-                return imgHeight;
-            }
-        });
-
-        /*
-         * Add children indicator circles below the image 
-         */
-        enterNodesGroup.append(SVG_CIRCLE)
-                                   .attr(HTML_RADIUS, 1e-6)
-                                   .style(CSS_FILL, childStatusCallback);
+        addChildrenIndicator(enterNodesGroup);
 
         /*
          * Animate new nodes, ie. child nodes being displayed after expanding parent, 
@@ -391,15 +377,7 @@ public class TreeCanvas implements Constants {
          */
         Transition nodeUpdate = updateNodeSelection.transition()
                                                         .duration(TRANSITION_DURATION)
-                                                        .attr(SVG_TRANSFORM, new DatumFunction<String>() {
-                                                            @Override
-                                                            public String apply(Element context, Value jsNode, int index) {
-                                                                JSTreeNode treeNode = jsNode.<JSTreeNode> as();
-                                                                return SVG_TRANSLATE + OPEN_BRACKET +
-                                                                            treeNode.x() + COMMA +
-                                                                            treeNode.y() + CLOSE_BRACKET;
-                                                            }
-                                                        });
+                                                        .attr(SVG_TRANSFORM, nodeEnterTransformCallback);
 
         /*
          * All circles currently being updated have their radius enlarged to their
@@ -411,16 +389,10 @@ public class TreeCanvas implements Constants {
          * Animate the removal of nodes being removed from the diagram
          * when a parent node is contracted.
          */
+        NodeExitTransformCallback nodeExitTransformCallback = new NodeExitTransformCallback(source);
         Transition nodeExit = updateNodeSelection.exit().transition()
                                                     .duration(TRANSITION_DURATION)
-                                                    .attr(SVG_TRANSFORM, new DatumFunction<String>() {
-                                                        @Override
-                                                        public String apply(Element context, Value d, int index) {
-                                                            return SVG_TRANSLATE + OPEN_BRACKET +
-                                                                        source.x() + COMMA +
-                                                                        source.y() + CLOSE_BRACKET;
-                                                        }
-                                                    }).remove();
+                                                    .attr(SVG_TRANSFORM, nodeExitTransformCallback).remove();
 
         /*
          * Make the removed nodes circles too small to be visible
@@ -431,75 +403,9 @@ public class TreeCanvas implements Constants {
          * Update the locations of all remaining nodes based on where
          * the layout has now located them
          */
-        nodes.forEach(new ForEachCallback<Void>() {
-            @Override
-            public Void forEach(Object thisArg, Value jsNode, int index, Array<?> array) {
-                JSTreeNode treeNode = jsNode.<JSTreeNode> as();
-                treeNode.setAttr(HTML_X0, treeNode.x());
-                treeNode.setAttr(HTML_Y0, treeNode.y());
-                return null;
-            }
-        });
+        nodes.forEach(nodeUpdateLocationCallback);
 
-        /*
-         * Determine the array of links given the
-         * nodes provided to the layout
-         */
-        Array<Link> links = layout.links(nodes);
-
-        /*
-         * Update link paths for all new node locations
-         * Select all the svg links on the page that have a valid target
-         * in the links data. Links with an invalid target are those
-         * where the child has been collapsed away.
-         */
-        UpdateSelection link = svgGroup.selectAll(SVG_PATH + DOT + css.link())
-                                                 .data(links, new KeyFunction<Integer>() {
-                                                     @Override
-                                                     public Integer map(Element context, Array<?> newDataArray,
-                                                                        Value jsNode, int index) {
-                                                         return jsNode.<Link> as().target().<JSTreeNode> cast().id();
-                                                     }
-                                                 });
-
-        /*
-         * For all links not yet drawn, build an svg path using the
-         * co-ordinates of the source, ie. parent.
-         */
-        link.enter().insert(SVG_ELEMENT + COLON + SVG_PATH, GROUP_ELEMENT)
-                         .attr(CSS_CLASS, css.link())
-                         .attr(SVG_DATA_ELEMENT, new DatumFunction<String>() {
-                                                                          @Override
-                                                                          public String apply(Element context, Value jsNode, int index) {
-                                                                              Coords o = Coords.create(source.getNumAttr(HTML_X0),
-                                                                                                                      source.getNumAttr(HTML_Y0));
-                                                                              /*
-                                                                               * Use the path data generator to create a link that at
-                                                                               * this point goes from source to source
-                                                                               */
-                                                                              return pathDataGenerator.generate(Link.create(o, o));
-                                                                          }
-                                                                        });
-
-        /*
-         * Starts an animtion of the link's svg data element using the path generator
-         */
-        link.transition().duration(TRANSITION_DURATION)
-                                .attr(SVG_DATA_ELEMENT, pathDataGenerator);
-
-        /*
-         * Removal of invalid links where their targets have been collapsed away
-         * Animate their removal by regenerating the link back to pointing their
-         * source and target to the source, ie. parent.
-         */
-        link.exit().transition().duration(TRANSITION_DURATION)
-                .attr(SVG_DATA_ELEMENT, new DatumFunction<String>() {
-                                                                    @Override
-                                                                    public String apply(Element context, Value jsNode, int index) {
-                                                                        Coords o = Coords.create(source.x(), source.y());
-                                                                        return pathDataGenerator.generate(Link.create(o, o));
-                                                                    }
-                                                                }).remove();
+        updateLinks(source, nodes);
     }
 
     /**
@@ -511,7 +417,6 @@ public class TreeCanvas implements Constants {
             return;
 
         String definition = this.rootData.toDefinition();
-        LOGGER.fine(definition);
 
         /*
          * Parse the json of the root data. As more children
@@ -530,7 +435,7 @@ public class TreeCanvas implements Constants {
         * Casts the js object created by the parser to a tree node.
         */
         JavaScriptObject jsRoot = jsonObject.getJavaScriptObject();
-        root = jsRoot.<JSTreeNode>cast();
+        root = jsRoot.<TreeNode>cast();
 
         /* Set the initial location of the root node */
         root.setAttr(HTML_X, (parentWidth - 20) / 3);
@@ -538,16 +443,9 @@ public class TreeCanvas implements Constants {
 
         /* Collapse everything but root initially */
         if (root.children() != null) {
-            root.children().forEach(new Collapse());
+            root.children().forEach(collapseCallback);
         }
 
         update(root);
-    }
-
-    /**
-     * @return a unique id
-     */
-    int createId() {
-        return intGenerator.incrementAndGet();
     }
 }
