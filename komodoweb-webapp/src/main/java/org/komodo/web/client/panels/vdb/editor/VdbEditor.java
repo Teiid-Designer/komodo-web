@@ -30,6 +30,10 @@ import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -37,7 +41,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  *
  */
 @Dependent
-public class VdbEditor extends FlowPanel implements Constants {
+public class VdbEditor extends FlowPanel implements HasSelectionHandlers<KomodoObjectBean[]>, Constants {
 
     /**
      * Bundle for css
@@ -82,6 +86,7 @@ public class VdbEditor extends FlowPanel implements Constants {
         setHeight(height + Unit.PX.getType());
 
         canvas = new TreeCanvas(this, width, height, css);
+        canvas.setSelectionHandler(this);
     }
 
     /**
@@ -93,5 +98,10 @@ public class VdbEditor extends FlowPanel implements Constants {
         // Set the content of the editor
         TreeVisitor visitor = new TreeVisitor(canvas);
         vdb.accept(visitor, visitor.createContext(null));
+    }
+
+    @Override
+    public HandlerRegistration addSelectionHandler(SelectionHandler<KomodoObjectBean[]> handler) {
+        return addHandler(handler, SelectionEvent.getType());
     }
 }

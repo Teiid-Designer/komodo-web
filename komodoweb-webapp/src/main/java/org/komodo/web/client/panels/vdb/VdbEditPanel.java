@@ -15,6 +15,7 @@
  */
 package org.komodo.web.client.panels.vdb;
 
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -25,7 +26,10 @@ import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
@@ -35,13 +39,21 @@ import com.google.inject.Inject;
  */
 @Dependent
 @Templated("VdbEditPanel.html")
-public class VdbEditPanel extends Composite implements Constants {
+public class VdbEditPanel extends Composite implements SelectionHandler<KomodoObjectBean[]>, Constants {
 
-    @Inject @DataField("vdb-edit-panel")
-    private VerticalPanel vdbEditPanel;
+    private static final Logger LOGGER = Logger.getLogger(VdbEditPanel.class.getName());
+
+    @Inject @DataField("vdb-diagram-panel")
+    private VerticalPanel vdbDiagramPanel;
+
+    @Inject @DataField("selection-property-panel")
+    private VerticalPanel selectionPropertyPanel;
 
     @Inject
     private VdbEditor editor;
+
+    @Inject
+    private Label propertyLabel;
 
     private Integer scrollPanelWidth = 1024;
 
@@ -53,6 +65,8 @@ public class VdbEditPanel extends Composite implements Constants {
     @PostConstruct
     protected void postConstruct() {
         ScrollPanel scroller = new ScrollPanel(editor);
+        editor.addSelectionHandler(this);
+
         scroller.setTitle(VDB_EDIT_SCROLLPANEL);
         scroller.setWidth(scrollPanelWidth + Unit.PX.getType());
         scroller.setHeight(scrollPanelHeight + Unit.PX.getType());
@@ -61,11 +75,37 @@ public class VdbEditPanel extends Composite implements Constants {
         style.setBorderWidth(1, Unit.PX);
         style.setBorderStyle(BorderStyle.SOLID);
 
-        vdbEditPanel.add(scroller);
+        vdbDiagramPanel.add(scroller);
+
+        selectionPropertyPanel.add(propertyLabel);
+
     }
 
     protected void setContent(KomodoObjectBean kObject) {
         editor.setContent(kObject);
     }
 
+    @Override
+    public void onSelection(SelectionEvent<KomodoObjectBean[]> event) {
+        Object obj = event.getSelectedItem();
+        if (obj instanceof KomodoObjectBean[]) {
+            KomodoObjectBean[] selection = (KomodoObjectBean[]) obj;
+
+            if (selection.length > 0) {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < selection.length; ++i) {
+                    buffer.append(selection[i].getName());
+                    if (i < (selection.length - 1))
+                        buffer.append(COMMA)
+                                 .append(SPACE);
+                }
+
+                propertyLabel.setText(buffer.toString());
+                return;
+            }
+        }
+
+        // No selection datta so clear the propertyLabel
+        propertyLabel.setText(EMPTY_STRING);
+    }
 }

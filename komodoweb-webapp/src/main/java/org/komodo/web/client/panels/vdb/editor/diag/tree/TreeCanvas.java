@@ -21,8 +21,11 @@
  */
 package org.komodo.web.client.panels.vdb.editor.diag.tree;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.komodo.web.client.panels.vdb.editor.diag.DiagramCss;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import com.github.gwtd3.api.D3;
 import com.github.gwtd3.api.arrays.Array;
 import com.github.gwtd3.api.behaviour.Zoom;
@@ -31,11 +34,16 @@ import com.github.gwtd3.api.core.EnteringSelection;
 import com.github.gwtd3.api.core.Selection;
 import com.github.gwtd3.api.core.Transition;
 import com.github.gwtd3.api.core.UpdateSelection;
+import com.github.gwtd3.api.core.Value;
+import com.github.gwtd3.api.functions.DatumFunction;
 import com.github.gwtd3.api.layout.HierarchicalLayout.Node;
 import com.github.gwtd3.api.layout.Link;
 import com.github.gwtd3.api.layout.Tree;
 import com.github.gwtd3.api.svg.Diagonal;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
@@ -109,6 +117,10 @@ public class TreeCanvas extends TreeCanvasUtilities {
     private final AtomicInteger intGenerator;
 
     private TreeNode root;
+
+    private HasSelectionHandlers<KomodoObjectBean[]> selectionHandler;
+
+    private final Map<Integer, TreeData> treeDataMap = new HashMap<Integer, TreeData>();
 
     /**
      * @param widget the widget to place the canvas on
@@ -205,10 +217,54 @@ public class TreeCanvas extends TreeCanvasUtilities {
     }
 
     /**
+     * @param selectionHandler the handler to deal with selections
+     */
+    public void setSelectionHandler(HasSelectionHandlers<KomodoObjectBean[]> selectionHandler) {
+        this.selectionHandler = selectionHandler;
+    }
+
+    @Override
+    protected void fireSelectionEvent() {
+        if (selectionHandler == null)
+            return;
+
+        String selectedClass = DOT + css().selected();
+        Selection selection = svgGroup.selectAll(selectedClass);
+
+        final KomodoObjectBean[] selected = new KomodoObjectBean[selection.size()];
+
+        /*
+         * The selection contains the rectangles used for displaying the selection
+         *  so have to find their accompanying data.
+         */
+        selection.each(new DatumFunction<Void>() {
+
+            @Override
+            public Void apply(Element element, Value jsNode, int index) {
+                Value idValue = jsNode.getProperty(ID);
+                int id = idValue.asInt();
+                TreeData treeData = treeDataMap.get(id);
+                if (treeData == null)
+                    return null;
+
+                selected[index] = treeData.getSource();
+
+                return null;
+            }
+        });
+
+        SelectionEvent.fire(selectionHandler, selected);
+    }
+
+    /**
      * @return a unique id
      */
     int createId() {
         return intGenerator.incrementAndGet();
+    }
+
+    void addData(TreeData treeData) {
+        treeDataMap.put(treeData.getId(), treeData);
     }
 
     /**

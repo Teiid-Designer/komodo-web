@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.Constants;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.resources.client.ImageResource;
 
 /**
@@ -34,6 +35,8 @@ import com.google.gwt.resources.client.ImageResource;
 public class TreeData implements Constants {
 
     private final TreeCanvas tree;
+
+    private final KomodoObjectBean source;
 
     private final int id;
 
@@ -49,10 +52,13 @@ public class TreeData implements Constants {
 
     /**
      * @param tree the parent tree canvas
+     * @param source the source bean of this tree data
      */
-    public TreeData(TreeCanvas tree) {
+    public TreeData(TreeCanvas tree, KomodoObjectBean source) {
         this.tree = tree;
+        this.source = source;
         id = tree.createId();
+        tree.addData(this);
     }
 
     /**
@@ -60,6 +66,13 @@ public class TreeData implements Constants {
      */
     public int getId() {
         return this.id;
+    }
+
+    /**
+     * @return the source
+     */
+    public KomodoObjectBean getSource() {
+        return this.source;
     }
 
     /**
@@ -168,15 +181,6 @@ public class TreeData implements Constants {
      */
     public String toDefinition() {
         StringBuffer buffer = new StringBuffer();
-//        {
-//        "name": "Top Level",
-//        "parent": "null",
-//        "value": 10,
-//        "type": "black",
-//        "level": "red",
-//        "icon": "earth.png",
-//        "children": [...]
-//        }
 
         buffer.append(OPEN_BRACE);
         newline(buffer);

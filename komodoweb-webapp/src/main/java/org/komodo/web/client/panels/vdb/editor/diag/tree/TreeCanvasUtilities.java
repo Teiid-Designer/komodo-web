@@ -62,6 +62,11 @@ public abstract class TreeCanvasUtilities implements Constants {
     protected abstract DiagramCss css();
 
     /**
+     * Deduce the selection and fire an event
+     */
+    protected abstract void fireSelectionEvent();
+
+    /**
      * @param e element
      * @return the bounding width of the given element
      */
@@ -192,24 +197,29 @@ public abstract class TreeCanvasUtilities implements Constants {
             }
 
             String id = element.getId();
-            if (id == null)
-                return null;
+            try {
+                if (id == null)
+                    return null;
 
-            if (! id.startsWith(NODE_ID_PREFIX))
-                return null;
+                if (! id.startsWith(NODE_ID_PREFIX))
+                    return null;
 
-            int boundingWidth = getBoundingWidth(element);
-            int boundingHeight = getBoundingHeight(element);
+                int boundingWidth = getBoundingWidth(element);
+                int boundingHeight = getBoundingHeight(element);
 
-            D3.select(element).insert(SVG_RECTANGLE, HTML_TEXT)
-                                         .attr(HTML_X, -(boundingWidth / 2) - 5)
-                                         .attr(HTML_Y, -boundingHeight)
-                                         .attr(HTML_WIDTH, boundingWidth + 10)
-                                         .attr(HTML_HEIGHT, boundingHeight)
-                                         .classed(css().selected(), true);
+                D3.select(element).insert(SVG_RECTANGLE, HTML_TEXT)
+                                             .attr(HTML_X, -(boundingWidth / 2) - 5)
+                                             .attr(HTML_Y, -boundingHeight)
+                                             .attr(HTML_WIDTH, boundingWidth + 10)
+                                             .attr(HTML_HEIGHT, boundingHeight)
+                                             .classed(css().selected(), true);
+            } finally {
+                // Stop propagration of click event to parent svg
+                D3.event().stopPropagation();
 
-            // Stop propagration of click event to parent svg
-            D3.event().stopPropagation();
+                // Broadcast the latest selection
+                fireSelectionEvent();
+            }
 
             return null;
         }

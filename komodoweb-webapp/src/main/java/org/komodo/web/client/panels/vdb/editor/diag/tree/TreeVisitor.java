@@ -87,7 +87,7 @@ public class TreeVisitor implements KObjectBeanVisitor<TreeData>, Constants {
     }
 
     private TreeData createTreeData(KomodoObjectBean kObject, ImageResource img, String name) {
-        TreeData data = new TreeData(tree);
+        TreeData data = new TreeData(tree, kObject);
         data.setHasChildren(kObject.hasChildren());
         data.setImage(img);
 
