@@ -1,0 +1,67 @@
+<!-- VdbPropertiesPanel.ui.xml -->
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" 
+                     xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+    <ui:style>
+    	.mainMargin {
+			margin: 0.5em
+		}
+
+		.label {
+			float: left;
+			margin-right: auto;
+			margin-bottom: 0.5em;
+		}
+
+		.textBox {
+			float: right;
+			margin-bottom: 0.5em;
+			font-size: 1em;
+		}
+
+		.clearFloat {
+			clear: both;
+		}
+
+		.descriptionLabel {
+			float: left;
+		}
+
+    	.descriptionText {
+			width: 95%;
+			margin-bottom: 0.5em;
+    	}
+
+		.rightAlign {
+			float: right;
+		}
+    </ui:style>
+
+    <g:FlowPanel styleName="{style.mainMargin}">
+        <g:FlowPanel>
+            <g:Label text="Name" styleName="{style.label}"/>
+            <g:TextBox ui:field="nameBox" styleName="{style.textBox}"/>
+        </g:FlowPanel>
+
+        <g:FlowPanel styleName="{style.clearFloat}">
+            <g:Label text="Version" styleName="{style.label}"/>
+            <g:TextBox ui:field="versionBox" styleName="{style.textBox}"/>
+        </g:FlowPanel>
+
+        <g:FlowPanel styleName="{style.clearFloat}">
+            <g:Label text="Description" styleName="{style.descriptionLabel}"/>
+            <g:TextArea ui:field="descriptionArea" styleName="{style.descriptionText}"/>
+        </g:FlowPanel>
+
+        <g:FlowPanel styleName="{style.clearFloat}, {style.rightAlign}">
+            <g:CheckBox text="Preview" ui:field="previewBox"/>
+        </g:FlowPanel>
+
+        <g:FlowPanel styleName="{style.clearFloat}">
+            <g:Button ui:field="applyButton" text="Apply" styleName="{style.rightAlign}"/>
+        </g:FlowPanel>
+
+    </g:FlowPanel>    
+
+</ui:UiBinder>

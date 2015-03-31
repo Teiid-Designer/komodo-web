@@ -23,25 +23,25 @@ package org.komodo.web.client.panels.vdb.editor;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import org.komodo.web.client.panels.vdb.editor.diag.DiagramCss;
+import org.komodo.web.client.panels.vdb.editor.diag.tree.TreeCanvas;
+import org.komodo.web.client.panels.vdb.editor.diag.tree.TreeVisitor;
 import org.komodo.web.share.Constants;
-import com.github.gwtd3.api.Colors;
-import com.github.gwtd3.api.D3;
-import com.github.gwtd3.api.core.Selection;
-import com.github.gwtd3.api.core.Transform;
-import com.github.gwtd3.api.svg.Symbol;
-import com.github.gwtd3.api.svg.Symbol.Type;
+import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.HasSelectionHandlers;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  *
  */
 @Dependent
-public class VdbEditor extends FlowPanel implements Constants {
+public class VdbEditor extends FlowPanel implements HasSelectionHandlers<KomodoObjectBean[]>, Constants {
 
     /**
      * Bundle for css
@@ -57,21 +57,13 @@ public class VdbEditor extends FlowPanel implements Constants {
          * @return css for this editor
          */
         @Source("VdbEditor.css")
-        public EditorCss css();
+        public DiagramCss css();
     }
 
-    /**
-     * Editor css
-     */
-    interface EditorCss extends CssResource {
-        String css();
-    }
-
-    private Selection svg;
-    private Symbol symbols;
-    private Integer width = 1024;
-    private Integer height = 768;
-    private final EditorCss css;
+    private TreeCanvas canvas;
+    private Integer width = 1024; // in px
+    private Integer height = 2048; // in px
+    private final DiagramCss css;
 
     /**
      * Constructor
@@ -85,6 +77,7 @@ public class VdbEditor extends FlowPanel implements Constants {
 
     @PostConstruct
     private void init() {
+
         // Set the title of this panel - visible in the source of the web page
         setTitle(VDB_EDITOR);
 
@@ -92,34 +85,23 @@ public class VdbEditor extends FlowPanel implements Constants {
         setWidth(width + Unit.PX.getType());
         setHeight(height + Unit.PX.getType());
 
-        // Construct the symbol generator
-        symbols = D3.svg().symbol();
-
-        // Create the svg canvas by selecting the 'div' of this panel and
-        // appending an 'svg' div and inside that a 'g' div
-        svg = D3.select(this)
-                    .append(SVG_ELEMENT)
-                    .append(GROUP_ELEMENT);
-
-        addSymbol();
-        addSymbol();
-        addSymbol();
+        canvas = new TreeCanvas(this, width, height, css);
+        canvas.setSelectionHandler(this);
     }
 
-    protected void addSymbol() {
-        symbols.type(Type.values()[Random.nextInt(Type.values().length)]);
-        symbols.size(Random.nextInt(2500) + 25);
+    /**
+     * Set the editor content based on the given vdb
+     *
+     * @param vdb the komodo object representing the vdb
+     */
+    public void setContent(KomodoObjectBean vdb) {
+        // Set the content of the editor
+        TreeVisitor visitor = new TreeVisitor(canvas);
+        vdb.accept(visitor, visitor.createContext(null));
+    }
 
-        svg.append(SVG_PATH)
-                .classed(css.css(), true)
-                .attr(SVG_TRANSFORM,
-                        Transform
-                                .parse("")
-                                .translate(Random.nextInt(width),
-                                        Random.nextInt(height)).toString())
-                .attr("d", symbols.generate(1.0))
-                .style("fill",
-                        Colors.rgb(Random.nextInt(255), Random.nextInt(255),
-                                Random.nextInt(255)).toHexaString());
+    @Override
+    public HandlerRegistration addSelectionHandler(SelectionHandler<KomodoObjectBean[]> handler) {
+        return addHandler(handler, SelectionEvent.getType());
     }
 }

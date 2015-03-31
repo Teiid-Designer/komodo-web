@@ -15,9 +15,14 @@
  */
 package org.komodo.web.backend.server.services.util;
 
+import java.util.Arrays;
+import org.komodo.spi.KException;
 import org.komodo.spi.repository.KomodoObject;
+import org.komodo.spi.repository.Property;
+import org.komodo.spi.repository.PropertyValueType;
 import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.komodo.web.share.beans.KomodoObjectPropertyBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 
 
@@ -49,7 +54,7 @@ public class Utils {
 	}
 
 	/**
-	 * Create a VDB object
+	 * Create a Komodo Object Bean
 	 *
 	 * @param kObj the komodo object
 	 * @return the komodo object bean
@@ -71,6 +76,15 @@ public class Utils {
 			objBean.setType(kObj.getTypeIdentifier(transaction));
 			objBean.setIsVirtual(RelationalIdentifier.isVirtual(kObj, transaction));
 
+			String[] propertyNames = kObj.getPropertyNames(transaction);
+
+			if (propertyNames.length > 0) {
+			    for (String propertyName : propertyNames) {
+			        KomodoObjectPropertyBean propertyBean = createKomodoObjectPropertyBean(kObj, propertyName, transaction);
+			        objBean.add(propertyBean);
+			    }
+			}
+
 			transaction.commit();
 
 		} catch (Exception e) {
@@ -79,6 +93,64 @@ public class Utils {
 		
 		return objBean;
 	}
-	
+
+    /**
+     * Create a Komodo Object Property Bean
+     *
+     * @param kObj the komodo object
+     * @param propertyName the name of the property
+     * @param uow the transaction (can be null)
+     * @return the property bean
+     * @throws KException if error occurs
+     */
+    public KomodoObjectPropertyBean createKomodoObjectPropertyBean(KomodoObject kObj, String propertyName, UnitOfWork uow) throws KException {
+        UnitOfWork transaction = uow;
+
+        if (uow == null) {
+            transaction = kObj.getRepository().createTransaction("komodo-object-prop-bean", true, null); //$NON-NLS-1$
+        }
+
+        assert (transaction != null);
+
+        try {
+            Property property = kObj.getProperty(transaction, propertyName);
+            boolean isMultiple = property.isMultiple(transaction);
+            PropertyValueType valueType = property.getValueType(transaction);
+
+            KomodoObjectPropertyBean propertyBean = new KomodoObjectPropertyBean();
+
+            propertyBean.setName(propertyName);
+            propertyBean.setValueType(valueType);
+            propertyBean.setMultiple(isMultiple);
+
+            Object value = null;
+            if (isMultiple) {
+                value = Arrays.asList(property.getValues(transaction));
+            } else
+                value = property.getValue(transaction);
+
+            switch (valueType) {
+                case BIG_DECIMAL:
+                case BOOLEAN:
+                case DOUBLE:
+                case INTEGER:
+                case LONG:
+                case CALENDAR:
+                case STRING:
+                    // All these type are serializable so set as is
+                    propertyBean.setValue(value);
+                    break;
+                case UNDEFINED:
+                default:
+                    break;
+            }
+
+            return propertyBean;
+        } finally {
+            if (uow == null) {
+                transaction.commit();
+            }
+        }
+    }
 }
 
