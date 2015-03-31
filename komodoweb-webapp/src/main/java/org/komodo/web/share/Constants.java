@@ -143,6 +143,6 @@ public interface Constants extends StringConstants {
     
     
     /* Vdb Editor */
-    String VDB_EDIT_SCROLLPANEL = "vdb-edit-scrollpanel";
+    String VDB_EDIT_DIAG_SCROLLPANEL = "vdb-edit-diagram-scrollpanel";
     String VDB_EDITOR = "vdb-editor";
 }

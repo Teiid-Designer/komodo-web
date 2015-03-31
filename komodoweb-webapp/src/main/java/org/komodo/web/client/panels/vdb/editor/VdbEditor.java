@@ -61,8 +61,8 @@ public class VdbEditor extends FlowPanel implements HasSelectionHandlers<KomodoO
     }
 
     private TreeCanvas canvas;
-    private Integer width = 1024;
-    private Integer height = 2048;
+    private Integer width = 1024; // in px
+    private Integer height = 2048; // in px
     private final DiagramCss css;
 
     /**
