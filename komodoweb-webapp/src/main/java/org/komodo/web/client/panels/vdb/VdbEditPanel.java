@@ -27,15 +27,15 @@ import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
@@ -57,13 +57,13 @@ public class VdbEditPanel extends Composite implements SelectionHandler<KomodoOb
     private static final Double BORDER_WIDTH = 0.1; // in em
 
     @Inject @DataField("vdb-edit-panel")
-    private HorizontalPanel basePanel;
+    private FlowPanel basePanel;
 
     @Inject
     private VdbEditor editor;
 
     @Inject
-    private VerticalPanel objectPropertiesPanel;
+    private FlowPanel objectPropertiesPanel;
 
     @Inject
     private PropertiesPanelFactory panelFactory;
@@ -75,7 +75,7 @@ public class VdbEditPanel extends Composite implements SelectionHandler<KomodoOb
         editor.addSelectionHandler(this);
 
         scroller.setTitle(VDB_EDIT_DIAG_SCROLLPANEL);
-        scroller.setWidth(EDIT_PANEL_WIDTH + Unit.EM.getType());
+        scroller.setWidth(DIAGRAM_PANEL_WIDTH + Unit.EM.getType());
         scroller.setHeight(EDIT_PANEL_HEIGHT + Unit.EM.getType());
 
         Style style = scroller.getElement().getStyle();
@@ -87,19 +87,62 @@ public class VdbEditPanel extends Composite implements SelectionHandler<KomodoOb
 
     private Widget createObjectPropertiesPanel() {
         Style objPropPanelStyle = objectPropertiesPanel.getElement().getStyle();
-        objPropPanelStyle.setWidth(panelFactory.getParentWidth(), Unit.EM);
-        objPropPanelStyle.setHeight(panelFactory.getParentHeight(), Unit.EM);
-        objPropPanelStyle.setPaddingLeft(0.5, Unit.EM);
-        objPropPanelStyle.setPaddingRight(0.5, Unit.EM);
-        objPropPanelStyle.setPaddingBottom(0.5, Unit.EM);
+
+        /*
+         * Want to position the properties panel so its always to the right
+         * of the diagram panel, even when zoomed in. Float: left fails to
+         * work at this point since zoom in enough and the properties
+         * panel jumps down below.
+         */
+
+        /*
+         * Set the position of the properties panel to absolute so that we
+         * are now in charge of its location
+         */
+        objPropPanelStyle.setPosition(Position.ABSOLUTE);
+
+        /*
+         * Set its position as being on same level as diagram panel
+         */
+        objPropPanelStyle.setTop(0, Unit.EM);
+
+        /*
+         * Move it to the right of the diagram panel which is the
+         * diagram panel width + border width + an extra 2 units
+         * to account for the vertical scrollbar width
+         */
+        objPropPanelStyle.setLeft(DIAGRAM_PANEL_WIDTH + BORDER_WIDTH + 2, Unit.EM);
+
+        /*
+         * Set its width and height to appropriate values
+         */
+        objPropPanelStyle.setWidth(DIAGRAM_PANEL_WIDTH / 2.5, Unit.EM);
+        objPropPanelStyle.setHeight(EDIT_PANEL_HEIGHT, Unit.EM);
+
+        /*
+         * Set its background colour to a subtle shade that just frames the panel
+         */
         objPropPanelStyle.setBackgroundColor("#fAfAfA"); //$NON-NLS-1$
 
+        /*
+         * Add the title
+         */
         Label propertyTitle = new Label("Property Editor"); //$NON-NLS-1$
         Style titleStyle = propertyTitle.getElement().getStyle();
+
+        /*
+         * Centre the title
+         * Set its font size and make it bold
+         * Set its height as this ensures a value we can know when
+         * passing on the remaining content area to the sub panels, ie.
+         * SUB_PANEL_HEIGHT = DIAGRAM_PANEL_HEIGHT
+         *                                          - PROPERTY_TITLE_HEIGHT + (BORDER_WIDTH * 2)
+         */
         titleStyle.setTextAlign(TextAlign.CENTER);
         titleStyle.setFontSize(1, Unit.EM);
         titleStyle.setFontWeight(FontWeight.BOLD);
         titleStyle.setLineHeight(PROPERTY_TITLE_HEIGHT, Unit.EM);
+        titleStyle.setHeight(PROPERTY_TITLE_HEIGHT, Unit.EM);
         objectPropertiesPanel.add(propertyTitle);
 
         return objectPropertiesPanel;
@@ -117,7 +160,7 @@ public class VdbEditPanel extends Composite implements SelectionHandler<KomodoOb
     protected void postConstruct() {
         basePanel.add(createDiagramPanel());
 
-        panelFactory.setParentDimensions(EDIT_PANEL_WIDTH / 2,
+        panelFactory.setParentDimensions(DIAGRAM_PANEL_WIDTH / 2.5,
                                                              (EDIT_PANEL_HEIGHT - PROPERTY_TITLE_HEIGHT +
                                                              (BORDER_WIDTH * 2)));
         Widget panel = createObjectPropertiesPanel();

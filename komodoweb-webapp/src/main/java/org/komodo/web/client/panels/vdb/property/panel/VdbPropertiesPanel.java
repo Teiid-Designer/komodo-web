@@ -23,18 +23,22 @@ package org.komodo.web.client.panels.vdb.property.panel;
 
 import org.komodo.web.client.panels.vdb.property.PropertiesPanelDescriptor;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Properties panel for the top-level vdb node
  */
-public class VdbPropertiesPanel extends VerticalPanel {
+@UiTemplate("./VdbPropertiesPanel.ui.xml")
+public class VdbPropertiesPanel extends Composite {
 
     /**
      * Descriptor for this panel
@@ -59,21 +63,28 @@ public class VdbPropertiesPanel extends VerticalPanel {
         }
     }
 
-    private Label nameLabel = new Label("Name"); //$NON-NLS-1$
+    interface VdbPropertiesPanelUiBinder extends UiBinder<Widget, VdbPropertiesPanel> {
+        // Nothing required
+    }
 
-    private TextBox name = new TextBox();
+    private static VdbPropertiesPanelUiBinder uiBinder = GWT.create(VdbPropertiesPanelUiBinder.class);
 
-    private Label versionLabel = new Label("Version"); //$NON-NLS-1$
+    @UiField
+    TextBox nameBox;
 
-    private TextBox version = new TextBox();
+    @UiField
+    TextBox versionBox;
 
-    private Label descriptionLabel = new Label("Version"); //$NON-NLS-1$
+    @UiField
+    TextArea descriptionArea;
 
-    private TextArea description = new TextArea();
+    @UiField
+    CheckBox previewBox;
 
-    private CheckBox previewBox = new CheckBox("Preview Vdb"); //$NON-NLS-1$
+    @UiField
+    Button applyButton;
 
-    private Button applyButton = new Button("Apply"); //$NON-NLS-1$
+    KomodoObjectBean kObject;
 
     /**
      * Create new instance
@@ -82,24 +93,7 @@ public class VdbPropertiesPanel extends VerticalPanel {
      * @param parentHeight parent height
      */
     protected VdbPropertiesPanel(double parentWidth, double parentHeight) {
-
-        HorizontalPanel namePanel = new HorizontalPanel();
-        namePanel.add(nameLabel);
-        namePanel.add(name);
-
-        HorizontalPanel versionPanel = new HorizontalPanel();
-        versionPanel.add(versionLabel);
-        versionPanel.add(version);
-
-        HorizontalPanel descriptionPanel = new HorizontalPanel();
-        descriptionPanel.add(descriptionLabel);
-        descriptionPanel.add(description);
-
-        add(namePanel);
-        add(versionPanel);
-        add(descriptionPanel);
-        add(previewBox);
-        add(applyButton);
+        initWidget(uiBinder.createAndBindUi(this));
     }
     
 }
