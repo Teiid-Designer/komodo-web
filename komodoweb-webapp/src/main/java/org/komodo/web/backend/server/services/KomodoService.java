@@ -48,7 +48,9 @@ public class KomodoService implements IKomodoService {
 	private static KEngine kEngine;
 
 	private WorkspaceManager wsManager;
-	
+
+	private Utils utils;
+
     /**
      * Constructor.
      */
@@ -62,6 +64,13 @@ public class KomodoService implements IKomodoService {
         }
 
         return wsManager;
+    }
+
+    private Utils getUtils() {
+        if (utils == null)
+            utils = Utils.getInstance();
+
+        return utils;
     }
 
     @Override
@@ -147,7 +156,7 @@ public class KomodoService implements IKomodoService {
     	if(!isKEngineStarted()) {
     		startKEngine();
     	}
-   	    Utils utils = Utils.getInstance();
+
     	List<KomodoObjectBean> result = new ArrayList<KomodoObjectBean>();
     	
   		Repository repo = kEngine.getDefaultRepository();
@@ -167,7 +176,7 @@ public class KomodoService implements IKomodoService {
 		}
 		if(children!=null && children.length>0) {
 			for(KomodoObject child : children) {
-				result.add(utils.createKomodoObjectBean(child));
+				result.add(getUtils().createKomodoObjectBean(child));
 			}
 		}
 
@@ -179,13 +188,13 @@ public class KomodoService implements IKomodoService {
 		if(!isKEngineStarted()) {
 			startKEngine();
 		}
-		Utils utils = Utils.getInstance();
+
 		KomodoObjectBean result = null;
 
 		Vdb newVdb;
 		try {
 			newVdb = getWorkspaceManager().createVdb(null, null, vdbName, "extPath"); //$NON-NLS-1$
-			result = utils.createKomodoObjectBean(newVdb);
+			result = getUtils().createKomodoObjectBean(newVdb);
 		} catch (KException ex) {
 			throw new KomodoUiException(ex);
 		}
