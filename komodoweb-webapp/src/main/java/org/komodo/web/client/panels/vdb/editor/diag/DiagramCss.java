@@ -28,11 +28,23 @@ import com.google.gwt.resources.client.CssResource;
  */
 public interface DiagramCss extends CssResource {
 
+    /**
+     * @return css class
+     */
     String css();
 
+    /**
+     * @return link class
+     */
     String link();
 
+    /**
+     * @return node class
+     */
     String node();
 
+    /**
+     * @return selected class
+     */
     String selected();
 }

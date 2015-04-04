@@ -28,12 +28,15 @@ import org.komodo.relational.workspace.WorkspaceManager;
 import org.komodo.repository.LocalRepository;
 import org.komodo.spi.KException;
 import org.komodo.spi.repository.KomodoObject;
+import org.komodo.spi.repository.Property;
 import org.komodo.spi.repository.Repository;
 import org.komodo.spi.repository.RepositoryClient.State;
 import org.komodo.spi.repository.RepositoryObserver;
 import org.komodo.utils.KLog;
+import org.komodo.web.backend.server.services.util.JsonTreeVisitor;
 import org.komodo.web.backend.server.services.util.Utils;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.komodo.web.share.beans.KomodoObjectPropertyBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
 
@@ -150,7 +153,30 @@ public class KomodoService implements IKomodoService {
     	
     	return isStarted;
     }
-    
+
+    @Override
+    public KomodoObjectBean getKomodoNode(final String path) throws KomodoUiException {
+        if(!isKEngineStarted()) {
+            startKEngine();
+        }
+
+        Repository repo = kEngine.getDefaultRepository();
+
+        try {
+            if(path == null)
+                return null;
+
+            KomodoObject kObj = repo.getFromWorkspace(null, path);
+            if (kObj == null)
+                return null;
+
+            return getUtils().createKomodoObjectBean(kObj);
+
+        } catch (KException e) {
+            throw new KomodoUiException(e);
+        }
+    }
+
     @Override
     public List<KomodoObjectBean> getKomodoNodes(final String kObjPath) throws KomodoUiException {
     	if(!isKEngineStarted()) {
@@ -247,6 +273,54 @@ public class KomodoService implements IKomodoService {
 
 		return vdbDdl;
 	}
+
+	@Override
+    public String deriveJsonTree(String kObjectPath) throws KomodoUiException {
+        try {
+            Repository repo = kEngine.getDefaultRepository();
+            KomodoObject kObject = repo.getFromWorkspace(null, kObjectPath);
+            if (kObject == null) {
+                // No longer valid
+                throw new KException("Komodo Object at path " + kObjectPath + " is no longer valid"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            KomodoObjectBean kObjectBean = getUtils().createKomodoObjectBean(kObject);
+            JsonTreeVisitor visitor = new JsonTreeVisitor(this);
+            kObjectBean.accept(visitor, visitor.createContext(null));
+            return visitor.getDefinition();
+        }
+        catch (KException e) {
+            throw new KomodoUiException(e);
+        }
+    }
+
+    @Override
+    public KomodoObjectPropertyBean updateProperty(KomodoObjectPropertyBean propBean) throws KomodoUiException {
+        try {
+            Repository repo = kEngine.getDefaultRepository();
+            KomodoObject kObject = repo.getFromWorkspace(null, propBean.getParent());
+            if (kObject == null) {
+                // No longer valid
+                throw new KException("Komodo Object Bean is no longer valid"); //$NON-NLS-1$
+            }
+
+            String name = propBean.getName();
+            Object value = propBean.getValue();
+
+            Property property = kObject.getProperty(null, name);
+            Object currentValue = property.getValue(null);
+            if (value == null && currentValue == null)
+                return propBean;
+
+            if (value != null && value.equals(currentValue))
+                return propBean;
+
+            property.set(null, value);
+            return propBean;
+        } catch (KException e) {
+            throw new KomodoUiException(e);
+        }
+    }
 
 	protected static LocalRepository _repo = null;
 

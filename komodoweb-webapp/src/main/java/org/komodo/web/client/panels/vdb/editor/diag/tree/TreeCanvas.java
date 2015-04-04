@@ -21,10 +21,12 @@
  */
 package org.komodo.web.client.panels.vdb.editor.diag.tree;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 import org.komodo.web.client.panels.vdb.editor.diag.DiagramCss;
+import org.komodo.web.client.services.KomodoRpcService;
+import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import com.github.gwtd3.api.D3;
 import com.github.gwtd3.api.arrays.Array;
@@ -41,12 +43,11 @@ import com.github.gwtd3.api.layout.Link;
 import com.github.gwtd3.api.layout.Tree;
 import com.github.gwtd3.api.svg.Diagonal;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
 import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -90,11 +91,7 @@ public class TreeCanvas extends TreeCanvasUtilities {
 
     private final LinkIdMappingCallback linkIdMappingCallback;
 
-    private final StringPropertyCallback iconLinkCallback;
-
-    private final StringPropertyCallback iconWidthCallback;
-
-    private final StringPropertyCallback iconHeightCallback;
+    private final ImageResourceCallback imageResourceCallback;
 
     private final StringPropertyCallback labelCallback;
 
@@ -112,15 +109,11 @@ public class TreeCanvas extends TreeCanvasUtilities {
 
     private int parentHeight;
 
-    private TreeData rootData;
-
-    private final AtomicInteger intGenerator;
+    private String rootObjectPath;
 
     private TreeNode root;
 
     private HasSelectionHandlers<KomodoObjectBean[]> selectionHandler;
-
-    private final Map<Integer, TreeData> treeDataMap = new HashMap<Integer, TreeData>();
 
     /**
      * @param widget the widget to place the canvas on
@@ -133,7 +126,6 @@ public class TreeCanvas extends TreeCanvasUtilities {
         this.parentWidth = width;
         this.parentHeight = height;
         this.css = css;
-        this.intGenerator = new AtomicInteger(Integer.MIN_VALUE);
 
         this.layout = D3.layout().tree().size(width, height);
 
@@ -170,9 +162,7 @@ public class TreeCanvas extends TreeCanvasUtilities {
         this.nodeIdMappingCallback = new NodeIdMappingCallback();
         this.linkIdMappingCallback = new LinkIdMappingCallback();
 
-        this.iconLinkCallback = new StringPropertyCallback(ICON);
-        this.iconWidthCallback = new StringPropertyCallback(ICON_WIDTH);
-        this.iconHeightCallback = new StringPropertyCallback(ICON_HEIGHT);
+        this.imageResourceCallback = new ImageResourceCallback();
 
         this.labelCallback = new StringPropertyCallback(NAME);
 
@@ -228,10 +218,10 @@ public class TreeCanvas extends TreeCanvasUtilities {
         if (selectionHandler == null)
             return;
 
-        String selectedClass = DOT + css().selected();
-        Selection selection = svgGroup.selectAll(selectedClass);
+        final List<KomodoObjectBean> selectedObjects = new ArrayList<KomodoObjectBean>();
 
-        final KomodoObjectBean[] selected = new KomodoObjectBean[selection.size()];
+        String selectedClass = DOT + css().selected();
+        final Selection selection = svgGroup.selectAll(selectedClass);
 
         /*
          * The selection contains the rectangles used for displaying the selection
@@ -240,42 +230,45 @@ public class TreeCanvas extends TreeCanvasUtilities {
         selection.each(new DatumFunction<Void>() {
 
             @Override
-            public Void apply(Element element, Value jsNode, int index) {
+            public Void apply(Element element, Value jsNode, final int index) {
                 Value idValue = jsNode.getProperty(ID);
-                int id = idValue.asInt();
-                TreeData treeData = treeDataMap.get(id);
-                if (treeData == null)
-                    return null;
+                String path = idValue.asString();
 
-                selected[index] = treeData.getSource();
+                KomodoRpcService service = KomodoRpcService.get();
+                service.getKomodoNode(path, new IRpcServiceInvocationHandler<KomodoObjectBean>() {
+
+                    @Override
+                    public void onReturn(KomodoObjectBean kObject) {
+                        selectedObjects.add(kObject);
+
+                        if (index == selection.size() - 1)
+                            SelectionEvent.fire(selectionHandler, selectedObjects.toArray(new KomodoObjectBean[0]));
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+                        Window.alert("Failed to process the selected nodes: " + error.getMessage()); //$NON-NLS-1$
+                        LOGGER.log(Level.SEVERE, "Node selection failure", error); //$NON-NLS-1$
+                    }
+                });
 
                 return null;
             }
         });
-
-        SelectionEvent.fire(selectionHandler, selected);
-    }
-
-    /**
-     * @return a unique id
-     */
-    int createId() {
-        return intGenerator.incrementAndGet();
-    }
-
-    void addData(TreeData treeData) {
-        treeDataMap.put(treeData.getId(), treeData);
     }
 
     /**
      * Set the root data object
      *
-     * @param rootData the root data
+     * @param kObject the root object
      */
-    public void setRootData(TreeData rootData) {
-        this.rootData = rootData;
-    }
+    public void setContent(KomodoObjectBean kObject) {
+        this.rootObjectPath = kObject.getPath();
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Setting canvas content to " + kObject.getPath()); //$NON-NLS-1$
 
+        update();
+    }
 
     /*
      * Update all new, existing and outdated links
@@ -335,21 +328,35 @@ public class TreeCanvas extends TreeCanvasUtilities {
                                    .on(HTML_CLICK, expandCollapseListener);
     }
 
+    private void setImage(Selection nodesGroup) {
+        Selection imgSelection = nodesGroup.select(HTML_IMAGE);
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Setting image on " + imgSelection.size() + " nodes"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        imgSelection.each(imageResourceCallback);
+    }
+
     /*
      * Append the image to each new node
      */
-    private void addImage(Selection enterNodesGroup) {
-        Selection imgSelection = enterNodesGroup.append(HTML_IMAGE);
+    private void addImage(Selection selection) {
+        Selection imgSelection = selection.append(HTML_IMAGE);
 
         /*
          * Centre the icon above the circle
          */
         imgSelection.attr(HTML_X, IMAGE_X);
         imgSelection.attr(HTML_Y, IMAGE_Y);
+        imgSelection.each(imageResourceCallback);
+        setImage(selection);
+    }
 
-        imgSelection.attr(HTML_XLINK_REF, iconLinkCallback);
-        imgSelection.attr(HTML_WIDTH, iconWidthCallback);
-        imgSelection.attr(HTML_HEIGHT, iconHeightCallback);
+    private void setLabel(Selection selection) {
+        Selection txtSelection = selection.select(HTML_TEXT);
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Setting labels on " + txtSelection.size() + " nodes"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        txtSelection.text(labelCallback);
     }
 
     /*
@@ -368,7 +375,7 @@ public class TreeCanvas extends TreeCanvasUtilities {
         txtSelection.attr(HTML_TEXT_ANCHOR, MIDDLE);
         txtSelection.style(CSS_FILL_OPACITY, 1);
         txtSelection.attr(HTML_DY, IMAGE_Y - 5);
-        txtSelection.text(labelCallback);
+        setLabel(enterNodesGroup);
     }
 
     @Override
@@ -386,6 +393,9 @@ public class TreeCanvas extends TreeCanvasUtilities {
          * Set the y location of the nodes based on the depth
          * of each node in the hierarchy
          */
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Setting Y location of each node according to depth"); //$NON-NLS-1$
+
         nodes.forEach(nodeYLocationCallback);
 
         /*
@@ -394,43 +404,61 @@ public class TreeCanvas extends TreeCanvasUtilities {
         String nodeSelector = GROUP_ELEMENT + DOT + css.node();
         Selection nodeSelection = svgGroup.selectAll(nodeSelector);
 
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Size of existing node selection: " + nodeSelection.size()); //$NON-NLS-1$
+
         /*
          * Map and append all new nodes from the data array
          * to the node selection
          */
         UpdateSelection updateNodeSelection = nodeSelection.data(nodes, nodeIdMappingCallback);
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Size of updating node selection: " + updateNodeSelection.size()); //$NON-NLS-1$
 
         /*
          * Selection of new nodes being added to layout
          */
         EnteringSelection enterNodes = updateNodeSelection.enter();
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Have new nodes? " + ! enterNodes.empty()); //$NON-NLS-1$
 
-        /*
-         * Add group element to enter nodes
-         */
-        Selection enterNodesGroup = enterNodes.append(GROUP_ELEMENT);
+        if (! enterNodes.empty()) {
+            /*
+             * Add group element to enter nodes
+             */
+            Selection enterNodesGroup = enterNodes.append(GROUP_ELEMENT);
 
-        /*
-         * Adds the click handler to new nodes
-         */
-        enterNodesGroup.classed(css.node(), true)
-                                   .attr(SVG_TRANSFORM, SVG_TRANSLATE + OPEN_BRACKET +
+            /*
+             * Adds the click handler to new nodes
+             */
+            enterNodesGroup.classed(css.node(), true)
+                                       .attr(SVG_TRANSFORM, SVG_TRANSLATE + OPEN_BRACKET +
                                                                                  source.getNumAttr(HTML_X) + COMMA +
                                                                                  source.getNumAttr(HTML_Y) + CLOSE_BRACKET)
-                                   .attr(ID, groupIdCallback)
-                                   .on(HTML_CLICK, selectionListener);
+                                       .attr(ID, groupIdCallback)
+                                       .on(HTML_CLICK, selectionListener);
 
-        addLabel(enterNodesGroup);
+            addLabel(enterNodesGroup);
 
-        addImage(enterNodesGroup);
+            addImage(enterNodesGroup);
 
-        addChildrenIndicator(enterNodesGroup);
+            addChildrenIndicator(enterNodesGroup);
+        }
+
+        /*
+         * Update the label and image for each displayed node
+         */
+        setLabel(updateNodeSelection);
+        setImage(updateNodeSelection);
 
         /*
          * Animate new nodes, ie. child nodes being displayed after expanding parent, 
          * using a transition. This will move the new nodes from parent nodes to their
          * final destination.
          */
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Animate transition of expanding nodes"); //$NON-NLS-1$
+
         Transition nodeUpdate = updateNodeSelection.transition()
                                                         .duration(TRANSITION_DURATION)
                                                         .attr(SVG_TRANSFORM, nodeEnterTransformCallback);
@@ -445,6 +473,9 @@ public class TreeCanvas extends TreeCanvasUtilities {
          * Animate the removal of nodes being removed from the diagram
          * when a parent node is contracted.
          */
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Animate transition of removal of collapsing nodes"); //$NON-NLS-1$
+
         NodeExitTransformCallback nodeExitTransformCallback = new NodeExitTransformCallback(source);
         Transition nodeExit = updateNodeSelection.exit().transition()
                                                     .duration(TRANSITION_DURATION)
@@ -459,6 +490,9 @@ public class TreeCanvas extends TreeCanvasUtilities {
          * Update the locations of all remaining nodes based on where
          * the layout has now located them
          */
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Updating locations of all nodes"); //$NON-NLS-1$
+
         nodes.forEach(nodeUpdateLocationCallback);
 
         updateLinks(source, nodes);
@@ -469,39 +503,61 @@ public class TreeCanvas extends TreeCanvasUtilities {
      * the root node into the internal update process. 
      */
     public void update() {
-        if(this.rootData == null)
+        if(this.rootObjectPath == null)
             return;
 
-        String definition = this.rootData.toDefinition();
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Deriving json definition from root object"); //$NON-NLS-1$
 
-        /*
-         * Parse the json of the root data. As more children
-         * are added asynchronously to the root data's
-         * descendants, new nodes will be added and displayed.
-         */
-        JSONValue jsonValue = JSONParser.parseLenient(definition);
-        if (jsonValue == null)
-            return;
+        KomodoRpcService service = KomodoRpcService.get();
+        service.deriveJsonTree(this.rootObjectPath, new IRpcServiceInvocationHandler<String>() {
 
-        JSONObject jsonObject = jsonValue.isObject();
-        if (jsonObject == null)
-            return;
+            @Override
+            public void onReturn(String definition) {
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine("Definition of root object: " + definition); //$NON-NLS-1$
 
-       /*
-        * Casts the js object created by the parser to a tree node.
-        */
-        JavaScriptObject jsRoot = jsonObject.getJavaScriptObject();
-        root = jsRoot.<TreeNode>cast();
+                /*
+                 * Parse the json of the root data. As more children
+                 * are added asynchronously to the root data's
+                 * descendants, new nodes will be added and displayed.
+                 */
+                JavaScriptObject jsRoot = JsonUtils.safeEval(definition);
+                if (jsRoot == null) {
+                    String msg = "Failed to safely evaluate json definition for root object"; //$NON-NLS-1$
+                    Window.alert(msg);
+                    LOGGER.severe(msg);
+                    return;
+                }
 
-        /* Set the initial location of the root node */
-        root.setAttr(HTML_X, (parentWidth - 20) / 3);
-        root.setAttr(HTML_Y, TOP_MARGIN);
+               /*
+                * Casts the js object created by the parser to a tree node.
+                */
+                root = jsRoot.<TreeNode>cast();
 
-        /* Collapse everything but root initially */
-        if (root.children() != null) {
-            root.children().forEach(collapseCallback);
-        }
+                /* Set the initial location of the root node */
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine("Setting location of root object"); //$NON-NLS-1$
 
-        update(root);
+                root.setAttr(HTML_X, (parentWidth - 20) / 3);
+                root.setAttr(HTML_Y, TOP_MARGIN);
+
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine("Collapsing root object's grandchildren"); //$NON-NLS-1$
+
+                /* Collapse everything but root initially */
+                if (root.children() != null) {
+                    root.children().forEach(collapseCallback);
+                }
+
+                update(root);
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                Window.alert("An error occurred while drawing diagram. See console for more details."); //$NON-NLS-1$
+                LOGGER.log(Level.SEVERE, "Exception from deriving json tree from server", error); //$NON-NLS-1$
+            }
+        });
     }
 }

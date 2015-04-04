@@ -39,32 +39,26 @@ public class KomodoObjectBean {
     private Set<KomodoObjectPropertyBean> properties = new HashSet<KomodoObjectPropertyBean>();
 
     /**
-     * Constructor.
-     */
-    public KomodoObjectBean() {
-    }
-
-    /**
      * @return the name
      */
     public String getName() {
         return this.name;
     }
-    
-    /**
-     * @return the absolute path
-     */
-    public String getPath() {
-        return this.path;
-    }
-    
+
     /**
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    /**
+     * @return the absolute path
+     */
+    public String getPath() {
+        return this.path;
+    }
+
     /**
      * @param path the path
      */
@@ -146,6 +140,7 @@ public class KomodoObjectBean {
      * <code>KObjectBeanVisitor</code> <code>visit</code> method.
      *
      * @param visitor The KObjectBeanVisitor to be accepted.
+     * @param context Visitor context
      */
     public void accept(KObjectBeanVisitor visitor, VisitorContext context) {
 	    visitor.visit(this, context);

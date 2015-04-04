@@ -119,6 +119,7 @@ public class Utils {
 
             KomodoObjectPropertyBean propertyBean = new KomodoObjectPropertyBean();
 
+            propertyBean.setParent(kObj.getAbsolutePath());
             propertyBean.setName(propertyName);
             propertyBean.setValueType(valueType);
             propertyBean.setMultiple(isMultiple);

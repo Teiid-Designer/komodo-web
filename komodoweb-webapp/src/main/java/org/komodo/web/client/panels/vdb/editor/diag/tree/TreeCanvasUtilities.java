@@ -22,7 +22,9 @@
 package org.komodo.web.client.panels.vdb.editor.diag.tree;
 
 import java.util.logging.Logger;
+import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.panels.vdb.editor.diag.DiagramCss;
+import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.share.Constants;
 import com.github.gwtd3.api.Coords;
 import com.github.gwtd3.api.D3;
@@ -38,6 +40,7 @@ import com.github.gwtd3.api.svg.Diagonal;
 import com.github.gwtd3.api.svg.PathDataGenerator;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.resources.client.ImageResource;
 
 /**
  *
@@ -80,6 +83,19 @@ public abstract class TreeCanvasUtilities implements Constants {
      */
     public static final native int getBoundingHeight(Element e) /*-{
 		return e.getBBox().height;
+    }-*/;
+
+    /**
+     * @param e element
+     * @param namespace namespace of the attribute
+     * @param attribute the attribute
+     * @param value the value of the attribute
+     */
+    public static final native void setElementAttributeNS(Element e,
+                                                                                              String namespace,
+                                                                                              String attribute,
+                                                                                              String value) /*-{
+        return e.setAttributeNS(namespace, attribute, value);
     }-*/;
 
     /**
@@ -250,17 +266,17 @@ public abstract class TreeCanvasUtilities implements Constants {
      * The callback used to map the identifiers of
      * the nodes displayed.
      */
-    protected class NodeIdMappingCallback implements KeyFunction<Integer> {
+    protected class NodeIdMappingCallback implements KeyFunction<String> {
         @Override
-        public Integer map(Element context, Array<?> newDataArray, Value jsNode, int index) {
+        public String map(Element context, Array<?> newDataArray, Value jsNode, int index) {
             /*
              * jsNode has the properties gathered from the key/values
              * in the json data presented to the layout initially.
              */
             TreeNode treeNode = jsNode.<TreeNode> as();
             Value idValue = jsNode.getProperty(ID);
-            int id = idValue.asInt();
-            return ((treeNode.id() == -1) ? treeNode.id(id) : treeNode.id());
+            String id = idValue.asString();
+            return ((treeNode.id() == EMPTY_STRING) ? treeNode.id(id) : treeNode.id());
         }
     }
 
@@ -268,9 +284,9 @@ public abstract class TreeCanvasUtilities implements Constants {
      * The callback used to map the identifies of
      * the links displayed.
      */
-    protected class LinkIdMappingCallback implements KeyFunction<Integer> {
+    protected class LinkIdMappingCallback implements KeyFunction<String> {
         @Override
-        public Integer map(Element context, Array<?> newDataArray, Value jsNode, int index) {
+        public String map(Element context, Array<?> newDataArray, Value jsNode, int index) {
             return jsNode.<Link> as().target().<TreeNode> cast().id();
         }
     }
@@ -327,6 +343,30 @@ public abstract class TreeCanvasUtilities implements Constants {
             Value propertyValue = jsNode.getProperty(propertyName);
             String property = propertyValue.asString();
             return property;
+        }
+    }
+
+    /**
+     * Generic property callback used to find and return
+     * the property value of the property with the given
+     * name.
+     */
+    protected class ImageResourceCallback implements DatumFunction<Void> {
+
+        @Override
+        public Void apply(Element context, Value jsNode, int index) {
+            Value propertyValue = jsNode.getProperty(TYPE);
+            String kType = propertyValue.asString();
+            ImageResource imageResource = getImage(KomodoType.getKomodoType(kType));
+
+            /*
+             * setAttribute will just set the attribute name to xlink:href and not
+             * treat it as a ns prefix.
+             */
+            setElementAttributeNS(context, XLINK_NAMESPACE, HTML_HREF, imageResource.getSafeUri().asString());
+            context.setAttribute(HTML_WIDTH, Integer.toString(imageResource.getWidth()));
+            context.setAttribute(HTML_HEIGHT, Integer.toString(imageResource.getHeight()));
+            return null;
         }
     }
 
@@ -418,6 +458,82 @@ public abstract class TreeCanvasUtilities implements Constants {
             return SVG_TRANSLATE + OPEN_BRACKET +
                         source.x() + COMMA +
                         source.y() + CLOSE_BRACKET;
+        }
+    }
+
+    /**
+     * @param kType the komodo type
+     * @return the associated image for the given komodo type
+     */
+    public static ImageResource getImage(KomodoType kType) {
+        if (kType == null)
+            kType = KomodoType.UNKNOWN;
+
+        switch (kType) {
+            case VDB:
+                return AppResource.INSTANCE.images().diagVdb_Image();
+            case MODEL:
+                return AppResource.INSTANCE.images().diagModel_Image();
+            case VDB_MODEL_SOURCE:
+                return AppResource.INSTANCE.images().diagSource_Image();
+            case VDB_TRANSLATOR:
+                return AppResource.INSTANCE.images().diagTranslator_Image();
+            case VDB_IMPORT:
+                return AppResource.INSTANCE.images().diagVdbImport_Image();
+            case VDB_DATA_ROLE:
+                return AppResource.INSTANCE.images().diagDataRole_Image();
+            case VDB_PERMISSION:
+                return AppResource.INSTANCE.images().diagPermission_Image();
+            case VDB_CONDITION:
+                return AppResource.INSTANCE.images().diagCondition_Image();
+            case VIEW:
+                return AppResource.INSTANCE.images().diagView_Image();
+            case PARAMETER:
+                return AppResource.INSTANCE.images().diagParameter_Image();
+            case TABULAR_RESULT_SET:
+                return AppResource.INSTANCE.images().diagResultSet_Image();
+            case DATA_TYPE_RESULT_SET:
+                return AppResource.INSTANCE.images().diagDataTypeResultSet_Image();
+            case VDB_MASK:
+                return AppResource.INSTANCE.images().diagMask_Image();
+            case ACCESS_PATTERN:
+                return AppResource.INSTANCE.images().diagAccessPattern_Image();
+            case COLUMN:
+                return AppResource.INSTANCE.images().diagColumn_Image();
+            case RESULT_SET_COLUMN:
+                return AppResource.INSTANCE.images().diagResultSetColumn_Image();
+            case USER_DEFINED_FUNCTION:
+                return AppResource.INSTANCE.images().diagUsedDefinedFunction_Image();
+            case UNIQUE_CONSTRAINT:
+                return AppResource.INSTANCE.images().diagUniqueConstraint_Image();
+            case TABLE:
+                return AppResource.INSTANCE.images().diagTable_Image();
+            case STORED_PROCEDURE:
+                return AppResource.INSTANCE.images().diagStoredProcedure_Image();
+            case VIRTUAL_PROCEDURE:
+                return AppResource.INSTANCE.images().diagVirtualProcedure_Image();
+            case STATEMENT_OPTION:
+                return AppResource.INSTANCE.images().diagStatementOption_Image();
+            case SCHEMA:
+                return AppResource.INSTANCE.images().diagSchema_Image();
+            case PUSHDOWN_FUNCTION:
+                return AppResource.INSTANCE.images().diagPushdownFunction_Image();
+            case INDEX:
+                return AppResource.INSTANCE.images().diagIndex_Image();
+            case FOREIGN_KEY:
+                return AppResource.INSTANCE.images().diagForeignKey_Image();
+            case PRIMARY_KEY:
+                return AppResource.INSTANCE.images().diagPrimaryKey_Image();
+            case VDB_ENTRY:
+                return AppResource.INSTANCE.images().diagVdbEntry_Image();
+            case DDL_SCHEMA:
+                return AppResource.INSTANCE.images().diagDdl_Image();
+            case TSQL_SCHEMA:
+                return AppResource.INSTANCE.images().diagTeiidSql_Image();
+            case VDB_SCHEMA:
+                return AppResource.INSTANCE.images().diagVdbSchema_Image();
+            default:
+                return AppResource.INSTANCE.images().diagDefault_Image();
         }
     }
 }

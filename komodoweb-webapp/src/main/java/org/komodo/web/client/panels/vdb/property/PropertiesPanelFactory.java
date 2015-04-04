@@ -26,6 +26,9 @@ import java.util.Map;
 import org.komodo.web.client.panels.vdb.property.panel.NoPropertiesPanel;
 import org.komodo.web.client.panels.vdb.property.panel.VdbPropertiesPanel;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.komodo.web.share.beans.KomodoObjectPropertyBean;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -39,6 +42,8 @@ public class PropertiesPanelFactory {
 
     private double parentHeight;
 
+    private ValueChangeHandler<KomodoObjectPropertyBean> valueChangeHandler;
+
     /**
      * @param parentWidth parent width
      * @param parentHeight parent height
@@ -46,6 +51,16 @@ public class PropertiesPanelFactory {
     public void setParentDimensions(double parentWidth, double parentHeight) {
         this.parentWidth = parentWidth;
         this.parentHeight = parentHeight;
+    }
+
+    /**
+     * Sets the associated value change handler if the panel needs to
+     * advertise its update of properties
+     *
+     * @param handler the handler
+     */
+    public void setValueChangeHandler(ValueChangeHandler<KomodoObjectPropertyBean> handler) {
+        this.valueChangeHandler = handler;
     }
 
     /**
@@ -67,6 +82,10 @@ public class PropertiesPanelFactory {
         if (panel == null) {
             panel = descriptor.create(parentWidth, parentHeight);
             panelIndex.put(descriptor.id(), panel);
+
+            if (panel instanceof HasValueChangeHandlers) {
+                ((HasValueChangeHandlers)panel).addValueChangeHandler(valueChangeHandler);
+            }
         }
 
         descriptor.setContent(panel, kObject);

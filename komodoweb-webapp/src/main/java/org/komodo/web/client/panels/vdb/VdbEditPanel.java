@@ -15,7 +15,6 @@
  */
 package org.komodo.web.client.panels.vdb;
 
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -44,9 +43,9 @@ import com.google.inject.Inject;
  */
 @Dependent
 @Templated("VdbEditPanel.html")
-public class VdbEditPanel extends Composite implements SelectionHandler<KomodoObjectBean[]>, Constants {
-
-    private static final Logger LOGGER = Logger.getLogger(VdbEditPanel.class.getName());
+public class VdbEditPanel extends Composite
+    implements SelectionHandler<KomodoObjectBean[]>,
+                           Constants {
 
     private static final Integer DIAGRAM_PANEL_WIDTH = 50; // in em
 
@@ -163,6 +162,7 @@ public class VdbEditPanel extends Composite implements SelectionHandler<KomodoOb
         panelFactory.setParentDimensions(DIAGRAM_PANEL_WIDTH / 2.5,
                                                              (EDIT_PANEL_HEIGHT - PROPERTY_TITLE_HEIGHT +
                                                              (BORDER_WIDTH * 2)));
+        panelFactory.setValueChangeHandler(editor);
         Widget panel = createObjectPropertiesPanel();
         basePanel.add(panel);
 
@@ -170,6 +170,7 @@ public class VdbEditPanel extends Composite implements SelectionHandler<KomodoOb
     }
 
     protected void setContent(KomodoObjectBean kObject) {
+        // Set the editor's content
         editor.setContent(kObject);
     }
 
