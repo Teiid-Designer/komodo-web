@@ -28,6 +28,7 @@ import org.komodo.web.client.services.rpc.DelegatingErrorCallback;
 import org.komodo.web.client.services.rpc.DelegatingRemoteCallback;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.komodo.web.share.beans.KomodoObjectPropertyBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 import org.komodo.web.share.services.IKomodoService;
 
@@ -88,6 +89,22 @@ public class KomodoRpcService {
     }
 
     /**
+     * Retrieve the komodo node at the given path
+     *
+     * @param path komodo object path
+     * @param handler rpc handler
+     */
+    public void getKomodoNode(final String path, final IRpcServiceInvocationHandler<KomodoObjectBean> handler) {
+        RemoteCallback<KomodoObjectBean> successCallback = new DelegatingRemoteCallback<KomodoObjectBean>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+            remoteKomodoService.call(successCallback, errorCallback).getKomodoNode(path);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
+    /**
      * Retrieve the komodo nodes at the given path
      *
      * @param kObjectPath komodo object path
@@ -98,6 +115,73 @@ public class KomodoRpcService {
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
         	remoteKomodoService.call(successCallback, errorCallback).getKomodoNodes(kObjectPath);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
+    /**
+     * Derive a json tree of the given object path and its children
+     *
+     * @param kObjectPath the root object
+     * @param handler the callback handler
+     */
+    public void deriveJsonTree(String kObjectPath, final IRpcServiceInvocationHandler<String> handler) {
+        RemoteCallback<String> successCallback = new DelegatingRemoteCallback<String>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+            remoteKomodoService.call(successCallback, errorCallback).deriveJsonTree(kObjectPath);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
+    /**
+     * Adds a new property
+     *
+     * @param parentPath the path of the property parent
+     * @param name the name
+     * @param value the value
+     * @param handler rpc handler
+     */
+    public void addProperty(String parentPath, String name, String value, IRpcServiceInvocationHandler<KomodoObjectBean> handler) {
+        RemoteCallback<KomodoObjectBean> successCallback = new DelegatingRemoteCallback<KomodoObjectBean>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+            remoteKomodoService.call(successCallback, errorCallback).addProperty(parentPath, name, value);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
+    /**
+     * Removes the given komodo property
+     *
+     * @param propertyBean property to be removed
+     * @param handler rpc handler
+     */
+    public void removeProperty(KomodoObjectPropertyBean propertyBean, IRpcServiceInvocationHandler<KomodoObjectBean> handler) {
+        RemoteCallback<KomodoObjectBean> successCallback = new DelegatingRemoteCallback<KomodoObjectBean>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+            remoteKomodoService.call(successCallback, errorCallback).removeProperty(propertyBean);
+        } catch (KomodoUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
+    /**
+     * Updates the given komodo property
+     *
+     * @param propertyBean property to be updated
+     * @param newValue the new value
+     * @param handler rpc handler
+     */
+    public void updateProperty(KomodoObjectPropertyBean propertyBean, Object newValue, final IRpcServiceInvocationHandler<KomodoObjectPropertyBean> handler) {
+        RemoteCallback<KomodoObjectPropertyBean> successCallback = new DelegatingRemoteCallback<KomodoObjectPropertyBean>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+            remoteKomodoService.call(successCallback, errorCallback).updateProperty(propertyBean, newValue);
         } catch (KomodoUiException e) {
             errorCallback.error(null, e);
         }

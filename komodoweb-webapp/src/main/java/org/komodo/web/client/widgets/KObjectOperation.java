@@ -19,32 +19,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-package org.komodo.web.client.panels.vdb.editor.diag;
+package org.komodo.web.client.widgets;
 
-import com.google.gwt.resources.client.CssResource;
+import org.komodo.web.share.beans.KomodoObjectBean;
 
 /**
- * Diagramming css resource interface
+ *
  */
-public interface DiagramCss extends CssResource {
+public interface KObjectOperation {
 
     /**
-     * @return css class
+     * @param kObject
      */
-    String css();
+    void execute(KomodoObjectBean kObject);
 
-    /**
-     * @return link class
-     */
-    String link();
-
-    /**
-     * @return node class
-     */
-    String node();
-
-    /**
-     * @return selected class
-     */
-    String selected();
 }

@@ -19,53 +19,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
-package org.komodo.web.client.panels.vdb.editor.diag.tree;
+package org.komodo.web.backend.server.services.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.komodo.web.client.resources.AppResource;
+import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
-import com.google.gwt.resources.client.ImageResource;
 
 /**
  *
  */
-public class TreeData implements Constants {
-
-    private final TreeCanvas tree;
+public class JsonTreeData implements Constants {
 
     private final KomodoObjectBean source;
 
-    private final int id;
-
-    private TreeData parent;
-
-    private ImageResource image;
+    private JsonTreeData parent;
 
     private String label;
 
-    private List<TreeData> children = new ArrayList<TreeData>();
+    private List<JsonTreeData> children = new ArrayList<JsonTreeData>();
 
     private boolean hasChildren;
 
     /**
-     * @param tree the parent tree canvas
      * @param source the source bean of this tree data
      */
-    public TreeData(TreeCanvas tree, KomodoObjectBean source) {
-        this.tree = tree;
+    public JsonTreeData(KomodoObjectBean source) {
         this.source = source;
-        id = tree.createId();
-        tree.addData(this);
     }
 
     /**
      * @return the id
      */
-    public int getId() {
-        return this.id;
+    public String getId() {
+        return this.source.getPath();
     }
 
     /**
@@ -78,49 +67,33 @@ public class TreeData implements Constants {
     /**
      * @return the parent
      */
-    public TreeData getParent() {
+    public JsonTreeData getParent() {
         return this.parent;
     }
 
     /**
      * @param parent the parent to set
      */
-    protected void setParent(TreeData parent) {
+    protected void setParent(JsonTreeData parent) {
         this.parent = parent;
     }
 
     /**
      * @param child child to add
      */
-    public void addChild(TreeData child) {
+    public void addChild(JsonTreeData child) {
         if (child.getParent() == this && children.contains(child))
             return;
 
         children.add(child);
         child.setParent(this);
-        tree.update();
     }
 
     /**
-     * @return the image
+     * @return the type of the source object
      */
-    public ImageResource getImage() {
-        if (image == null) {
-            // Assign the default icon since there is no image
-            image = AppResource.INSTANCE.images().diagDefault_Image();
-        }
-
-        return this.image;
-    }
-
-    /**
-     * @param image the image resource to set
-     */
-    public void setImage(ImageResource image) {
-        if (this.image == image)
-            return;
-
-        this.image = image;
+    public KomodoType getType() {
+        return source.getType();
     }
 
     /**
@@ -185,7 +158,7 @@ public class TreeData implements Constants {
         buffer.append(OPEN_BRACE);
         newline(buffer);
 
-        property(buffer, ID, Integer.toString(getId()));
+        property(buffer, ID, getId());
         comma(buffer);
         newline(buffer);
 
@@ -197,15 +170,7 @@ public class TreeData implements Constants {
         comma(buffer);
         newline(buffer);
 
-        property(buffer, ICON, getImage().getSafeUri().asString());
-        comma(buffer);
-        newline(buffer);
-
-        property(buffer, ICON_WIDTH, Integer.toString(getImage().getWidth()));
-        comma(buffer);
-        newline(buffer);
-
-        property(buffer, ICON_HEIGHT, Integer.toString(getImage().getHeight()));
+        property(buffer, TYPE, getType().getType());
         comma(buffer);
         newline(buffer);
 
@@ -220,9 +185,9 @@ public class TreeData implements Constants {
             buffer.append(OPEN_SQUARE_BRACKET);
             newline(buffer);
 
-            Iterator<TreeData> iterator = children.iterator();
+            Iterator<JsonTreeData> iterator = children.iterator();
             while (iterator.hasNext()) {
-                TreeData child = iterator.next();
+                JsonTreeData child = iterator.next();
                 buffer.append(child.toDefinition());
 
                 if (iterator.hasNext()) {

@@ -33,11 +33,11 @@ public class TreeNode extends Node {
         super();
     }
 
-    protected final native int id() /*-{
-        return this.id || -1;
+    protected final native String id() /*-{
+        return this.id || "";
     }-*/;
 
-    protected final native int id(int id) /*-{
+    protected final native String id(String id) /*-{
         return this.id = id;
     }-*/;
 

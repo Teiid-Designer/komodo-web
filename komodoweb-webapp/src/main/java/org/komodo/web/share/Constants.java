@@ -110,7 +110,9 @@ public interface Constants extends StringConstants {
     String JS_NO_CHILDREN = "_children";
     String JS_CHILDREN = "children";
 
+    String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
     String HTML_XLINK_REF = "xlink:href";
+    String HTML_HREF = "href";
     String HTML_X = "x";
     String HTML_X0 = "x0";
     String HTML_Y = "y";
@@ -134,9 +136,7 @@ public interface Constants extends StringConstants {
     String NAME = "name";
     String PARENT = "parent";
     String NULL = "null";
-    String ICON = "icon";
-    String ICON_WIDTH = "icon-width";
-    String ICON_HEIGHT = "icon-height";
+    String TYPE = "type";
     String HAS_CHILDREN = "has-children";
     String CHILDREN = "children";
     

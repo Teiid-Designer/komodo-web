@@ -39,32 +39,26 @@ public class KomodoObjectBean {
     private Set<KomodoObjectPropertyBean> properties = new HashSet<KomodoObjectPropertyBean>();
 
     /**
-     * Constructor.
-     */
-    public KomodoObjectBean() {
-    }
-
-    /**
      * @return the name
      */
     public String getName() {
         return this.name;
     }
-    
-    /**
-     * @return the absolute path
-     */
-    public String getPath() {
-        return this.path;
-    }
-    
+
     /**
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    /**
+     * @return the absolute path
+     */
+    public String getPath() {
+        return this.path;
+    }
+
     /**
      * @param path the path
      */
@@ -146,8 +140,61 @@ public class KomodoObjectBean {
      * <code>KObjectBeanVisitor</code> <code>visit</code> method.
      *
      * @param visitor The KObjectBeanVisitor to be accepted.
+     * @param context Visitor context
      */
     public void accept(KObjectBeanVisitor visitor, VisitorContext context) {
 	    visitor.visit(this, context);
 	}
+
+    @Override
+    public String toString() {
+        return this.path;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.hasChildren ? 1231 : 1237);
+        result = prime * result + (this.isVirtual ? 1231 : 1237);
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.path == null) ? 0 : this.path.hashCode());
+        result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
+        result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        KomodoObjectBean other = (KomodoObjectBean)obj;
+        if (this.hasChildren != other.hasChildren)
+            return false;
+        if (this.isVirtual != other.isVirtual)
+            return false;
+        if (this.name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!this.name.equals(other.name))
+            return false;
+        if (this.path == null) {
+            if (other.path != null)
+                return false;
+        } else if (!this.path.equals(other.path))
+            return false;
+        if (this.properties == null) {
+            if (other.properties != null)
+                return false;
+        } else if (!this.properties.equals(other.properties))
+            return false;
+        if (this.type != other.type)
+            return false;
+        return true;
+    }
+
 }

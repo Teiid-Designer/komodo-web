@@ -21,18 +21,22 @@
  */
 package org.komodo.web.client.panels.vdb.editor;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import org.komodo.web.client.panels.vdb.editor.diag.DiagramCss;
 import org.komodo.web.client.panels.vdb.editor.diag.tree.TreeCanvas;
-import org.komodo.web.client.panels.vdb.editor.diag.tree.TreeVisitor;
 import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.komodo.web.share.beans.KomodoObjectPropertyBean;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -41,7 +45,12 @@ import com.google.gwt.user.client.ui.FlowPanel;
  *
  */
 @Dependent
-public class VdbEditor extends FlowPanel implements HasSelectionHandlers<KomodoObjectBean[]>, Constants {
+public class VdbEditor extends FlowPanel
+            implements HasSelectionHandlers<KomodoObjectBean[]>,
+                                   ValueChangeHandler<KomodoObjectPropertyBean>,
+                                   Constants {
+
+    private static final Logger LOGGER = Logger.getLogger(VdbEditor.class.getName());
 
     /**
      * Bundle for css
@@ -90,18 +99,27 @@ public class VdbEditor extends FlowPanel implements HasSelectionHandlers<KomodoO
     }
 
     /**
-     * Set the editor content based on the given vdb
+     * Set the editor content based on the given kObject
      *
-     * @param vdb the komodo object representing the vdb
+     * @param kObject the komodo object representing the kObject
      */
-    public void setContent(KomodoObjectBean vdb) {
-        // Set the content of the editor
-        TreeVisitor visitor = new TreeVisitor(canvas);
-        vdb.accept(visitor, visitor.createContext(null));
+    public void setContent(KomodoObjectBean kObject) {
+        if (kObject == null)
+            return;
+
+        canvas.setContent(kObject);
     }
 
     @Override
     public HandlerRegistration addSelectionHandler(SelectionHandler<KomodoObjectBean[]> handler) {
         return addHandler(handler, SelectionEvent.getType());
+    }
+
+    @Override
+    public void onValueChange(ValueChangeEvent<KomodoObjectPropertyBean> event) {
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Value changed on object property" + event.getValue().getName()); //$NON-NLS-1$
+
+        canvas.update();
     }
 }

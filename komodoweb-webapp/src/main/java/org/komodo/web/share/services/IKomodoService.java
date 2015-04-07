@@ -18,6 +18,7 @@ package org.komodo.web.share.services;
 import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.komodo.web.share.beans.KomodoObjectBean;
+import org.komodo.web.share.beans.KomodoObjectPropertyBean;
 import org.komodo.web.share.exceptions.KomodoUiException;
 
 /**
@@ -33,14 +34,24 @@ public interface IKomodoService {
      *
      * @throws KomodoUiException if error occurs
      */
-    public void startKEngine( ) throws KomodoUiException;
+    void startKEngine( ) throws KomodoUiException;
 
     /**
      * Shutdown the Komodo Engine
      *
      * @throws KomodoUiException if error occurs
      */
-    public void shutdownKEngine( ) throws KomodoUiException;
+    void shutdownKEngine( ) throws KomodoUiException;
+
+    /**
+     * Retrieve the komodo node at the given path
+     *
+     * @param path the path of the node to retrieve
+     * @return komodo node at the given path
+     *
+     * @throws KomodoUiException if error occurs
+     */
+    KomodoObjectBean getKomodoNode(final String path) throws KomodoUiException;
 
     /**
      * Retrieve the komodo nodes at the given path
@@ -48,9 +59,9 @@ public interface IKomodoService {
      * @param path the path of the children to retrieve
      * @return list of komodo objects
      *
-     * @throws KomodoUiException if error occurs 
+     * @throws KomodoUiException if error occurs
      */
-    public List<KomodoObjectBean> getKomodoNodes(final String path) throws KomodoUiException;
+    List<KomodoObjectBean> getKomodoNodes(final String path) throws KomodoUiException;
 
     /**
      * Create a vdb
@@ -60,7 +71,7 @@ public interface IKomodoService {
      *
      * @throws KomodoUiException if error occurs
      */
-    public KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException;
+    KomodoObjectBean createVdb(final String vdbName) throws KomodoUiException;
 
     /**
      * Delete the vdb with the given name
@@ -70,7 +81,7 @@ public interface IKomodoService {
      *
      * @throws KomodoUiException if error occurs
      */
-    public List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException;
+    List<KomodoObjectBean> deleteVdb(final String vdbName) throws KomodoUiException;
 
     /**
      * Get the DDL of the given vdb
@@ -79,6 +90,38 @@ public interface IKomodoService {
      * @return the DDL
      * @throws KomodoUiException if error occurs
      */
-    public String getVdbDDL(final String vdbPath) throws KomodoUiException;
+    String getVdbDDL(final String vdbPath) throws KomodoUiException;
+
+    /**
+     * @param parentPath the path of the property parent
+     * @param name the name
+     * @param value the value
+     * @return the update komodo object
+     * @throws KomodoUiException if error occurs
+     */
+    KomodoObjectBean addProperty(String parentPath, String name, String value) throws KomodoUiException;
+
+    /**
+     * @param propertyBean the property to be removed
+     * @return the updated komodo object
+     * @throws KomodoUiException if error occurs
+     */
+    KomodoObjectBean removeProperty(KomodoObjectPropertyBean propertyBean) throws KomodoUiException;
+
+    /**
+     * @param propertyBean the property to be updated
+     * @param newValue the new value
+     * @return propertyBean that has been updated
+     * @throws KomodoUiException if error occurs
+     */
+    KomodoObjectPropertyBean updateProperty(KomodoObjectPropertyBean propertyBean, Object newValue) throws KomodoUiException;
+
+    /**
+     * @param kObjectPath path of object
+     * @return json tree representation of the object and its children
+     *
+     * @throws KomodoUiException
+     */
+    String deriveJsonTree(String kObjectPath) throws KomodoUiException;
 
 }

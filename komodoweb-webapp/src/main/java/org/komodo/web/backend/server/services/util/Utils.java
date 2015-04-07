@@ -119,6 +119,7 @@ public class Utils {
 
             KomodoObjectPropertyBean propertyBean = new KomodoObjectPropertyBean();
 
+            propertyBean.setParent(kObj.getAbsolutePath());
             propertyBean.setName(propertyName);
             propertyBean.setValueType(valueType);
             propertyBean.setMultiple(isMultiple);
@@ -141,7 +142,11 @@ public class Utils {
                     propertyBean.setValue(value);
                     break;
                 case UNDEFINED:
+                    // No clue what this type is so assign the string representation
+                    propertyBean.setValue(value.toString());
+                    break;
                 default:
+                    propertyBean.setValue("*** Error: unsupported value type ***"); //$NON-NLS-1$
                     break;
             }
 

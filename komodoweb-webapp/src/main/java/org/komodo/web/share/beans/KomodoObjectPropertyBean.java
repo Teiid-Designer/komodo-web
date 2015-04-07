@@ -31,7 +31,9 @@ import org.komodo.spi.repository.PropertyValueType;
  */
 @Portable
 @Bindable
-public class KomodoObjectPropertyBean {
+public class KomodoObjectPropertyBean implements Cloneable {
+
+    private String parent;
 
     private String name;
 
@@ -40,6 +42,20 @@ public class KomodoObjectPropertyBean {
     private PropertyValueType valueType;
 
     private boolean multiple;
+
+    /**
+     * @return the parent
+     */
+    public String getParent() {
+        return this.parent;
+    }
+
+    /**
+     * @param parentPath the parent
+     */
+    public void setParent(String parentPath) {
+        this.parent = parentPath;
+    }
 
     /**
      * @return the name
@@ -102,4 +118,61 @@ public class KomodoObjectPropertyBean {
     public void setMultiple(boolean multiple) {
         this.multiple = multiple;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.multiple ? 1231 : 1237);
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.parent == null) ? 0 : this.parent.hashCode());
+        result = prime * result + ((this.value == null) ? 0 : this.value.hashCode());
+        result = prime * result + ((this.valueType == null) ? 0 : this.valueType.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        KomodoObjectPropertyBean other = (KomodoObjectPropertyBean)obj;
+        if (this.multiple != other.multiple)
+            return false;
+        if (this.name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!this.name.equals(other.name))
+            return false;
+        if (this.parent == null) {
+            if (other.parent != null)
+                return false;
+        } else if (!this.parent.equals(other.parent))
+            return false;
+        if (this.value == null) {
+            if (other.value != null)
+                return false;
+        } else if (!this.value.equals(other.value))
+            return false;
+        if (this.valueType != other.valueType)
+            return false;
+        return true;
+    }
+
+    /**
+     * @return a full copy of this bean
+     */
+    public KomodoObjectPropertyBean copy() {
+        KomodoObjectPropertyBean clone = new KomodoObjectPropertyBean();
+        clone.parent = getParent();
+        clone.name = getName();
+        clone.value = getValue();
+        clone.valueType = getValueType();
+        clone.multiple = isMultiple();
+        return clone;
+    }
+
 }
