@@ -1,0 +1,75 @@
+<!-- VdbPropertiesPanel.ui.xml -->
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+                     xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+    <ui:style  type='org.komodo.web.client.widgets.CustomPropertiesTable.BinderStyle'>
+		.tablePanel {
+			clear: both;
+			padding: 0.5em;
+			border-width: 0.1em;
+			border-style: solid;
+			border-color:	grey;
+		}
+
+		.propsTable {
+			max-width: 100%;
+			min-width: 100%;
+			table-layout: fixed;
+			margin-bottom: 1em;
+		}
+
+		.propsTable td {
+			font-size: 1em;
+			width: 50%;
+		}
+
+		.propsTableTitle {
+			float: left;
+			margin-right: auto;
+			margin-bottom: 0.1em;
+			font-size: 1.1em;
+		}
+
+		.propsTableCell {
+			font-size: 1em;
+		}
+
+		.newPropPanel {
+			margin-bottom: 0.5em
+		}
+
+		.newPropNameTextBox {
+			font-size: 1em;
+			width: 35%;
+			margin-right: 0.5em;
+		}
+
+		.newPropValueTextBox {
+			font-size: 1em;
+			width: 45%;
+			margin-right: 0.5em;
+		}
+
+		.propertyButton {
+			padding: 0.1em;
+			height: 1.5em;
+			width: 1.5em;
+			cursor: hand;
+			cursor: pointer;
+			vertical-align: middle;
+		}
+
+    </ui:style>
+
+    <g:FlowPanel styleName="{style.tablePanel}">
+        <g:Label text="Custom Properties" styleName="{style.propsTableTitle}"/>
+        <g:FlexTable ui:field="propsTable" styleName="{style.propsTable}"/>
+        <g:FlowPanel styleName="{style.newPropPanel}">
+            <g:TextBox ui:field="newPropName" styleName="{style.newPropNameTextBox}"/>
+            <g:TextBox ui:field="newPropValue" styleName="{style.newPropValueTextBox}"/>
+            <g:Image ui:field="addPropertyButton" styleName="{style.propertyButton}"/>
+        </g:FlowPanel>
+    </g:FlowPanel>
+
+</ui:UiBinder>

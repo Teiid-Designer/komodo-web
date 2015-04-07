@@ -23,7 +23,10 @@ package org.komodo.web.client.panels.vdb.property;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.komodo.web.client.panels.vdb.property.panel.NoPropertiesPanel;
+import org.komodo.web.client.panels.vdb.property.panel.TranslatorPropertiesPanel;
 import org.komodo.web.client.panels.vdb.property.panel.VdbPropertiesPanel;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.komodo.web.share.beans.KomodoObjectPropertyBean;
@@ -35,6 +38,8 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class PropertiesPanelFactory {
+
+    protected static final Logger LOGGER = Logger.getLogger(PropertiesPanelFactory.class.getName());
 
     private Map<String, Widget> panelIndex = new HashMap<String, Widget>();
 
@@ -88,6 +93,9 @@ public class PropertiesPanelFactory {
             }
         }
 
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Setting content on panel " + panel.getClass().getSimpleName() + " to " + kObject); //$NON-NLS-1$ //$NON-NLS-2$
+
         descriptor.setContent(panel, kObject);
 
         return panel;
@@ -106,6 +114,8 @@ public class PropertiesPanelFactory {
         switch (kObject.getType()) {
             case VDB:
                 return create(new VdbPropertiesPanel.Descriptor(), kObject);
+            case VDB_TRANSLATOR:
+               return create(new TranslatorPropertiesPanel.Descriptor(), kObject);
             case ACCESS_PATTERN:
                 break;
             case COLUMN:
@@ -163,8 +173,6 @@ public class PropertiesPanelFactory {
             case VDB_PERMISSION:
                 break;
             case VDB_SCHEMA:
-                break;
-            case VDB_TRANSLATOR:
                 break;
             case VIEW:
                 break;

@@ -15,6 +15,8 @@
  */
 package org.komodo.web.client.panels.vdb;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -26,6 +28,7 @@ import org.komodo.web.share.beans.KomodoObjectBean;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.FontWeight;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.dom.client.Style.Unit;
@@ -46,6 +49,8 @@ import com.google.inject.Inject;
 public class VdbEditPanel extends Composite
     implements SelectionHandler<KomodoObjectBean[]>,
                            Constants {
+
+    private static final Logger LOGGER = Logger.getLogger(VdbEditPanel.class.getName());
 
     private static final Integer DIAGRAM_PANEL_WIDTH = 50; // in em
 
@@ -115,13 +120,18 @@ public class VdbEditPanel extends Composite
         /*
          * Set its width and height to appropriate values
          */
-        objPropPanelStyle.setWidth(DIAGRAM_PANEL_WIDTH / 2.5, Unit.EM);
+        objPropPanelStyle.setWidth((DIAGRAM_PANEL_WIDTH * 3) / 5, Unit.EM);
         objPropPanelStyle.setHeight(EDIT_PANEL_HEIGHT, Unit.EM);
 
         /*
          * Set its background colour to a subtle shade that just frames the panel
          */
         objPropPanelStyle.setBackgroundColor("#fAfAfA"); //$NON-NLS-1$
+
+        /*
+         * Set overflow to use scrollbars if required
+         */
+        objPropPanelStyle.setOverflow(Overflow.AUTO);
 
         /*
          * Add the title
@@ -149,6 +159,9 @@ public class VdbEditPanel extends Composite
 
     private void addPropertiesPanel(KomodoObjectBean kObject) {
         selectionSubPanel = panelFactory.create(kObject);
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Panel class " + selectionSubPanel.getClass().getSimpleName() + " created for object: " + kObject); //$NON-NLS-1$ //$NON-NLS-2$
+
         objectPropertiesPanel.add(selectionSubPanel);
     }
 
@@ -159,7 +172,7 @@ public class VdbEditPanel extends Composite
     protected void postConstruct() {
         basePanel.add(createDiagramPanel());
 
-        panelFactory.setParentDimensions(DIAGRAM_PANEL_WIDTH / 2.5,
+        panelFactory.setParentDimensions((DIAGRAM_PANEL_WIDTH * 3) / 5,
                                                              (EDIT_PANEL_HEIGHT - PROPERTY_TITLE_HEIGHT +
                                                              (BORDER_WIDTH * 2)));
         panelFactory.setValueChangeHandler(editor);
@@ -178,6 +191,9 @@ public class VdbEditPanel extends Composite
     public void onSelection(SelectionEvent<KomodoObjectBean[]> event) {
         if (selectionSubPanel != null)
             selectionSubPanel.removeFromParent();
+
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine(getClass().getSimpleName() + " selecting " + event.getSelectedItem()); //$NON-NLS-1$
 
         Object obj = event.getSelectedItem();
         if (! (obj instanceof KomodoObjectBean[])) {

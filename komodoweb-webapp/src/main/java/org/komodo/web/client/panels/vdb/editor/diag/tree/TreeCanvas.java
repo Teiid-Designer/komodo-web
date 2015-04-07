@@ -222,6 +222,10 @@ public class TreeCanvas extends TreeCanvasUtilities {
 
         String selectedClass = DOT + css().selected();
         final Selection selection = svgGroup.selectAll(selectedClass);
+        if (selection.empty()) {
+            SelectionEvent.fire(selectionHandler, selectedObjects.toArray(new KomodoObjectBean[0]));
+            return;
+        }
 
         /*
          * The selection contains the rectangles used for displaying the selection

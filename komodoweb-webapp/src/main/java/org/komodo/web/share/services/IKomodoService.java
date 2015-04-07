@@ -93,11 +93,28 @@ public interface IKomodoService {
     String getVdbDDL(final String vdbPath) throws KomodoUiException;
 
     /**
+     * @param parentPath the path of the property parent
+     * @param name the name
+     * @param value the value
+     * @return the update komodo object
+     * @throws KomodoUiException if error occurs
+     */
+    KomodoObjectBean addProperty(String parentPath, String name, String value) throws KomodoUiException;
+
+    /**
+     * @param propertyBean the property to be removed
+     * @return the updated komodo object
+     * @throws KomodoUiException if error occurs
+     */
+    KomodoObjectBean removeProperty(KomodoObjectPropertyBean propertyBean) throws KomodoUiException;
+
+    /**
      * @param propertyBean the property to be updated
+     * @param newValue the new value
      * @return propertyBean that has been updated
      * @throws KomodoUiException if error occurs
      */
-    KomodoObjectPropertyBean updateProperty(KomodoObjectPropertyBean propertyBean) throws KomodoUiException;
+    KomodoObjectPropertyBean updateProperty(KomodoObjectPropertyBean propertyBean, Object newValue) throws KomodoUiException;
 
     /**
      * @param kObjectPath path of object

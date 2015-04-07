@@ -294,29 +294,65 @@ public class KomodoService implements IKomodoService {
         }
     }
 
-    @Override
-    public KomodoObjectPropertyBean updateProperty(KomodoObjectPropertyBean propBean) throws KomodoUiException {
+	@Override
+    public KomodoObjectBean addProperty(String parentPath, String name, String value) throws KomodoUiException {
         try {
             Repository repo = kEngine.getDefaultRepository();
-            KomodoObject kObject = repo.getFromWorkspace(null, propBean.getParent());
+            KomodoObject kObject = repo.getFromWorkspace(null, parentPath);
             if (kObject == null) {
                 // No longer valid
                 throw new KException("Komodo Object Bean is no longer valid"); //$NON-NLS-1$
             }
 
-            String name = propBean.getName();
-            Object value = propBean.getValue();
+            kObject.setProperty(null, name, value);
+            return getUtils().createKomodoObjectBean(kObject);
+
+        } catch (KException e) {
+            throw new KomodoUiException(e);
+        }
+	}
+
+	@Override
+	public KomodoObjectBean removeProperty(KomodoObjectPropertyBean propertyBean) throws KomodoUiException {
+        try {
+            Repository repo = kEngine.getDefaultRepository();
+            KomodoObject kObject = repo.getFromWorkspace(null, propertyBean.getParent());
+            if (kObject == null) {
+                // No longer valid
+                throw new KException("Komodo Object Bean is no longer valid"); //$NON-NLS-1$
+            }
+
+            kObject.setProperty(null, propertyBean.getName(), (Object[]) null);
+
+            return getUtils().createKomodoObjectBean(kObject);
+        } catch (KException e) {
+            throw new KomodoUiException(e);
+        }
+	}
+
+    @Override
+    public KomodoObjectPropertyBean updateProperty(KomodoObjectPropertyBean propertyBean,
+                                                                                      Object newValue) throws KomodoUiException {
+        try {
+            Repository repo = kEngine.getDefaultRepository();
+            KomodoObject kObject = repo.getFromWorkspace(null, propertyBean.getParent());
+            if (kObject == null) {
+                // No longer valid
+                throw new KException("Komodo Object Bean is no longer valid"); //$NON-NLS-1$
+            }
+
+            String name = propertyBean.getName();
 
             Property property = kObject.getProperty(null, name);
             Object currentValue = property.getValue(null);
-            if (value == null && currentValue == null)
-                return propBean;
+            if (newValue == null && currentValue == null)
+                return propertyBean;
 
-            if (value != null && value.equals(currentValue))
-                return propBean;
+            if (newValue != null && newValue.equals(currentValue))
+                return propertyBean;
 
-            property.set(null, value);
-            return propBean;
+            property.set(null, newValue);
+            return propertyBean;
         } catch (KException e) {
             throw new KomodoUiException(e);
         }
