@@ -6,6 +6,9 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
+import org.komodo.web.client.messages.ClientMessages;
+import org.komodo.web.share.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -15,11 +18,6 @@ import org.uberfire.mvp.PlaceRequest;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-
-import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
-import org.komodo.web.client.messages.ClientMessages;
-import org.komodo.web.share.Constants;
-
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -34,7 +32,7 @@ public class ConfirmationDialog {
 	@Inject
     private ClientMessages i18n;
 	
-	@Inject Event<ConfirmationDialogEvent> buttonEvent;
+	@Inject Event<UiEvent> buttonEvent;
 
     @Inject
 	private PlaceManager placeManager;
@@ -46,6 +44,9 @@ public class ConfirmationDialog {
 	private String dialogType;
 	private String dialogArg; 
 	
+	/**
+	 * Setup
+	 */
 	@PostConstruct
 	public void setup() {
 		messagePanel = new HTMLPanel("<p>Click to close</p>");
@@ -73,6 +74,10 @@ public class ConfirmationDialog {
 		view.setHeight("200px");
 	}
 	
+	/**
+	 * Startup
+	 * @param place the requesting place
+	 */
 	@OnStartup
 	public void onStartup( final PlaceRequest place ) {
 		this.place = place;
@@ -152,9 +157,9 @@ public class ConfirmationDialog {
 	 */
 	private void fireCancelEvent() {
     	if(Constants.CONFIRMATION_DIALOG_CREATE_VDB.equals(dialogType)) {
-    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.CREATE_VDB_CANCEL));
+    		buttonEvent.fire(new UiEvent(UiEventType.VDB_CREATE_CONFIRM_CANCEL));
     	} else if(Constants.CONFIRMATION_DIALOG_DELETE_VDB.equals(dialogType)) {
-    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.DELETE_VDB_CANCEL));
+    		buttonEvent.fire(new UiEvent(UiEventType.VDB_DELETE_CONFIRM_CANCEL));
     	}
 	}
 
@@ -163,9 +168,9 @@ public class ConfirmationDialog {
 	 */
 	private void fireOkEvent() {
     	if(Constants.CONFIRMATION_DIALOG_CREATE_VDB.equals(dialogType)) {
-    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.CREATE_VDB_OK));
+    		buttonEvent.fire(new UiEvent(UiEventType.VDB_CREATE_CONFIRM_OK));
     	} else if(Constants.CONFIRMATION_DIALOG_DELETE_VDB.equals(dialogType)) {
-    		buttonEvent.fire(new ConfirmationDialogEvent(ConfirmationDialogEventType.DELETE_VDB_OK));
+    		buttonEvent.fire(new UiEvent(UiEventType.VDB_DELETE_CONFIRM_OK));
     	}
 	}
 
