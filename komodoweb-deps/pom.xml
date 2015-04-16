@@ -30,7 +30,7 @@
     <version.org.uberfire>0.6.0-SNAPSHOT</version.org.uberfire>
     <version.org.uberfire.ext>0.6.0-SNAPSHOT</version.org.uberfire.ext>
     <version.org.jboss.teiid>8.7.0.Final</version.org.jboss.teiid>
-    <version.org.komodo>1.0.0-SNAPSHOT</version.org.komodo>
+    <version.org.komodo>0.0.1-SNAPSHOT</version.org.komodo>
     <version.jboss>8.0.0.Final</version.jboss>
     <jbossas-version>${version.jboss}</jbossas-version>
     <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
