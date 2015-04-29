@@ -19,84 +19,107 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+
+import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.komodo.spi.constants.StringConstants;
 import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.dialogs.UiEvent;
+import org.komodo.web.client.dialogs.UiEventListener;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.messages.ClientMessages;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.services.KomodoRpcService;
+import org.komodo.web.client.services.UiEventService;
 import org.komodo.web.client.services.rpc.IRpcServiceInvocationHandler;
 import org.komodo.web.client.utils.UiUtils;
 import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
-/**
- *
- */
-@Dependent
-@Templated("./RepoVdbContentPanel.html")
 /**
  * Accordion panel for VDB Content display
  */
-public class RepoVdbContentPanel extends Composite {
+@Dependent
+public class RepoVdbContent extends Composite implements UiEventListener {
     
-    @Inject
+    interface RepoVdbContentBinder extends UiBinder<Widget, RepoVdbContent> { }
+    private static RepoVdbContentBinder uiBinder = GWT.create(RepoVdbContentBinder.class);
+ 
 	private PlaceManager placeManager;
     
-	@Inject
     private ClientMessages i18n;
-	
-	// DeckPanel for content
-	@Inject @DataField("list-vdb")
-	private DeckPanel deckPanel;
-	
-    @Inject @DataField("image-vdb")
-    private Image vdbImage;
     
-    @Inject @DataField("btn-create-vdb")
-    private Button createVdbButton;
+    private UiEventService uiEventService;
+	
+    @UiField
+    PanelCollapse collapseVdb;
+    
+	// DeckPanel for content
+    @UiField
+	DeckPanel vdbDeckPanel;
+	
+    @UiField
+    Button createVdbButton;
     
     // VDB CellList
-    @Inject 
     private VdbList vdbsList;
     
-    private List<KomodoObjectBean> currentVdbs = new ArrayList<KomodoObjectBean>();
+    private List<KomodoObjectBean> currentVdbs;
+    
+    /**
+     * Constructor
+     */
+    public RepoVdbContent() {
+        // Init from the UI Binder template
+        initWidget(uiBinder.createAndBindUi(this));
+        init();
+    }
     
     /**
      * Called after construction.
      */
-    @PostConstruct
-    protected void postConstruct() {
+    protected void init() {
+        placeManager = IOC.getBeanManager().lookupBean( PlaceManager.class ).getInstance();
+        i18n = IOC.getBeanManager().lookupBean( ClientMessages.class ).getInstance();
+        uiEventService = UiEventService.get();
+        uiEventService.addListener(this);
+        vdbsList = new VdbList();
+        currentVdbs = new ArrayList<KomodoObjectBean>();
+        
     	// Deck panel for DataSource list
     	HTMLPanel spinnerPanel = new HTMLPanel(AbstractImagePrototype.create(AppResource.INSTANCE.images().spinnner24x24Image()).getHTML());
     	Label errorLabel = new Label(i18n.format("RepoVdbContentPanel.error-loading-msg"));
     	UiUtils.setMessageStyle(errorLabel, UiUtils.MessageType.ERROR);
 
-    	this.vdbImage.setResource(AppResource.INSTANCE.images().filterVdbsImage());
-    	
-    	createVdbButton.setHTML(AbstractImagePrototype.create(AppResource.INSTANCE.images().addIconImage()).getSafeHtml());
-    	
-    	deckPanel.add(spinnerPanel);
-    	deckPanel.add(errorLabel);
-    	deckPanel.add(vdbsList);
+    	createVdbButton.setIcon(IconType.PLUS);
+    	createVdbButton.addClickHandler(new ClickHandler() {
+    		@Override
+    		public void onClick(ClickEvent event) {
+    	    	showConfirmVdbCreateDialog();
+    		}
+    	});
+
+    	vdbDeckPanel.add(spinnerPanel);
+    	vdbDeckPanel.add(errorLabel);
+    	vdbDeckPanel.add(vdbsList);
 
     	loadVdbs();
     }
@@ -106,7 +129,7 @@ public class RepoVdbContentPanel extends Composite {
      */
     public void loadVdbs() {
     	// Show spinner
-    	deckPanel.showWidget(0);
+    	vdbDeckPanel.showWidget(0);
     	
 		KomodoRpcService.get().getKomodoNodes(null, new IRpcServiceInvocationHandler<List<KomodoObjectBean>>() {
 			@Override
@@ -116,23 +139,14 @@ public class RepoVdbContentPanel extends Composite {
 				currentVdbs.addAll(result);
 				
 				vdbsList.setData(currentVdbs);
-				deckPanel.showWidget(2);
+				vdbDeckPanel.showWidget(2);
 			}
 			@Override
 			public void onError(Throwable error) {
 				// Failure - show failed message
-				deckPanel.showWidget(1);
+				vdbDeckPanel.showWidget(1);
 			}
 		});
-    }
-    
-    /**
-     * Event handler that fires when the user clicks the New VDB button
-     * @param event the click event
-     */
-    @EventHandler("btn-create-vdb")
-    public void onCreateVdbButtonClick(ClickEvent event) {
-    	showConfirmVdbCreateDialog();
     }
     
     /**
@@ -145,11 +159,8 @@ public class RepoVdbContentPanel extends Composite {
     	placeManager.goTo(new DefaultPlaceRequest(Constants.CONFIRMATION_DIALOG,parameters));    	
     }
         
-    /**
-     * Handles UiEvents
-     * @param uiEvent the UiEvent
-     */
-    public void onUiEvent(@Observes UiEvent uiEvent) {
+	@Override
+	public void handleUiEvent(UiEvent uiEvent) {
     	// Tree Loaded OK
     	if(uiEvent.getType() == UiEventType.VDB_CREATE) {
         	String newVdbName = Constants.NEW_VDB_BASENAME + getUniqueSuffix(Constants.NEW_VDB_BASENAME,getCurrentVdbNames());
@@ -160,7 +171,7 @@ public class RepoVdbContentPanel extends Composite {
     	    	doDeleteVdb(kObj.getName());
     		}
     	}
-    }
+	}
     
     /**
      * Create a new VDB and select it
@@ -173,12 +184,12 @@ public class RepoVdbContentPanel extends Composite {
 				currentVdbs.add(result);
 				
 				vdbsList.setData(currentVdbs);
-				deckPanel.showWidget(2);
+				vdbDeckPanel.showWidget(2);
 			}
 			@Override
 			public void onError(Throwable error) {
 				// Failure - show failed message
-				deckPanel.showWidget(1);
+				vdbDeckPanel.showWidget(1);
 			}
 		});
     }
@@ -192,12 +203,12 @@ public class RepoVdbContentPanel extends Composite {
 				currentVdbs.addAll(result);
 				
 				vdbsList.setData(currentVdbs);
-				deckPanel.showWidget(2);
+				vdbDeckPanel.showWidget(2);
 			}
 			@Override
 			public void onError(Throwable error) {
 				// Failure - show failed message
-				deckPanel.showWidget(1);
+				vdbDeckPanel.showWidget(1);
 			}
 		});
     }

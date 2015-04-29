@@ -15,31 +15,34 @@
  */
 package org.komodo.web.client.panels.repo;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.komodo.web.client.resources.AppResource;
+
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Accordion Panel for display of DataSources
+ * Accordion for display of view content
  */
 @Dependent
-@Templated("./RepoDataSourceContentPanel.html")
-public class RepoDataSourceContentPanel extends Composite {
+public class RepoViewContent extends Composite {
     
-    @Inject @DataField("image-datasource")
-    private Image datasourceImage;
+    interface RepoViewContentBinder extends UiBinder<Widget, RepoViewContent> { }
+    private static RepoViewContentBinder uiBinder = GWT.create(RepoViewContentBinder.class);
+ 
+    @UiField
+    PanelCollapse collapseView;
 
     /**
-     * Called after construction.
+     * Constructor
      */
-    @PostConstruct
-    protected void postConstruct() {
-    	this.datasourceImage.setResource(AppResource.INSTANCE.images().filterViewsImage());
+    public RepoViewContent() {
+        // Init the dashboard from the UI Binder template
+        initWidget(uiBinder.createAndBindUi(this));
     }
     
 }
