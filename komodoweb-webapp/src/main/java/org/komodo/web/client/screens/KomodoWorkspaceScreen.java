@@ -19,22 +19,22 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.komodo.spi.constants.StringConstants;
 import org.komodo.spi.repository.KomodoType;
 import org.komodo.web.client.dialogs.UiEvent;
 import org.komodo.web.client.dialogs.UiEventType;
-import org.komodo.web.client.messages.ClientMessages;
-import org.komodo.web.client.panels.repo.RepoContentPanel;
-import org.komodo.web.client.panels.repo.RepoDefinitionPanel;
+import org.komodo.web.client.panels.repo.RepoContent;
+import org.komodo.web.client.panels.repo.RepoDefnPanel;
 import org.komodo.web.client.panels.vdb.VdbPanel;
 import org.komodo.web.client.widgets.KomodoObjectPropertiesPanel;
-import org.komodo.web.client.widgets.RepoTreeDisplay;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -49,17 +49,11 @@ import com.google.gwt.user.client.ui.IsWidget;
 @WorkbenchScreen(identifier = "KomodoWorkspaceScreen")
 public class KomodoWorkspaceScreen extends Composite {
 
-    @Inject
-    private ClientMessages i18n;
-    
-    @Inject 
-    private RepoTreeDisplay repoTree;
-
     @Inject @DataField("repo-definition-panel")
-    protected RepoDefinitionPanel repoDefinitionPanel;
+    protected RepoDefnPanel repoDefinitionPanel;
     
     @Inject @DataField("repo-content-panel")
-    protected RepoContentPanel repoContentPanel;
+    protected RepoContent repoContentPanel;
 
     @Inject @DataField("details-deckpanel")
     protected DeckPanel detailsDeckPanel;
@@ -76,6 +70,9 @@ public class KomodoWorkspaceScreen extends Composite {
       return StringConstants.EMPTY_STRING;
     }
     
+    /**
+     * @return view
+     */
     @WorkbenchPartView
     public IsWidget getView() {
         return this;
@@ -107,17 +104,17 @@ public class KomodoWorkspaceScreen extends Composite {
     
     /**
      * Handles UiEvents
-     * @param dEvent
+     * @param uiEvent the UiEvent
      */
-    public void onUiEvent(@Observes UiEvent dEvent) {
+    public void onUiEvent(@Observes UiEvent uiEvent) {
     	// Tree Loaded OK
-    	if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_OK) {
+    	if(uiEvent.getType() == UiEventType.REPO_TREE_LOAD_OK) {
         	//repoTreePanel.showWidget(1);
     	// Tree Load Error
-    	} else if(dEvent.getType() == UiEventType.REPO_TREE_LOAD_ERROR) {
+    	} else if(uiEvent.getType() == UiEventType.REPO_TREE_LOAD_ERROR) {
         	//repoTreePanel.showWidget(2);
-    	} else if(dEvent.getType() == UiEventType.KOBJECT_SELECTED) {
-    		KomodoObjectBean kObj = dEvent.getKomodoObject();
+    	} else if(uiEvent.getType() == UiEventType.KOBJECT_SELECTED) {
+    		KomodoObjectBean kObj = uiEvent.getKomodoObject();
     		if(kObj.getType()==KomodoType.VDB) {
     			vdbPanel.setKObject(kObj);
     			detailsDeckPanel.showWidget(1);

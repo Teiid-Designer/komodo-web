@@ -16,26 +16,30 @@
 package org.komodo.web.client.panels.repo;
 
 import javax.enterprise.context.Dependent;
+
 import org.gwtbootstrap3.client.ui.PanelCollapse;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Accordion for display of connection content
+ */
 @Dependent
 public class RepoConnectionContent extends Composite {
     
-    interface RepoConnectionContentBinder extends UiBinder<Widget, RepoConnectionContent> {
-        // Nothing Required
-    }
-
+    interface RepoConnectionContentBinder extends UiBinder<Widget, RepoConnectionContent> { }
     private static RepoConnectionContentBinder uiBinder = GWT.create(RepoConnectionContentBinder.class);
  
     @UiField
     PanelCollapse collapseConn;
 
-
+    /**
+     * Constructor
+     */
     public RepoConnectionContent() {
         // Init the dashboard from the UI Binder template
         initWidget(uiBinder.createAndBindUi(this));

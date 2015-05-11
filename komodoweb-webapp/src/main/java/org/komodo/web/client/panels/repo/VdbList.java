@@ -19,20 +19,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+
+import javax.enterprise.context.Dependent;
+
+import org.jboss.errai.ioc.client.container.IOC;
 import org.komodo.spi.constants.StringConstants;
-import org.komodo.web.client.dialogs.ConfirmationDialogEvent;
-import org.komodo.web.client.dialogs.ConfirmationDialogEventType;
 import org.komodo.web.client.dialogs.UiEvent;
+import org.komodo.web.client.dialogs.UiEventListener;
 import org.komodo.web.client.dialogs.UiEventType;
 import org.komodo.web.client.resources.AppResource;
 import org.komodo.web.client.resources.CellListResources;
+import org.komodo.web.client.services.UiEventService;
 import org.komodo.web.share.Constants;
 import org.komodo.web.share.beans.KomodoObjectBean;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
@@ -54,13 +56,11 @@ import com.google.gwt.view.client.SingleSelectionModel;
 /**
  * VdbList - contains list of VDBs with add, edit, delete icons
  */
-public class VdbList extends Composite {
+@Dependent
+public class VdbList extends Composite implements UiEventListener {
 
-    @Inject
 	private PlaceManager placeManager;
-    
-	@Inject Event<UiEvent> uiEvent;
-	
+    	
     protected VerticalPanel panel = new VerticalPanel();
     protected Label label = new Label();
 
@@ -70,6 +70,7 @@ public class VdbList extends Composite {
     private static String VDB_IMG_HTML = AbstractImagePrototype.create(AppResource.INSTANCE.images().filterVdbsImage()).getHTML();
 
     private KomodoObjectBean vdbForDelete;
+    private UiEventService uiEventService;
     
     /**
      * Constructor
@@ -80,6 +81,11 @@ public class VdbList extends Composite {
     }
     
     private VerticalPanel createListPanel() {
+        placeManager = IOC.getBeanManager().lookupBean( PlaceManager.class ).getInstance();
+        
+        uiEventService = UiEventService.get();
+        uiEventService.addListener(this);
+        
     	VerticalPanel outerPanel = new VerticalPanel();
     	
        	CellList.Resources resources = GWT.create(CellListResources.class);
@@ -160,7 +166,7 @@ public class VdbList extends Composite {
     private void fireUiEvent(KomodoObjectBean kObj, UiEventType eventType) {
 		UiEvent event = new UiEvent(eventType);
 		event.setKomodoObject(kObj);
-		uiEvent.fire(event);
+		UiEventService.get().fire(event);
     }
     
     /**
@@ -307,27 +313,17 @@ public class VdbList extends Composite {
     	placeManager.goTo(new DefaultPlaceRequest(Constants.CONFIRMATION_DIALOG,parameters));    	
     }
     
-    /**
-     * Handles events from the ConfirmationDialog.  Action is take for the OK events; CANCEL events ignored
-     * @param dialogEvent the ConfirmationDialogEvent to handle
-     */
-    public void onConfirmationDialogEvent(@Observes ConfirmationDialogEvent dialogEvent) {
+	@Override
+	public void handleUiEvent(UiEvent uiEvent) {
     	// Create VDB was confirmed
-    	if(dialogEvent.getType() == ConfirmationDialogEventType.CREATE_VDB_OK) {
-    		fireUiEvent(new UiEvent(UiEventType.VDB_CREATE));
+    	if(uiEvent.getType() == UiEventType.VDB_CREATE_CONFIRM_OK) {
+    		UiEventService.get().fire(new UiEvent(UiEventType.VDB_CREATE));
         // Delete VDB was confirmed
-    	} else if(dialogEvent.getType() == ConfirmationDialogEventType.DELETE_VDB_OK) {
+    	} else if(uiEvent.getType() == UiEventType.VDB_DELETE_CONFIRM_OK) {
     		UiEvent deleteVdbEvent = new UiEvent(UiEventType.VDB_DELETE);
     		deleteVdbEvent.setKomodoObject(vdbForDelete);
-    		fireUiEvent(deleteVdbEvent);
+    		UiEventService.get().fire(deleteVdbEvent);
     	}
-    }
-    
-	/*
-	 * Fires UiEvent events when action is required
-	 */
-	private void fireUiEvent(UiEvent event) {
-		uiEvent.fire(event);
 	}
     
 }

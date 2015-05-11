@@ -29,11 +29,11 @@
 		<b:Panel>
 			<b:PanelHeader>
 				<b:Heading size="H4">
-				    <b:Icon type="GEAR" size="LARGE" />
-					<b:Anchor dataToggle="COLLAPSE" dataParent="#accordion" dataTarget="#collapseConn">Connections</b:Anchor>
+				    <b:Icon type="CUBE" size="LARGE" />
+					<b:Anchor dataToggle="COLLAPSE" dataParent="#accordion" dataTarget="#collapseDataSource">DataSources</b:Anchor>
 				</b:Heading>
 			</b:PanelHeader>
-			<b:PanelCollapse b:id="collapseConn" ui:field="collapseConn">
+			<b:PanelCollapse b:id="collapseDataSource" ui:field="collapseDataSource">
 				<b:PanelBody>
 				</b:PanelBody>
 			</b:PanelCollapse>
