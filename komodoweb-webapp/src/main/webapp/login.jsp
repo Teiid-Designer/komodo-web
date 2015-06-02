@@ -160,9 +160,6 @@
       <br style="clear: both;"/>
 
       <p>
-        <% if (request.getParameter("gwt.codesvr") != null) { %>
-          <input type="hidden" name="gwt.codesvr" value="<%= org.owasp.encoder.Encode.forHtmlAttribute(request.getParameter("gwt.codesvr")) %>"/>
-        <% } %>
         <input class="button" type="submit" value="Sign In"/>
       </p>
     </form>
