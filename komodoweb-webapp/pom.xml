@@ -80,6 +80,21 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-server</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-backend-server</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-backend-cdi</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-fs</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -405,6 +420,9 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-server</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-backend-server</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-backend-cdi</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-nio2-fs</compileSourcesArtifact>
           </compileSourcesArtifacts>
 
           <!-- do not insert line breaks in this string; it breaks Windows compatibility -->
