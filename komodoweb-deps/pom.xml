@@ -19,23 +19,21 @@
   </description>
 
   <properties>
-    <version.com.google.gwt>2.6.1</version.com.google.gwt>
+    <version.com.google.gwt>2.7.0</version.com.google.gwt>
     <!--
             gwt dnd should match the google gwt version. See matrix at
             https://code.google.com/p/gwt-dnd/wiki/GettingStarted
        -->
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <version.org.jboss.integration-platform>6.0.0.CR13</version.org.jboss.integration-platform>
-    <version.org.jboss.errai>3.1.1.Final</version.org.jboss.errai>
-    <version.org.uberfire>0.6.0-SNAPSHOT</version.org.uberfire>
-    <version.org.uberfire.ext>0.6.0-SNAPSHOT</version.org.uberfire.ext>
+    <version.org.jboss.errai>3.2.0-SNAPSHOT</version.org.jboss.errai>
+    <version.org.uberfire>0.7.0-SNAPSHOT</version.org.uberfire>
+    <version.org.uberfire.ext>0.7.0-SNAPSHOT</version.org.uberfire.ext>
     <version.org.jboss.teiid>8.7.0.Final</version.org.jboss.teiid>
     <version.org.komodo>0.0.1-SNAPSHOT</version.org.komodo>
     <version.jboss>8.0.0.Final</version.jboss>
     <jbossas-version>${version.jboss}</jbossas-version>
-    <version.org.mortbay.jetty>6.1.25</version.org.mortbay.jetty>
     <version.org.infinispan>6.0.2.Final</version.org.infinispan>
-    <version.org.owasp.encoder>1.1.1</version.org.owasp.encoder>
     <version.com.github.gwtd3>1.1.1</version.com.github.gwtd3>
 
     <!-- temporary: makes the enforcerRule (illegal-transitive-dependency-check) not to break the build -->
@@ -82,21 +80,18 @@
         <!-- Errai -->
         <dependency>
             <groupId>org.jboss.errai.bom</groupId>
-            <artifactId>errai-bom</artifactId>
+            <artifactId>errai-internal-bom</artifactId>
             <version>${version.org.jboss.errai}</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-security-client</artifactId>
-            <version>${version.org.jboss.errai}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-security-picketlink</artifactId>
-            <version>${version.org.jboss.errai}</version>
-        </dependency>
+        
+      <!-- Errai dependency for CDI 1.0 Compat -->
+      <dependency>
+        <groupId>org.jboss.errai</groupId>
+        <artifactId>errai-weld-integration</artifactId>
+        <version>3.0.4.Final</version>
+      </dependency>
 
       <!-- GWT and GWT Extensions -->
       <dependency>
@@ -184,27 +179,6 @@
         <groupId>org.owasp.encoder</groupId>
         <artifactId>encoder</artifactId>
         <version>${version.org.owasp.encoder}</version>
-      </dependency>
-
-      <!-- CDI Development Utils -->
-      <!-- This must be placed above com.google.gwt:gwt-dev to override the
-         Jetty that is present there -->
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty-naming</artifactId>
-        <version>${version.org.mortbay.jetty}</version>
       </dependency>
 
       <dependency>

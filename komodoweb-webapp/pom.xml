@@ -59,10 +59,65 @@
       <artifactId>guice</artifactId>
     </dependency>
 
+    <!-- Upload -->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+
     <!-- UberFire -->
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-all</artifactId>
+      <artifactId>uberfire-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-io</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-server</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-backend-server</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-backend-cdi</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-fs</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-js</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-workbench-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-client-backend</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-client-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -70,7 +125,7 @@
       <artifactId>uberfire-workbench-processors</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-security-client</artifactId>
@@ -123,18 +178,6 @@
 
     <!-- Third party libraries -->
     <dependency>
-      <groupId>org.owasp.encoder</groupId>
-      <artifactId>encoder</artifactId>
-    </dependency>
-    <dependency>
-         <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-ext</artifactId>
-    </dependency>
-    <dependency>
 	   <groupId>com.github.gwtd3</groupId>
        <artifactId>gwt-d3-api</artifactId>
     </dependency>
@@ -164,36 +207,78 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-picketlink</artifactId>
     </dependency>
-
-    <!-- All of these libraries are supplied by the app server and must not be deployed with the WAR file! -->
-    <dependency><groupId>javax.enterprise</groupId><artifactId>cdi-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>javax.inject</groupId><artifactId>javax.inject</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>javax.validation</groupId><artifactId>validation-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>junit</groupId><artifactId>junit</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.hibernate.common</groupId><artifactId>hibernate-commons-annotations</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.hibernate.javax.persistence</groupId><artifactId>hibernate-jpa-2.0-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.hibernate</groupId><artifactId>hibernate-core</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.hibernate</groupId><artifactId>hibernate-entitymanager</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.hibernate</groupId><artifactId>hibernate-validator</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-cdi-jboss</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-cdi-jetty</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-codegen-gwt</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-ioc-bus-support</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-javax-enterprise</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-jaxrs-client</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-jpa-client</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-navigation</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.errai</groupId><artifactId>errai-tools</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.resteasy</groupId><artifactId>jaxrs-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.resteasy</groupId><artifactId>resteasy-cdi</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.spec.javax.interceptor</groupId><artifactId>jboss-interceptors-api_1.1_spec</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.spec.javax.transaction</groupId><artifactId>jboss-transaction-api_1.1_spec</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.weld.servlet</groupId><artifactId>weld-servlet-core</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.weld</groupId><artifactId>weld-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.jboss.weld</groupId><artifactId>weld-spi</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>xml-apis</groupId><artifactId>xml-apis</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId><scope>provided</scope></dependency>
     
+    <!-- Weld Modules -->
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+
+    <!-- Log -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-ext</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+
+    <!-- Cleanup WAR -->
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>de.benediktmeurer.gwt-slf4j</groupId>
+      <artifactId>gwt-slf4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-xjc</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- GWT -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -321,6 +406,23 @@
             <compileSourcesArtifact>org.modeshape:modeshape-sequencer-teiid</compileSourcesArtifact>
             <compileSourcesArtifact>org.modeshape:modeshape-sequencer-ddl</compileSourcesArtifact>
             <compileSourcesArtifact>org.jboss.tools.komodo.plugins:org.komodo.modeshape.teiid.sql.sequencer</compileSourcesArtifact>
+            <!-- UberFire -->
+            <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-nio2-model</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-io</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-js</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-client-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-workbench-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-server</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-backend-server</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-backend-cdi</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-nio2-fs</compileSourcesArtifact>
           </compileSourcesArtifacts>
 
           <!-- do not insert line breaks in this string; it breaks Windows compatibility -->

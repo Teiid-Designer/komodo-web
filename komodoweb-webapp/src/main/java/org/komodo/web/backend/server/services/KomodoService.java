@@ -17,9 +17,11 @@ package org.komodo.web.backend.server.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.komodo.core.KEngine;
 import org.komodo.relational.vdb.Vdb;
@@ -264,7 +266,7 @@ public class KomodoService implements IKomodoService {
 			for(Vdb vdb : vdbs) {
 				String thePath = vdb.getAbsolutePath();
 				if(thePath.equals(vdbPath)) {
-					vdbDdl = ((VdbImpl)vdb).export(null);
+					vdbDdl = ((VdbImpl)vdb).export(null, new Properties());
 				}
 			}
 		} catch (KException e) {
